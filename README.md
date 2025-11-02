@@ -1,1 +1,1 @@
-# main-system
+# Payattn core code repo
