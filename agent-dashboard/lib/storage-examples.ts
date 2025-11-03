@@ -7,7 +7,14 @@
  */
 
 import { AuthService, SessionToken } from './auth';
-import { EncryptedStorage, UserProfile } from './storage';
+import { 
+  saveProfile, 
+  loadProfile, 
+  deleteProfile, 
+  deleteAllProfiles,
+  hasProfile, 
+  type UserProfile 
+} from './storage';
 
 /**
  * Example 1: Complete authentication and profile storage flow
@@ -41,7 +48,7 @@ export async function authenticateAndSaveProfile(
     console.log('Session token created:', jwt.substring(0, 20) + '...');
 
     // Save encrypted profile (using public key for encryption)
-    await EncryptedStorage.saveProfile(profileData, walletAddress);
+    await saveProfile(profileData, walletAddress);
     console.log('Profile saved and encrypted');
     
     // Store verification with timestamp (persists for 24 hours)
@@ -103,7 +110,7 @@ export async function initializeSession(): Promise<{
     }
     
     // Load encrypted profile using public key (wallet address)
-    const profile = await EncryptedStorage.loadProfile(walletAddress);
+    const profile = await loadProfile(walletAddress);
 
     return {
       isAuthenticated: true,
@@ -151,19 +158,20 @@ export async function updateProfile(
   }
 
   // Load existing profile
-  const existing = await EncryptedStorage.loadProfile(walletAddress);
+  const existing = await loadProfile(walletAddress);
   
-  // Merge updates with proper type handling
+  // Merge updates with existing profile
   const updated: UserProfile = {
     demographics: updates.demographics || existing?.demographics,
     interests: updates.interests || existing?.interests,
     location: updates.location || existing?.location,
     financial: updates.financial || existing?.financial,
     preferences: updates.preferences || existing?.preferences,
+    encryptedAt: new Date().toISOString(),
   };
 
   // Save encrypted
-  await EncryptedStorage.saveProfile(updated, walletAddress);
+  await saveProfile(updated, walletAddress);
 }
 
 /**
@@ -186,7 +194,7 @@ export async function logout(): Promise<void> {
  * Example 4b: Delete specific wallet's profile data
  */
 export async function deleteMyProfile(publicKey: string): Promise<void> {
-  await EncryptedStorage.deleteProfile(publicKey);
+  deleteProfile(publicKey);
   console.log('Profile deleted for this wallet');
 }
 
@@ -194,7 +202,7 @@ export async function deleteMyProfile(publicKey: string): Promise<void> {
  * Example 4c: Nuclear option - delete ALL wallet profiles
  */
 export async function deleteAllWalletProfiles(): Promise<void> {
-  await EncryptedStorage.deleteAllProfiles();
+  deleteAllProfiles();
   console.log('All wallet profiles deleted');
 }
 
@@ -226,7 +234,7 @@ export function getSessionInfo(): {
   return {
     walletAddress: token.walletAddress,
     expiresIn: `${expiresInHours}h ${expiresInMinutes}m`,
-    hasProfile: EncryptedStorage.hasProfile(token.publicKey),
+    hasProfile: hasProfile(token.publicKey),
   };
 }
 
@@ -250,4 +258,5 @@ export const SAMPLE_PROFILE: UserProfile = {
     maxAdsPerHour: 10,
     painThreshold: 5,
   },
+  encryptedAt: new Date().toISOString(),
 };

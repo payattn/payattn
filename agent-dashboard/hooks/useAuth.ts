@@ -6,10 +6,11 @@ import { useState, useEffect, useCallback } from 'react';
 import { AuthService, AuthSession } from '@/lib/auth';
 
 export function useAuth() {
-  const { publicKey, wallet, connected, disconnect } = useWallet();
+  const { publicKey, wallet, connected, connecting, disconnect } = useWallet();
   const [session, setSession] = useState<AuthSession | null>(null);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isRestoringSession, setIsRestoringSession] = useState(true);
 
   // Load existing session on mount
   useEffect(() => {
@@ -17,7 +18,17 @@ export function useAuth() {
     if (existingSession && AuthService.isSessionValid(existingSession)) {
       setSession(existingSession);
     }
+    // Wait a bit for wallet to potentially auto-connect
+    const timer = setTimeout(() => setIsRestoringSession(false), 1000);
+    return () => clearTimeout(timer);
   }, []);
+
+  // Once wallet connects with valid session, mark restoration complete
+  useEffect(() => {
+    if (connected && session && publicKey?.toBase58() === session.publicKey) {
+      setIsRestoringSession(false);
+    }
+  }, [connected, session, publicKey]);
 
   // Authenticate when wallet connects
   const authenticate = useCallback(async () => {
@@ -92,19 +103,23 @@ export function useAuth() {
     setError(null);
   }, []);
 
-  // Auto-clear session when wallet disconnects
+  // Auto-clear session only when explicitly disconnected (not during initial load)
   useEffect(() => {
-    if (!connected) {
+    if (!connected && !connecting && !isRestoringSession) {
       clearAuth();
     }
-  }, [connected, clearAuth]);
+  }, [connected, connecting, isRestoringSession, clearAuth]);
 
   // Check if user is authenticated
+  // During session restoration, trust the valid session even if wallet not yet connected
   const isAuthenticated =
     session !== null &&
     AuthService.isSessionValid(session) &&
-    connected &&
-    publicKey?.toBase58() === session.publicKey;
+    (
+      (connected && publicKey?.toBase58() === session.publicKey) ||
+      (isRestoringSession && publicKey?.toBase58() === session.publicKey) ||
+      (connecting && publicKey?.toBase58() === session.publicKey)
+    );
 
   // Refresh session periodically
   useEffect(() => {

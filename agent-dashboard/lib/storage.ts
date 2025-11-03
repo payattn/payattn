@@ -1,9 +1,20 @@
 /**
- * Encrypted Storage Library
- * Implements AES-256-GCM encryption for client-side data storage
- * Uses Web Crypto API with PBKDF2 key derivation
- * REQUIRES wallet connection for verification (uses public key for deterministic encryption)
+ * Encrypted Storage for User Profiles
+ * 
+ * Uses AES-256-GCM encryption with key derived from wallet public key
+ * Data stored in localStorage, encrypted at rest
+ * 
+ * Security:
+ * - Encryption key derived from wallet public key using PBKDF2 (100,000 iterations)
+ * - Each encryption operation uses a fresh random IV
+ * - AES-GCM provides authenticated encryption
+ * - Data can only be decrypted with wallet public key
+ * 
+ * NOTE: Crypto functions imported from crypto-pure.ts
+ * This allows Service Worker to use same crypto code with zero dependencies
  */
+
+import { encryptData, decryptData } from './crypto-pure';
 
 export interface UserProfile {
   demographics?: {
@@ -22,268 +33,225 @@ export interface UserProfile {
     maxAdsPerHour: number;
     painThreshold: number;
   };
+  encryptedAt?: string;
 }
 
-const STORAGE_KEY_PREFIX = 'payattn_profile_v1';
-const PBKDF2_ITERATIONS = 100000;
-const PBKDF2_HASH = 'SHA-256';
-const AES_ALGORITHM = 'AES-GCM';
-const AES_KEY_LENGTH = 256;
-const IV_LENGTH = 12; // 12 bytes for GCM
+interface StorageData {
+  publicKey: string;
+  encryptedData: string;
+  version: string;
+}
 
-export class EncryptedStorage {
-  /**
-   * Generate storage key for a specific wallet
-   * Each wallet gets its own storage key to prevent data conflicts
-   */
-  private static getStorageKey(publicKey: string): string {
-    return `${STORAGE_KEY_PREFIX}_${publicKey}`;
+const STORAGE_VERSION = 'v1';
+
+/**
+ * Generate wallet-specific storage key
+ * Each wallet gets separate storage to prevent conflicts
+ */
+function getStorageKey(publicKey: string): string {
+  return `payattn_profile_v1_${publicKey}`;
+}
+
+/**
+ * Save encrypted profile for specific wallet
+ */
+export async function saveProfile(
+  profile: UserProfile,
+  publicKey: string
+): Promise<void> {
+  const profileWithTimestamp = {
+    ...profile,
+    encryptedAt: new Date().toISOString(),
+  };
+
+  const profileJson = JSON.stringify(profileWithTimestamp);
+  const encrypted = await encryptData(profileJson, publicKey);
+
+  const storageData: StorageData = {
+    publicKey,
+    encryptedData: encrypted,
+    version: STORAGE_VERSION,
+  };
+
+  localStorage.setItem(getStorageKey(publicKey), JSON.stringify(storageData));
+}
+
+/**
+ * Load encrypted profile for specific wallet
+ */
+export async function loadProfile(publicKey: string): Promise<UserProfile | null> {
+  const stored = localStorage.getItem(getStorageKey(publicKey));
+  if (!stored) {
+    return null;
   }
 
-  /**
-   * Derive encryption key from wallet public key
-   * SECURITY: Uses public key (deterministic) but requires wallet connection to verify
-   * This allows same data to be encrypted/decrypted consistently
-   * @param publicKeyString - Base58 encoded public key from wallet
-   */
-  private static async deriveKeyFromPublicKey(publicKeyString: string): Promise<CryptoKey> {
-    const encoder = new TextEncoder();
-    const passwordBytes = encoder.encode(publicKeyString);
-    
-    // Import as key material
-    const keyMaterial = await crypto.subtle.importKey(
-      'raw',
-      passwordBytes as BufferSource,
-      'PBKDF2',
-      false,
-      ['deriveBits', 'deriveKey']
-    );
-
-    // Static salt derived from app identifier (deterministic for MVP)
-    const saltBytes = encoder.encode('payattn_v1_salt_2025');
-
-    // Derive AES-GCM key
-    return crypto.subtle.deriveKey(
-      {
-        name: 'PBKDF2',
-        salt: saltBytes as BufferSource,
-        iterations: PBKDF2_ITERATIONS,
-        hash: PBKDF2_HASH,
-      },
-      keyMaterial,
-      {
-        name: AES_ALGORITHM,
-        length: AES_KEY_LENGTH,
-      },
-      false,
-      ['encrypt', 'decrypt']
-    );
-  }
-
-  /**
-   * Encrypt data using AES-256-GCM
-   * Returns base64-encoded IV + ciphertext
-   * @param data - Plain text to encrypt
-   * @param publicKey - Base58 public key string from connected wallet
-   */
-  static async encrypt(data: string, publicKey: string): Promise<string> {
-    if (typeof window === 'undefined') {
-      throw new Error('Encryption only available in browser context');
-    }
-
-    const key = await this.deriveKeyFromPublicKey(publicKey);
-    const encoder = new TextEncoder();
-    const dataBytes = encoder.encode(data);
-
-    // Generate random IV
-    const iv = crypto.getRandomValues(new Uint8Array(IV_LENGTH));
-
-    // Encrypt
-    const ciphertext = await crypto.subtle.encrypt(
-      {
-        name: AES_ALGORITHM,
-        iv,
-      },
-      key,
-      dataBytes as BufferSource
-    );
-
-    // Combine IV + ciphertext
-    const combined = new Uint8Array(iv.length + ciphertext.byteLength);
-    combined.set(iv, 0);
-    combined.set(new Uint8Array(ciphertext), iv.length);
-
-    // Encode to base64
-    return this.arrayBufferToBase64(combined);
-  }
-
-  /**
-   * Decrypt data using AES-256-GCM
-   * Expects base64-encoded IV + ciphertext
-   * @param encryptedData - Base64 encrypted string
-   * @param publicKey - Base58 public key string from connected wallet
-   */
-  static async decrypt(encryptedData: string, publicKey: string): Promise<string> {
-    if (typeof window === 'undefined') {
-      throw new Error('Decryption only available in browser context');
-    }
-
-    const key = await this.deriveKeyFromPublicKey(publicKey);
-    
-    // Decode from base64
-    const combined = this.base64ToArrayBuffer(encryptedData);
-
-    // Extract IV and ciphertext
-    const iv = combined.slice(0, IV_LENGTH);
-    const ciphertext = combined.slice(IV_LENGTH);
-
-    // Decrypt
-    const decrypted = await crypto.subtle.decrypt(
-      {
-        name: AES_ALGORITHM,
-        iv,
-      },
-      key,
-      ciphertext
-    );
-
-    const decoder = new TextDecoder();
-    return decoder.decode(decrypted);
-  }
-
-  /**
-   * Save user profile with encryption
-   * Requires wallet to be connected (uses public key for encryption)
-   * Each wallet's data is stored separately
-   * @param profile - User profile data
-   * @param publicKey - Base58 public key string from connected wallet
-   */
-  static async saveProfile(profile: UserProfile, publicKey: string): Promise<void> {
-    if (typeof window === 'undefined') {
-      throw new Error('Storage only available in browser context');
-    }
-
+  try {
+    // Try new format first (wrapped in JSON)
     try {
-      const jsonData = JSON.stringify(profile);
-      const encrypted = await this.encrypt(jsonData, publicKey);
-      const storageKey = this.getStorageKey(publicKey);
-      localStorage.setItem(storageKey, encrypted);
-    } catch (error) {
-      console.error('Failed to save profile:', error);
-      throw new Error('Failed to save encrypted profile');
-    }
-  }
+      const storageData = JSON.parse(stored) as StorageData;
 
-  /**
-   * Load user profile with decryption
-   * Requires wallet to be connected (uses public key for decryption)
-   * Loads data specific to the connected wallet
-   * @param publicKey - Base58 public key string from connected wallet
-   */
-  static async loadProfile(publicKey: string): Promise<UserProfile | null> {
-    if (typeof window === 'undefined') {
-      return null;
-    }
-
-    try {
-      const storageKey = this.getStorageKey(publicKey);
-      const encrypted = localStorage.getItem(storageKey);
-      if (!encrypted) {
+      // Version check
+      if (storageData.version !== STORAGE_VERSION) {
+        console.warn('Storage version mismatch, clearing data');
+        localStorage.removeItem(getStorageKey(publicKey));
         return null;
       }
 
-      const decrypted = await this.decrypt(encrypted, publicKey);
-      const profile: UserProfile = JSON.parse(decrypted);
+      // Decrypt
+      const decrypted = await decryptData(storageData.encryptedData, publicKey);
+      return JSON.parse(decrypted) as UserProfile;
+    } catch (jsonError) {
+      // If JSON parse fails, try old format (direct encrypted string)
+      console.log('Attempting to load old format data...');
+      const decrypted = await decryptData(stored, publicKey);
+      const profile = JSON.parse(decrypted) as UserProfile;
+      
+      // Migrate to new format
+      await saveProfile(profile, publicKey);
+      console.log('Migrated old format to new format');
+      
       return profile;
-    } catch (error) {
-      console.error('Failed to load profile:', error);
-      // If decryption fails, data may be corrupted or wrong wallet
-      return null;
+    }
+  } catch (error) {
+    console.error('Failed to decrypt profile:', error);
+    return null;
+  }
+}
+
+/**
+ * Delete profile for specific wallet
+ */
+export function deleteProfile(publicKey: string): void {
+  localStorage.removeItem(getStorageKey(publicKey));
+}
+
+/**
+ * Delete ALL profiles (all wallets)
+ */
+export function deleteAllProfiles(): void {
+  const keysToRemove: string[] = [];
+  
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key?.startsWith('payattn_profile_v1_')) {
+      keysToRemove.push(key);
     }
   }
+  
+  keysToRemove.forEach(key => localStorage.removeItem(key));
+}
 
-  /**
-   * Delete profile data for a specific wallet
-   * @param publicKey - Base58 public key string of wallet whose data to delete
-   */
-  static async deleteProfile(publicKey: string): Promise<void> {
-    if (typeof window === 'undefined') {
-      return;
+/**
+ * Check if profile exists for specific wallet
+ */
+export function hasProfile(publicKey: string): boolean {
+  return localStorage.getItem(getStorageKey(publicKey)) !== null;
+}
+
+/**
+ * Get list of all wallets with stored profiles
+ * Useful for dev/debugging
+ */
+export function getAllStoredWallets(): string[] {
+  const wallets: string[] = [];
+  
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key?.startsWith('payattn_profile_v1_')) {
+      // Extract public key from storage key
+      const publicKey = key.replace('payattn_profile_v1_', '');
+      wallets.push(publicKey);
     }
-
-    const storageKey = this.getStorageKey(publicKey);
-    localStorage.removeItem(storageKey);
   }
+  
+  return wallets;
+}
 
-  /**
-   * Delete ALL wallet profiles from storage
-   * WARNING: This removes data for ALL wallets, not just the current one
-   */
-  static async deleteAllProfiles(): Promise<void> {
-    if (typeof window === 'undefined') {
-      return;
-    }
+/**
+ * Service Worker execution log
+ */
+export interface SWExecutionLog {
+  timestamp: string;
+  profilesProcessed: number;
+  success: boolean;
+  error?: string;
+}
 
-    // Find all keys that match our profile prefix
-    const keysToRemove: string[] = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key?.startsWith(STORAGE_KEY_PREFIX)) {
-        keysToRemove.push(key);
-      }
-    }
+/**
+ * Service Worker Runtime Status
+ * Tracks when SW last ran and when it will run next
+ */
+export interface SWRuntimeStatus {
+  lastRunAt: string | null;
+  nextRunAt: string | null;
+  isActive: boolean;
+}
 
-    // Remove all profile keys
-    keysToRemove.forEach(key => localStorage.removeItem(key));
+/**
+ * Save SW runtime status
+ */
+export function updateSWStatus(status: SWRuntimeStatus): void {
+  localStorage.setItem('payattn_sw_status', JSON.stringify(status));
+}
+
+/**
+ * Get SW runtime status
+ */
+export function getSWStatus(): SWRuntimeStatus {
+  const stored = localStorage.getItem('payattn_sw_status');
+  if (!stored) {
+    return {
+      lastRunAt: null,
+      nextRunAt: null,
+      isActive: false,
+    };
   }
-
-  /**
-   * Convert ArrayBuffer to base64 string
-   */
-  private static arrayBufferToBase64(buffer: Uint8Array): string {
-    let binary = '';
-    const len = buffer.byteLength;
-    for (let i = 0; i < len; i++) {
-      binary += String.fromCharCode(buffer[i]!);
-    }
-    return btoa(binary);
+  
+  try {
+    return JSON.parse(stored) as SWRuntimeStatus;
+  } catch {
+    return {
+      lastRunAt: null,
+      nextRunAt: null,
+      isActive: false,
+    };
   }
+}
 
-  /**
-   * Convert base64 string to ArrayBuffer
-   */
-  private static base64ToArrayBuffer(base64: string): Uint8Array {
-    const binary = atob(base64);
-    const len = binary.length;
-    const bytes = new Uint8Array(len);
-    for (let i = 0; i < len; i++) {
-      bytes[i] = binary.charCodeAt(i);
-    }
-    return bytes;
+/**
+ * Save SW execution log entry
+ */
+export function logSWExecution(log: SWExecutionLog): void {
+  const logs = getSWExecutionLogs();
+  logs.push(log);
+  
+  // Keep only last 100 entries
+  if (logs.length > 100) {
+    logs.shift();
   }
+  
+  localStorage.setItem('payattn_sw_logs', JSON.stringify(logs));
+}
 
-  /**
-   * Check if profile exists for a specific wallet
-   * @param publicKey - Base58 public key string to check
-   */
-  static hasProfile(publicKey: string): boolean {
-    if (typeof window === 'undefined') {
-      return false;
-    }
-    const storageKey = this.getStorageKey(publicKey);
-    return localStorage.getItem(storageKey) !== null;
+/**
+ * Get all SW execution logs
+ */
+export function getSWExecutionLogs(): SWExecutionLog[] {
+  const stored = localStorage.getItem('payattn_sw_logs');
+  if (!stored) {
+    return [];
   }
+  
+  try {
+    return JSON.parse(stored) as SWExecutionLog[];
+  } catch {
+    return [];
+  }
+}
 
-  /**
-   * Helper: Verify wallet is connected and get public key
-   * In production, you'd verify the signature to ensure user owns the wallet
-   * @param wallet - Connected wallet adapter
-   * @returns Public key string (Base58 encoded)
-   */
-  static getWalletPublicKey(wallet: any): string {
-    if (!wallet || !wallet.publicKey) {
-      throw new Error('Wallet not connected');
-    }
-    return wallet.publicKey.toBase58();
-  }
+/**
+ * Clear SW execution logs
+ */
+export function clearSWExecutionLogs(): void {
+  localStorage.removeItem('payattn_sw_logs');
 }
