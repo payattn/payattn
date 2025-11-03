@@ -60,11 +60,25 @@ export function useAuth() {
       setSession(newSession);
 
       return true;
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : 'Authentication failed';
+    } catch (err: any) {
+      // Check if user cancelled the signature request
+      const isCancelled = err?.message?.includes('cancelled') || 
+                          err?.message?.includes('rejected') ||
+                          err?.message?.includes('User rejected');
+      
+      const errorMessage = isCancelled 
+        ? 'Signature request cancelled'
+        : (err instanceof Error ? err.message : 'Authentication failed');
+      
       setError(errorMessage);
-      console.error('Authentication error:', err);
+      
+      // Only log non-cancellation errors
+      if (!isCancelled) {
+        console.error('Authentication error:', err);
+      } else {
+        console.log('User cancelled authentication');
+      }
+      
       return false;
     } finally {
       setIsAuthenticating(false);

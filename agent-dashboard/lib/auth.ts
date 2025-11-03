@@ -15,11 +15,19 @@ export interface AuthSession {
   expiresAt: number;
 }
 
+export interface SessionToken {
+  walletAddress: string;
+  publicKey: string;
+  issuedAt: number;
+  expiresAt: number;
+}
+
 const SESSION_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 const CHALLENGE_VALIDITY = 5 * 60 * 1000; // 5 minutes
 
 export class AuthService {
   private static SESSION_KEY = 'payattn_auth_session';
+  private static JWT_SESSION_KEY = 'payattn_session';
 
   /**
    * Generate an authentication challenge for the user to sign
@@ -38,6 +46,7 @@ export class AuthService {
 
   /**
    * Request wallet signature for authentication challenge
+   * Throws error if user cancels/rejects signature request
    */
   static async requestSignature(
     wallet: any,
@@ -47,10 +56,15 @@ export class AuthService {
       throw new Error('Wallet does not support message signing');
     }
 
-    const encodedMessage = new TextEncoder().encode(challenge.message);
-    const signature = await wallet.signMessage(encodedMessage);
-
-    return signature;
+    try {
+      const encodedMessage = new TextEncoder().encode(challenge.message);
+      const signature = await wallet.signMessage(encodedMessage);
+      return signature;
+    } catch (error: any) {
+      // User cancelled/rejected the signature request
+      console.log('Signature request cancelled by user');
+      throw new Error('Signature request cancelled');
+    }
   }
 
   /**
@@ -179,5 +193,95 @@ export class AuthService {
    */
   static isChallengeValid(challenge: AuthChallenge): boolean {
     return Date.now() - challenge.timestamp < CHALLENGE_VALIDITY;
+  }
+
+  /**
+   * Generate JWT session token (simplified JWT implementation)
+   * For MVP: Using base64-encoded JSON without cryptographic signature
+   * Production should use proper JWT library with signature verification
+   */
+  static createSessionToken(walletAddress: string, publicKey: string): string {
+    const now = Date.now();
+    const token: SessionToken = {
+      walletAddress,
+      publicKey,
+      issuedAt: now,
+      expiresAt: now + SESSION_DURATION,
+    };
+
+    // Simple JWT format: header.payload (no signature for MVP)
+    const header = { alg: 'none', typ: 'JWT' };
+    const headerEncoded = btoa(JSON.stringify(header));
+    const payloadEncoded = btoa(JSON.stringify(token));
+    const jwt = `${headerEncoded}.${payloadEncoded}`;
+
+    // Store in localStorage
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(this.JWT_SESSION_KEY, jwt);
+    }
+
+    return jwt;
+  }
+
+  /**
+   * Get and validate current session token
+   * Returns null if token is invalid or expired
+   */
+  static getSessionToken(): SessionToken | null {
+    if (typeof window === 'undefined') {
+      return null;
+    }
+
+    const jwt = localStorage.getItem(this.JWT_SESSION_KEY);
+    if (!jwt) {
+      return null;
+    }
+
+    try {
+      // Parse JWT (header.payload)
+      const parts = jwt.split('.');
+      if (parts.length !== 2) {
+        this.clearSessionToken();
+        return null;
+      }
+
+      const payloadEncoded = parts[1];
+      if (!payloadEncoded) {
+        this.clearSessionToken();
+        return null;
+      }
+
+      const payload = JSON.parse(atob(payloadEncoded));
+      const token: SessionToken = payload;
+
+      // Validate expiration
+      if (Date.now() > token.expiresAt) {
+        this.clearSessionToken();
+        return null;
+      }
+
+      return token;
+    } catch (error) {
+      console.error('Failed to parse session token:', error);
+      this.clearSessionToken();
+      return null;
+    }
+  }
+
+  /**
+   * Clear session token (logout)
+   */
+  static clearSessionToken(): void {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(this.JWT_SESSION_KEY);
+    }
+  }
+
+  /**
+   * Check if session token is valid and not expired
+   */
+  static isSessionTokenValid(): boolean {
+    const token = this.getSessionToken();
+    return token !== null && Date.now() < token.expiresAt;
   }
 }
