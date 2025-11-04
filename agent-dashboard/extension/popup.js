@@ -107,6 +107,7 @@ function showAuthState(walletAddress) {
   const manageWalletBtn = document.getElementById('manageWallet');
   const manageProfileBtn = document.getElementById('manageProfile');
   const adDashboardBtn = document.getElementById('adDashboard');
+  const adQueueBtn = document.getElementById('adQueue');
   const openDashboardLink = document.getElementById('openDashboard');
   
   if (runNowBtn) {
@@ -128,6 +129,11 @@ function showAuthState(walletAddress) {
   if (adDashboardBtn) {
     adDashboardBtn.addEventListener('click', () => {
       chrome.tabs.create({ url: 'http://localhost:3000/dashboard' });
+    });
+  }
+  if (adQueueBtn) {
+    adQueueBtn.addEventListener('click', () => {
+      chrome.tabs.create({ url: chrome.runtime.getURL('ad-queue.html') });
     });
   }
   if (openDashboardLink) {

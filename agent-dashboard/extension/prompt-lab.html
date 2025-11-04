@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Venice AI Prompt Lab</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      color: #333;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      padding: 24px;
+      min-height: 800px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header {
+      margin-bottom: 24px;
+      border-bottom: 2px solid #f0f0f0;
+      padding-bottom: 16px;
+    }
+
+    .header h1 {
+      font-size: 28px;
+      color: #2d3748;
+      margin-bottom: 4px;
+    }
+
+    .header p {
+      color: #718096;
+      font-size: 14px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      flex: 1;
+      margin-bottom: 24px;
+    }
+
+    .input-section {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .input-section label {
+      font-weight: 600;
+      font-size: 14px;
+      color: #2d3748;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .input-section label .hint {
+      font-weight: 400;
+      color: #a0aec0;
+      font-size: 12px;
+    }
+
+    .input-section textarea {
+      flex: 1;
+      padding: 12px;
+      border: 2px solid #e2e8f0;
+      border-radius: 6px;
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+      font-size: 13px;
+      resize: none;
+      transition: border-color 0.2s;
+      color: #2d3748;
+    }
+
+    .input-section textarea:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .input-section textarea::placeholder {
+      color: #cbd5e0;
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .btn {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: #f0f0f0;
+      color: #4a5568;
+      border: 1px solid #e2e8f0;
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: #e8e8e8;
+    }
+
+    .btn-secondary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .status {
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 12px;
+      font-size: 13px;
+      display: none;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status.show {
+      display: flex;
+    }
+
+    .status.loading {
+      background: #fef3c7;
+      border: 1px solid #fbbf24;
+      color: #92400e;
+    }
+
+    .status.success {
+      background: #dcfce7;
+      border: 1px solid #86efac;
+      color: #166534;
+    }
+
+    .status.error {
+      background: #fee2e2;
+      border: 1px solid #fca5a5;
+      color: #991b1b;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid currentColor;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .response-container {
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 2px solid #f0f0f0;
+    }
+
+    .response-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .response-header h2 {
+      font-size: 16px;
+      color: #2d3748;
+    }
+
+    .response-stats {
+      font-size: 12px;
+      color: #718096;
+      display: flex;
+      gap: 16px;
+    }
+
+    .response-content {
+      background: #f7fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 16px;
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+      font-size: 13px;
+      color: #2d3748;
+      min-height: 150px;
+      max-height: 400px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      line-height: 1.5;
+    }
+
+    .response-content.empty {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #a0aec0;
+      font-style: italic;
+    }
+
+    .response-content::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .response-content::-webkit-scrollbar-track {
+      background: #f0f0f0;
+      border-radius: 4px;
+    }
+
+    .response-content::-webkit-scrollbar-thumb {
+      background: #cbd5e0;
+      border-radius: 4px;
+    }
+
+    .response-content::-webkit-scrollbar-thumb:hover {
+      background: #a0aec0;
+    }
+
+    .model-config {
+      display: flex;
+      gap: 16px;
+      align-items: flex-end;
+    }
+
+    .config-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .config-group label {
+      font-weight: 600;
+      font-size: 12px;
+      color: #4a5568;
+    }
+
+    .config-group input {
+      padding: 6px 8px;
+      border: 1px solid #e2e8f0;
+      border-radius: 4px;
+      font-size: 12px;
+      width: 100px;
+    }
+
+    .config-group input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    @media (max-width: 768px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .container {
+        padding: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🧪 Venice AI Prompt Lab</h1>
+      <p>Iterate on system prompts and test them against your data with streaming responses</p>
+    </div>
+
+    <div class="layout">
+      <!-- System Prompt Input -->
+      <div class="input-section">
+        <label>
+          System Prompt
+          <span class="hint">(Instructions for the AI)</span>
+        </label>
+        <textarea 
+          id="systemPrompt" 
+          placeholder="You are a helpful assistant that analyzes user data and matches them to relevant ads. Consider age, interests, income, and preferences when determining audience fit..."
+        ></textarea>
+        <div id="profileStatus" style="margin-top: 8px; font-size: 12px; color: #718096;">
+          📋 Profile: Loading...
+        </div>
+      </div>
+
+      <!-- JSON Data Input -->
+      <div class="input-section">
+        <label>
+          JSON Data
+          <span class="hint">(Data to analyze)</span>
+        </label>
+        <textarea 
+          id="jsonData" 
+          placeholder='{"user":{"age":46,"interests":["tech","privacy"],"income":"$100k-150k"},"ad":{"targetAge":[45,50],"targetInterests":["tech"],"targetIncome":"$75k+"}}'
+        ></textarea>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+      <button class="btn btn-primary" id="submitBtn">
+        ▶ Process
+      </button>
+      <button class="btn btn-secondary" id="clearBtn">
+        🗑 Clear
+      </button>
+
+      <div class="model-config" style="margin-left: auto;">
+        <div class="config-group">
+          <label>Temperature</label>
+          <input type="range" id="temperature" min="0" max="1" step="0.1" value="0.7">
+        </div>
+        <div class="config-group">
+          <label>Max Tokens</label>
+          <input type="number" id="maxTokens" min="100" max="4000" value="1024">
+        </div>
+      </div>
+    </div>
+
+    <!-- Status Message -->
+    <div class="status" id="status"></div>
+
+    <!-- Response Section -->
+    <div class="response-container">
+      <div class="response-header">
+        <h2>Response</h2>
+        <div class="response-stats">
+          <span id="tokenCount">Tokens: —</span>
+          <span id="processingTime">Time: —</span>
+        </div>
+      </div>
+      <div class="response-content empty" id="responseContent">
+        Submit a prompt and JSON to see the streamed response here...
+      </div>
+    </div>
+  </div>
+
+  <script src="venice-ai.js"></script>
+  <script src="crypto.js"></script>
+  <script src="prompt-lab.js"></script>
+</body>
+</html>

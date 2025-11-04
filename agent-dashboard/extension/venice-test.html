@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Venice AI Test</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      width: 700px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f8fafc;
+    }
+    .container {
+      padding: 20px;
+    }
+    h1 {
+      font-size: 20px;
+      margin-bottom: 8px;
+      color: #0f172a;
+    }
+    .subtitle {
+      font-size: 13px;
+      color: #64748b;
+      margin-bottom: 12px;
+    }
+    .notice {
+      background: #dcfce7;
+      border: 1px solid #86efac;
+      border-radius: 6px;
+      padding: 12px;
+      margin-bottom: 20px;
+      font-size: 12px;
+      color: #166534;
+    }
+    .notice a {
+      color: #15803d;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .notice a:hover {
+      text-decoration: underline;
+    }
+    .form-group {
+      margin-bottom: 16px;
+    }
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 6px;
+      color: #334155;
+    }
+    textarea, input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 13px;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+      font-family: 'Monaco', 'Menlo', monospace;
+    }
+    textarea:focus, input:focus {
+      outline: none;
+      border-color: #0ea5e9;
+      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+    }
+    .button-group {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    button {
+      flex: 1;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: #0ea5e9;
+      color: white;
+    }
+    .btn-primary:hover:not(:disabled) {
+      background: #0284c7;
+    }
+    .btn-primary:disabled {
+      background: #cbd5e1;
+      cursor: not-allowed;
+    }
+    .btn-secondary {
+      background: #e2e8f0;
+      color: #334155;
+    }
+    .btn-secondary:hover {
+      background: #cbd5e1;
+    }
+    .status {
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 16px;
+      font-size: 13px;
+    }
+    .status.idle {
+      background: #f0f9ff;
+      border: 1px solid #0ea5e9;
+      color: #0369a1;
+    }
+    .status.loading {
+      background: #fef3c7;
+      border: 1px solid #fbbf24;
+      color: #92400e;
+    }
+    .status.success {
+      background: #dcfce7;
+      border: 1px solid #86efac;
+      color: #166534;
+    }
+    .status.error {
+      background: #fee2e2;
+      border: 1px solid #fca5a5;
+      color: #991b1b;
+    }
+    .response-box {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 12px;
+      margin-bottom: 16px;
+    }
+    .response-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: #64748b;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+    .response-content {
+      font-family: 'Monaco', 'Menlo', monospace;
+      font-size: 12px;
+      line-height: 1.5;
+      color: #1e293b;
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    .response-error {
+      color: #dc2626;
+    }
+    .response-usage {
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid #e2e8f0;
+    }
+    .template-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .template-btn {
+      padding: 8px;
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      text-align: left;
+      transition: all 0.2s;
+    }
+    .template-btn:hover {
+      background: #e2e8f0;
+      border-color: #94a3b8;
+    }
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .tab-button {
+      padding: 10px 16px;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      color: #64748b;
+      transition: all 0.2s;
+    }
+    .tab-button:hover {
+      color: #334155;
+    }
+    .tab-button.active {
+      color: #0ea5e9;
+      border-bottom-color: #0ea5e9;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🤖 Venice AI Test</h1>
+    <p class="subtitle">Test the Venice AI integration directly from the extension</p>
+
+    <div class="notice">
+      💡 <strong>Tip:</strong> Configure your Venice AI API key first in <a href="settings.html">Extension Settings</a>
+    </div>
+
+    <!-- Tab Buttons -->
+    <div class="tab-buttons">
+      <button class="tab-btn" id="tabSimple" data-tab="simple">💬 Simple Chat</button>
+      <button class="tab-btn" id="tabMatching" data-tab="matching">🎯 Ad Matching</button>
+    </div>    <div id="status" class="status idle">
+      Ready to test
+    </div>
+
+    <!-- Simple Chat Tab -->
+    <div id="simpleTab" class="tab-content active">
+      <div class="form-group">
+        <label for="userMessage">User Message</label>
+        <textarea id="userMessage" placeholder="Enter a message...">Why is privacy important?</textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="systemPrompt">System Prompt (optional)</label>
+        <textarea id="systemPrompt" placeholder="You are a helpful AI assistant...">You are a helpful AI assistant.</textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Quick Templates</label>
+        <div class="template-buttons">
+          <button class="template-btn" id="templateSimple">Simple Question</button>
+          <button class="template-btn" id="templateAdAnalysis">Ad Analysis</button>
+          <button class="template-btn" id="templateCreative">Creative Task</button>
+          <button class="template-btn" id="templateSummary">Text Summary</button>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+        <div class="form-group">
+          <label for="model">Model</label>
+          <input type="text" id="model" value="venice-uncensored" />
+        </div>
+        <div class="form-group">
+          <label for="temperature">Temperature</label>
+          <input type="number" id="temperature" value="0.7" step="0.1" min="0" max="1" />
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button class="btn-primary" id="sendBtn">Send Message</button>
+        <button class="btn-secondary" id="clearBtn">Clear</button>
+      </div>
+    </div>
+
+    <!-- Ad Matching Tab -->
+    <div id="matchingTab" class="tab-content">
+      <div class="form-group">
+        <label for="userProfile">User Profile (JSON)</label>
+        <textarea id="userProfile">{
+  "demographics": {
+    "age": 46,
+    "gender": "M"
+  },
+  "interests": ["technology", "privacy"],
+  "financial": {
+    "incomeRange": "$100,000 - $150,000"
+  },
+  "preferences": {
+    "maxAdsPerHour": 5,
+    "painThreshold": 7
+  }
+}</textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="adData">Ad Data (JSON)</label>
+        <textarea id="adData">{
+  "content": "Introducing SecureVPN - Protect your online privacy today. Get 50% off annual plans.",
+  "targeting": {
+    "ageRange": [45, 50],
+    "interests": ["privacy", "security"],
+    "incomeRange": "$75,000+"
+  }
+}</textarea>
+      </div>
+
+      <div class="button-group">
+        <button class="btn-primary" id="analyzeMatchBtn">🎯 Analyze Match</button>
+        <button class="btn-secondary" id="clearMatchingBtn">Clear</button>
+      </div>
+    </div>
+
+    <!-- Response -->
+    <div id="responseContainer" style="display: none;">
+      <div class="response-box">
+        <div class="response-title">Response</div>
+        <div id="responseContent" class="response-content"></div>
+        <div id="responseUsage" class="response-usage" style="display: none;"></div>
+      </div>
+    </div>
+
+    <!-- Debug Info -->
+    <div style="padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; margin-top: 16px;">
+      <div style="font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 8px;">Debug</div>
+      <div id="debugInfo" style="font-family: 'Monaco', 'Menlo', monospace; font-size: 11px; color: #64748b; line-height: 1.4;"></div>
+    </div>
+  </div>
+
+  <script src="venice-ai.js"></script>
+  <script>
+    // Tab switching
+    function switchTab(tab) {
+      // Update buttons
+      document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      event.target.classList.add('active');
+
+      // Update content
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+      });
+      document.getElementById(tab + 'Tab').classList.add('active');
+
+      setStatus('Ready to test', 'idle');
+      document.getElementById('responseContainer').style.display = 'none';
+    }
+
+    // Template loader
+    function loadTemplate(type) {
+      const templates = {
+        simple: {
+          user: 'Why is privacy important?',
+          system: 'You are a helpful AI assistant.'
+        },
+        'ad-analysis': {
+          user: 'Analyze this ad: "Get 50% off premium features today! Limited time offer. Click here now!"',
+          system: 'You are an ad analysis expert. Analyze the ad and identify: 1) Main message, 2) Target audience, 3) Call to action.'
+        },
+        creative: {
+          user: 'Generate 3 creative headlines for a privacy-focused browser extension.',
+          system: 'You are a creative copywriter specializing in tech products.'
+        },
+        summary: {
+          user: 'Summarize this text in 2-3 sentences: "Privacy is the right to be left alone. It\'s a fundamental human right that allows people to maintain autonomy and dignity."',
+          system: 'You are a summarization expert. Provide concise summaries while preserving key information.'
+        }
+      };
+
+      const template = templates[type];
+      if (template) {
+        document.getElementById('userMessage').value = template.user;
+        document.getElementById('systemPrompt').value = template.system;
+      }
+    }
+
+    // Send message
+    async function handleSend() {
+      const userMessage = document.getElementById('userMessage').value.trim();
+      const systemPrompt = document.getElementById('systemPrompt').value.trim();
+      const model = document.getElementById('model').value.trim();
+      const temperature = parseFloat(document.getElementById('temperature').value);
+
+      if (!userMessage) {
+        setStatus('Please enter a message', 'error');
+        return;
+      }
+
+      setStatus('Sending request to Venice AI...', 'loading');
+      document.getElementById('sendBtn').disabled = true;
+
+      try {
+        updateDebug('Calling Venice API directly...');
+
+        const response = await window.VeniceAI.callVeniceAI(
+          systemPrompt
+            ? [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: userMessage }
+              ]
+            : [{ role: 'user', content: userMessage }],
+          model,
+          temperature
+        );
+
+        if (response.success) {
+          showResponse(response);
+          setStatus('✓ Response received successfully', 'success');
+          updateDebug(`Tokens used: ${response.usage?.total_tokens || 'N/A'}`);
+        } else {
+          setStatus(`Error: ${response.error || 'Unknown error'}`, 'error');
+          updateDebug(`Error: ${response.error}\n${response.details || ''}`);
+          showErrorResponse(response);
+        }
+      } catch (error) {
+        setStatus(`Error: ${error.message}`, 'error');
+        updateDebug(`Exception: ${error.message}`);
+      } finally {
+        document.getElementById('sendBtn').disabled = false;
+      }
+    }
+
+    // Analyze ad match
+    async function handleAnalyzeMatch() {
+      const profileText = document.getElementById('userProfile').value.trim();
+      const adText = document.getElementById('adData').value.trim();
+
+      if (!profileText || !adText) {
+        setStatus('Please enter both user profile and ad data', 'error');
+        return;
+      }
+
+      let userProfile, adData;
+      try {
+        userProfile = JSON.parse(profileText);
+        adData = JSON.parse(adText);
+      } catch (error) {
+        setStatus('Invalid JSON: ' + error.message, 'error');
+        return;
+      }
+
+      setStatus('Analyzing ad match...', 'loading');
+
+      try {
+        updateDebug('Analyzing if user matches ad targeting...');
+
+        const response = await window.VeniceAI.analyzeAdMatch(adData, userProfile);
+
+        if (response.success) {
+          const matchDisplay = response.matches ? '✅ MATCH' : '❌ NO MATCH';
+          const content = `${matchDisplay} (Score: ${response.matchScore}%)
+
+Reasoning: ${response.reasoning}
+
+Matched Criteria: ${response.matchedCriteria?.join(', ') || 'None'}
+Unmatched Criteria: ${response.unmatchedCriteria?.join(', ') || 'None'}`;
+
+          showResponse({ ...response, content });
+          setStatus('✓ Analysis complete', 'success');
+          updateDebug(`Match Score: ${response.matchScore}%`);
+        } else {
+          setStatus(`Error: ${response.error || 'Unknown error'}`, 'error');
+          showErrorResponse(response);
+        }
+      } catch (error) {
+        setStatus(`Error: ${error.message}`, 'error');
+        updateDebug(`Exception: ${error.message}`);
+      }
+    }
+
+    // Show response
+    function showResponse(response) {
+      const container = document.getElementById('responseContainer');
+      const content = document.getElementById('responseContent');
+      const usage = document.getElementById('responseUsage');
+
+      content.textContent = response.content || response.raw || JSON.stringify(response, null, 2);
+      content.className = 'response-content';
+
+      if (response.usage) {
+        usage.innerHTML = `
+          Model: ${response.model} | 
+          Prompt: ${response.usage.prompt_tokens} tokens | 
+          Completion: ${response.usage.completion_tokens} tokens | 
+          Total: ${response.usage.total_tokens} tokens
+        `;
+        usage.style.display = 'block';
+      }
+
+      container.style.display = 'block';
+    }
+
+    // Show error response
+    function showErrorResponse(response) {
+      const container = document.getElementById('responseContainer');
+      const content = document.getElementById('responseContent');
+      const usage = document.getElementById('responseUsage');
+
+      content.innerHTML = `<span class="response-error">Error: ${response.error}</span>\n${response.details || ''}`;
+      usage.style.display = 'none';
+      container.style.display = 'block';
+    }
+
+    // Clear form
+    function handleClear() {
+      document.getElementById('userMessage').value = '';
+      document.getElementById('systemPrompt').value = 'You are a helpful AI assistant.';
+      document.getElementById('responseContainer').style.display = 'none';
+      setStatus('Ready to test', 'idle');
+    }
+
+    function handleClearMatching() {
+      document.getElementById('userProfile').value = '';
+      document.getElementById('adData').value = '';
+      document.getElementById('responseContainer').style.display = 'none';
+      setStatus('Ready to test', 'idle');
+    }
+
+    // Status helper
+    function setStatus(message, type) {
+      const status = document.getElementById('status');
+      status.textContent = message;
+      status.className = `status ${type}`;
+    }
+
+    // Debug helper
+    function updateDebug(message) {
+      const debug = document.getElementById('debugInfo');
+      const now = new Date().toLocaleTimeString();
+      debug.textContent = `[${now}] ${message}`;
+    }
+  </script>
+  <script src="venice-test.js"></script>
+</body>
+</html>
