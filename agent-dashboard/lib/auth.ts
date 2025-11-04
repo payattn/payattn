@@ -1,6 +1,7 @@
 import { PublicKey } from '@solana/web3.js';
 import * as nacl from 'tweetnacl';
 import bs58 from 'bs58';
+import { hashSignature, fetchKeyMaterial } from './crypto-pure';
 
 export interface AuthChallenge {
   message: string;
@@ -13,6 +14,9 @@ export interface AuthSession {
   authenticated: boolean;
   timestamp: number;
   expiresAt: number;
+  keyHash?: string; // SHA-256 hash of wallet address for KDS
+  authToken?: string; // Base64 encoded signature for KDS authentication
+  keyMaterial?: string; // Fetched from KDS endpoint (cached in session)
 }
 
 export interface SessionToken {
@@ -31,11 +35,15 @@ export class AuthService {
 
   /**
    * Generate an authentication challenge for the user to sign
+   * Message format must match what the KDS server expects for signature verification
    */
   static generateChallenge(): AuthChallenge {
     const timestamp = Date.now();
     const nonce = this.generateNonce();
-    const message = `Sign this message to authenticate with payattn.org\n\nTimestamp: ${timestamp}\nNonce: ${nonce}`;
+    
+    // Note: The actual message signed will be set when we have the wallet address
+    // This is a placeholder - real message is generated in requestSignature
+    const message = `Sign in to Pay Attention\n\nWallet: [will be set]`;
 
     return {
       message,
@@ -50,14 +58,17 @@ export class AuthService {
    */
   static async requestSignature(
     wallet: any,
-    challenge: AuthChallenge
+    challenge: AuthChallenge,
+    walletAddress: string
   ): Promise<Uint8Array> {
     if (!wallet.signMessage) {
       throw new Error('Wallet does not support message signing');
     }
 
     try {
-      const encodedMessage = new TextEncoder().encode(challenge.message);
+      // Use consistent message format that matches KDS server verification
+      const message = `Sign in to Pay Attention\n\nWallet: ${walletAddress}`;
+      const encodedMessage = new TextEncoder().encode(message);
       const signature = await wallet.signMessage(encodedMessage);
       return signature;
     } catch (error: any) {
@@ -69,13 +80,16 @@ export class AuthService {
 
   /**
    * Verify the signature matches the public key
+   * Message format must match what was signed and what KDS server expects
    */
   static verifySignature(
     publicKey: PublicKey,
     signature: Uint8Array,
-    message: string
+    walletAddress: string
   ): boolean {
     try {
+      // Use consistent message format
+      const message = `Sign in to Pay Attention\n\nWallet: ${walletAddress}`;
       const encodedMessage = new TextEncoder().encode(message);
       const publicKeyBytes = publicKey.toBytes();
 
@@ -92,14 +106,36 @@ export class AuthService {
 
   /**
    * Create an authenticated session after successful verification
+   * Uses wallet address as deterministic key (not signature)
+   * Signature is only for proving ownership
    */
-  static createSession(publicKey: string): AuthSession {
+  static async createSession(publicKey: string, signature: Uint8Array): Promise<AuthSession> {
     const now = Date.now();
+    
+    // Compute DETERMINISTIC key hash from wallet address (not signature!)
+    // This ensures same wallet always gets same keyHash
+    const keyHash = await this.computeKeyHashFromWallet(publicKey);
+    
+    // Store signature as base64 auth token for KDS authentication
+    const authToken = this.encodeSignature(signature);
+    
+    // Fetch key material from KDS endpoint
+    let keyMaterial: string | undefined;
+    try {
+      keyMaterial = await fetchKeyMaterial(keyHash, publicKey, authToken);
+    } catch (error) {
+      console.error('Failed to fetch key material during session creation:', error);
+      // Continue without key material - will be fetched when needed
+    }
+    
     const session: AuthSession = {
       publicKey,
       authenticated: true,
       timestamp: now,
       expiresAt: now + SESSION_DURATION,
+      keyHash,
+      authToken,
+      keyMaterial, // Cached for session duration
     };
 
     // Store session in localStorage
@@ -108,6 +144,26 @@ export class AuthService {
     }
 
     return session;
+  }
+  
+  /**
+   * Compute deterministic keyHash from wallet address
+   * Same wallet = same keyHash every time
+   */
+  private static async computeKeyHashFromWallet(publicKey: string): Promise<string> {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(`payattn:${publicKey}`);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data.buffer as ArrayBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    return hashHex;
+  }
+  
+  /**
+   * Encode signature as base64 for storage and transport
+   */
+  private static encodeSignature(signature: Uint8Array): string {
+    return btoa(String.fromCharCode(...signature));
   }
 
   /**
@@ -175,6 +231,35 @@ export class AuthService {
     }
 
     return session;
+  }
+  
+  /**
+   * Get key material from session (cached) or fetch from KDS
+   */
+  static async getKeyMaterial(session: AuthSession): Promise<string> {
+    // Return cached material if available
+    if (session.keyMaterial) {
+      return session.keyMaterial;
+    }
+    
+    // Fetch from KDS if we have keyHash and authToken
+    if (session.keyHash && session.authToken) {
+      const material = await fetchKeyMaterial(
+        session.keyHash, 
+        session.publicKey, 
+        session.authToken
+      );
+      
+      // Cache in session
+      session.keyMaterial = material;
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(this.SESSION_KEY, JSON.stringify(session));
+      }
+      
+      return material;
+    }
+    
+    throw new Error('No authentication available in session');
   }
 
   /**

@@ -4,6 +4,7 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { PublicKey } from '@solana/web3.js';
 import { useState, useEffect, useCallback } from 'react';
 import { AuthService, AuthSession } from '@/lib/auth';
+import { syncAuthToExtension } from '@/lib/extension-sync';
 
 export function useAuth() {
   const { publicKey, wallet, connected, connecting, disconnect } = useWallet();
@@ -17,6 +18,13 @@ export function useAuth() {
     const existingSession = AuthService.getSession();
     if (existingSession && AuthService.isSessionValid(existingSession)) {
       setSession(existingSession);
+      
+      // Sync existing session to extension if available
+      if (existingSession.keyHash && existingSession.authToken) {
+        syncAuthToExtension(existingSession.keyHash, existingSession.publicKey, existingSession.authToken).catch(err => {
+          console.log('[useAuth] Could not sync existing session to extension:', err);
+        });
+      }
     }
     // Wait a bit for wallet to potentially auto-connect
     const timer = setTimeout(() => setIsRestoringSession(false), 1000);
@@ -49,26 +57,34 @@ export function useAuth() {
         throw new Error('Challenge expired');
       }
 
-      // Request signature from wallet
+      const walletAddress = publicKey.toBase58();
+
+      // Request signature from wallet (with wallet address for consistent message)
       const signature = await AuthService.requestSignature(
         wallet.adapter,
-        challenge
+        challenge,
+        walletAddress
       );
 
-      // Verify signature
+      // Verify signature (with wallet address for consistent message)
       const isValid = AuthService.verifySignature(
         publicKey,
         signature,
-        challenge.message
+        walletAddress
       );
 
       if (!isValid) {
         throw new Error('Signature verification failed');
       }
 
-      // Create authenticated session
-      const newSession = AuthService.createSession(publicKey.toBase58());
+      // Create authenticated session with signature for KDS
+      const newSession = await AuthService.createSession(walletAddress, signature);
       setSession(newSession);
+
+      // Sync keyHash and authToken to extension if installed
+      if (newSession.keyHash && newSession.authToken) {
+        await syncAuthToExtension(newSession.keyHash, publicKey.toBase58(), newSession.authToken);
+      }
 
       return true;
     } catch (err: any) {
@@ -101,6 +117,11 @@ export function useAuth() {
     AuthService.clearSession();
     setSession(null);
     setError(null);
+    
+    // Sync disconnect to extension
+    syncAuthToExtension('', '').catch(err => {
+      console.log('[useAuth] Could not sync disconnect to extension:', err);
+    });
   }, []);
 
   // Auto-clear session only when explicitly disconnected (not during initial load)

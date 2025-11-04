@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<body>
+<canvas id="canvas" width="128" height="128"></canvas>
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+// Draw icon
+ctx.fillStyle = '#0ea5e9';
+ctx.fillRect(0, 0, 128, 128);
+
+ctx.fillStyle = 'white';
+ctx.font = 'bold 80px Arial';
+ctx.textAlign = 'center';
+ctx.textBaseline = 'middle';
+ctx.fillText('P', 64, 64);
+
+// Download
+const link = document.createElement('a');
+link.download = 'icon128.png';
+link.href = canvas.toDataURL();
+link.click();
+</script>
+</body>
+</html>

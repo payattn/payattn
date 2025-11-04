@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>PayAttn Agent</title>
+  <style>
+    body {
+      width: 400px;
+      padding: 16px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    h1 {
+      font-size: 18px;
+      margin: 0 0 16px 0;
+    }
+    .status {
+      padding: 12px;
+      background: #f0f9ff;
+      border: 1px solid #0ea5e9;
+      border-radius: 6px;
+      margin-bottom: 16px;
+    }
+    .warning {
+      background: #fef3c7;
+      border-color: #fbbf24;
+    }
+    .status-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .status-item:last-child {
+      margin-bottom: 0;
+    }
+    button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-right: 8px;
+      margin-bottom: 8px;
+    }
+    .btn-primary {
+      background: #0ea5e9;
+      color: white;
+    }
+    .btn-primary:disabled {
+      background: #cbd5e1;
+      cursor: not-allowed;
+    }
+    .btn-secondary {
+      background: #e2e8f0;
+      color: #334155;
+    }
+    .logs {
+      max-height: 200px;
+      overflow-y: auto;
+      margin-top: 16px;
+    }
+    .log-entry {
+      padding: 8px;
+      margin-bottom: 8px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+    .log-success {
+      background: #dcfce7;
+      border: 1px solid #86efac;
+    }
+    .log-error {
+      background: #fee2e2;
+      border: 1px solid #fca5a5;
+    }
+    .link {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #e2e8f0;
+    }
+    .link a {
+      color: #0ea5e9;
+      text-decoration: none;
+    }
+    .link a:hover {
+      text-decoration: underline;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎯 PayAttn Agent</h1>
+  
+  <!-- Not Authenticated State -->
+  <div id="notAuthState" class="hidden">
+    <div class="status warning">
+      <strong>⚠️ Setup Required</strong>
+      <p style="margin: 8px 0 0 0; font-size: 14px;">
+        Connect your Phantom wallet to get started
+      </p>
+    </div>
+    <button class="btn-primary" id="setupButton">
+      🔐 Setup Extension
+    </button>
+  </div>
+  
+  <!-- Authenticated State -->
+  <div id="authState" class="hidden">
+    <div class="status">
+      <div class="status-item">
+        <span>Status:</span>
+        <strong id="status">🟢 Active</strong>
+      </div>
+      <div class="status-item">
+        <span>Wallet:</span>
+        <span id="walletAddr">...</span>
+      </div>
+      <div class="status-item">
+        <span>Last Run:</span>
+        <span id="lastRun">Never</span>
+      </div>
+      <div class="status-item">
+        <span>Next Run:</span>
+        <span id="nextRun">In 30 minutes</span>
+      </div>
+    </div>
+    
+    <div>
+      <button class="btn-primary" id="runNow">🔄 Run Now</button>
+      <button class="btn-secondary" id="refresh">↻ Refresh</button>
+    </div>
+    
+    <div style="margin-top: 12px; display: flex; gap: 8px;">
+      <button class="btn-secondary" id="manageWallet" style="flex: 1;">🔐 Manage Wallet</button>
+      <button class="btn-secondary" id="manageProfile" style="flex: 1;">👤 Manage Profile</button>
+      <button class="btn-secondary" id="adDashboard" style="flex: 1;">📊 Ad Dashboard</button>
+    </div>
+    
+    <div style="margin-top: 16px; padding: 12px; background: #f8fafc; border-radius: 6px; font-size: 13px;">
+      <strong>Your Profile:</strong>
+      <div id="profileCard" style="margin-top: 8px;">
+        Loading...
+      </div>
+    </div>
+    
+    <div class="logs">
+      <strong>Recent Executions:</strong>
+      <div id="logsContainer"></div>
+    </div>
+    
+    <div class="link">
+      <a href="#" id="openDashboard">Open Full Dashboard →</a>
+    </div>
+  </div>
+  
+  <script src="crypto.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

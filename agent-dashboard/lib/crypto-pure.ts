@@ -5,8 +5,16 @@
  * These functions can be used by:
  * - Main application (storage.ts imports this)
  * - Service Worker (copies these as plain JS)
+ * - Browser Extension (background script)
  * 
  * SECURITY: These are pure functions - no side effects, deterministic
+ * 
+ * Key Derivation Architecture:
+ * 1. User signs message with wallet
+ * 2. Compute keyHash = SHA-256(signature)
+ * 3. Fetch key material from /api/k/[keyHash]
+ * 4. Derive encryption key from fetched material + local salt
+ * 5. Store only keyHash in IndexedDB (not the key itself)
  */
 
 /**
@@ -18,12 +26,132 @@ export const CRYPTO_CONSTANTS = {
   AES_ALGORITHM: 'AES-GCM',
   AES_KEY_LENGTH: 256,
   IV_LENGTH: 12, // 12 bytes for GCM
+  KDS_ENDPOINT: typeof window !== 'undefined' 
+    ? `${window.location.origin}/api/k`
+    : 'http://localhost:3000/api/k', // Fallback for extension
 } as const;
 
 /**
- * Derive encryption key from wallet public key
+ * Compute SHA-256 hash of signature
+ * Used to generate keyHash for KDS endpoint
+ * 
+ * @param signature - Wallet signature bytes
+ * @returns Hex string of hash (64 chars)
+ */
+export async function hashSignature(signature: Uint8Array): Promise<string> {
+  console.log('[Crypto] Hashing signature, length:', signature.length);
+  console.log('[Crypto] Signature type:', signature.constructor.name);
+  
+  const hashBuffer = await crypto.subtle.digest('SHA-256', signature.buffer as ArrayBuffer);
+  const hashArray = new Uint8Array(hashBuffer);
+  const hexHash = Array.from(hashArray)
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
+  
+  console.log('[Crypto] Generated hash:', hexHash);
+  console.log('[Crypto] Hash length:', hexHash.length);
+  
+  return hexHash;
+}
+
+/**
+ * Fetch key material from KDS endpoint
+ * 
+ * @param keyHash - SHA-256 hash of wallet signature
+ * @param walletAddress - Wallet address for authentication
+ * @param authToken - Base64-encoded signature for authentication
+ * @returns Key material string from server
+ */
+export async function fetchKeyMaterial(
+  keyHash: string, 
+  walletAddress: string, 
+  authToken: string
+): Promise<string> {
+  const endpoint = `${CRYPTO_CONSTANTS.KDS_ENDPOINT}/${keyHash}`;
+  
+  try {
+    const response = await fetch(endpoint, {
+      headers: {
+        'X-Wallet': walletAddress,
+        'X-Auth-Token': authToken,
+      },
+    });
+    
+    if (!response.ok) {
+      if (response.status === 401) {
+        throw new Error('Authentication required');
+      }
+      if (response.status === 403) {
+        throw new Error('Invalid authentication');
+      }
+      throw new Error(`KDS returned ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    if (!data.keyMaterial) {
+      throw new Error('Invalid KDS response');
+    }
+    
+    return data.keyMaterial;
+  } catch (error) {
+    console.error('Failed to fetch key material:', error);
+    throw error;
+  }
+}
+
+/**
+ * Derive encryption key from key material and wallet address
+ * Combines remote key material with local context for defense in depth
+ * 
+ * @param keyMaterial - Material fetched from KDS
+ * @param walletAddress - Wallet address as additional salt
+ * @returns CryptoKey suitable for AES-256-GCM encryption
+ */
+export async function deriveKeyFromMaterial(
+  keyMaterial: string,
+  walletAddress: string
+): Promise<CryptoKey> {
+  // Convert key material to bytes
+  const materialBytes = new TextEncoder().encode(keyMaterial);
+
+  // Import as raw key material for PBKDF2
+  const importedMaterial = await crypto.subtle.importKey(
+    'raw',
+    materialBytes.buffer as ArrayBuffer,
+    'PBKDF2',
+    false,
+    ['deriveBits', 'deriveKey']
+  );
+
+  // Use wallet address as salt (deterministic but unique per wallet)
+  const saltBytes = new TextEncoder().encode(`payattn.org:${walletAddress}`);
+
+  // Derive 256-bit AES key
+  const key = await crypto.subtle.deriveKey(
+    {
+      name: 'PBKDF2',
+      salt: saltBytes.buffer as ArrayBuffer,
+      iterations: CRYPTO_CONSTANTS.PBKDF2_ITERATIONS,
+      hash: CRYPTO_CONSTANTS.PBKDF2_HASH,
+    },
+    importedMaterial,
+    {
+      name: CRYPTO_CONSTANTS.AES_ALGORITHM,
+      length: CRYPTO_CONSTANTS.AES_KEY_LENGTH,
+    },
+    true,
+    ['encrypt', 'decrypt']
+  );
+
+  return key;
+}
+
+/**
+ * Derive encryption key from wallet public key (LEGACY)
  * Uses PBKDF2 with 100,000 iterations for computational difficulty
  * 
+ * @deprecated Use deriveKeyFromMaterial instead for better security
  * @param publicKeyString - Base58 encoded public key from wallet
  * @returns CryptoKey suitable for AES-256-GCM encryption
  */
@@ -66,8 +194,89 @@ export async function deriveKeyFromPublicKey(
 }
 
 /**
- * Encrypt data using AES-256-GCM
+ * Encrypt data using AES-256-GCM with KDS key material
  * 
+ * @param data - Plaintext string to encrypt
+ * @param keyMaterial - Key material from KDS endpoint
+ * @param walletAddress - Wallet address for additional salt
+ * @returns Base64 encoded encrypted data (format: iv:ciphertext)
+ */
+export async function encryptDataWithMaterial(
+  data: string,
+  keyMaterial: string,
+  walletAddress: string
+): Promise<string> {
+  // Derive encryption key from fetched material
+  const key = await deriveKeyFromMaterial(keyMaterial, walletAddress);
+
+  // Generate random IV (12 bytes for GCM)
+  const iv = crypto.getRandomValues(new Uint8Array(CRYPTO_CONSTANTS.IV_LENGTH));
+
+  // Encode plaintext
+  const encoder = new TextEncoder();
+  const encodedData = encoder.encode(data);
+
+  // Encrypt
+  const encrypted = await crypto.subtle.encrypt(
+    {
+      name: CRYPTO_CONSTANTS.AES_ALGORITHM,
+      iv: iv,
+    },
+    key,
+    encodedData.buffer as ArrayBuffer
+  );
+
+  // Combine IV + ciphertext and encode as base64
+  const encryptedBytes = new Uint8Array(encrypted);
+  const combined = new Uint8Array(iv.length + encryptedBytes.length);
+  combined.set(iv, 0);
+  combined.set(encryptedBytes, iv.length);
+
+  return arrayBufferToBase64(combined);
+}
+
+/**
+ * Decrypt data using AES-256-GCM with KDS key material
+ * 
+ * @param encryptedData - Base64 encoded encrypted data (format: iv:ciphertext)
+ * @param keyMaterial - Key material from KDS endpoint
+ * @param walletAddress - Wallet address for additional salt
+ * @returns Decrypted plaintext string
+ */
+export async function decryptDataWithMaterial(
+  encryptedData: string,
+  keyMaterial: string,
+  walletAddress: string
+): Promise<string> {
+  // Derive decryption key from fetched material
+  const key = await deriveKeyFromMaterial(keyMaterial, walletAddress);
+
+  // Decode base64
+  const combined = base64ToArrayBuffer(encryptedData);
+
+  // Extract IV (first 12 bytes) and ciphertext (rest)
+  const iv = combined.slice(0, CRYPTO_CONSTANTS.IV_LENGTH);
+  const ciphertext = combined.slice(CRYPTO_CONSTANTS.IV_LENGTH);
+
+  // Decrypt
+  const decrypted = await crypto.subtle.decrypt(
+    {
+      name: CRYPTO_CONSTANTS.AES_ALGORITHM,
+      iv: iv,
+    },
+    key,
+    ciphertext
+  );
+
+  // Decode to string
+  const decoder = new TextDecoder();
+  return decoder.decode(decrypted);
+}
+
+/**
+ * Encrypt data using AES-256-GCM (LEGACY - uses public key directly)
+ * 
+ * @deprecated Use encryptDataWithMaterial for better security
  * @param data - Plaintext string to encrypt
  * @param publicKey - Base58 public key string for key derivation
  * @returns Base64 encoded encrypted data (format: iv:ciphertext)
@@ -106,8 +315,9 @@ export async function encryptData(
 }
 
 /**
- * Decrypt data using AES-256-GCM
+ * Decrypt data using AES-256-GCM (LEGACY - uses public key directly)
  * 
+ * @deprecated Use decryptDataWithMaterial for better security
  * @param encryptedData - Base64 encoded encrypted data (format: iv:ciphertext)
  * @param publicKey - Base58 public key string for key derivation
  * @returns Decrypted plaintext string

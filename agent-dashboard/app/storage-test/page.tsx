@@ -9,13 +9,11 @@ import {
   loadProfile,
   deleteProfile,
   getAllStoredWallets,
-  getSWExecutionLogs,
-  clearSWExecutionLogs,
-  getSWStatus,
   type UserProfile,
   type SWExecutionLog,
   type SWRuntimeStatus,
-} from '@/lib/storage';
+} from '@/lib/storage-kds';
+import { getLogsIDB, clearLogsIDB, getStatusIDB } from '@/lib/storage-idb';
 import {
   registerServiceWorker,
   unregisterServiceWorker,
@@ -58,20 +56,20 @@ export default function StorageTestPage() {
   const [autoRunEnabled, setAutoRunEnabled] = useState(false);
   const [autoRunInterval, setAutoRunInterval] = useState<NodeJS.Timeout | null>(null);
   
-  const refreshWalletList = () => {
+  const refreshWalletList = async () => {
     if (typeof window !== 'undefined') {
-      const wallets = getAllStoredWallets();
+      const wallets = await getAllStoredWallets();
       setStoredWallets(wallets);
     }
   };
   
-  const loadSwLogs = () => {
-    const logs = getSWExecutionLogs();
+  const loadSwLogs = async () => {
+    const logs = await getLogsIDB();
     setSwLogs(logs);
   };
   
-  const loadSwRuntimeStatus = () => {
-    const status = getSWStatus();
+  const loadSwRuntimeStatus = async () => {
+    const status = await getStatusIDB();
     setSwRuntimeStatus(status);
   };
   
@@ -236,7 +234,7 @@ export default function StorageTestPage() {
       setStatus('🔄 Running service worker...');
       
       // Load all profiles to send to SW (SW can't access localStorage)
-      const wallets = getAllStoredWallets();
+      const wallets = await getAllStoredWallets();
       const profiles: Array<{ publicKey: string; profile: any }> = [];
       
       for (const walletAddress of wallets) {
@@ -257,7 +255,7 @@ export default function StorageTestPage() {
       console.log(`[App] Sending ${profiles.length} profiles to SW`);
       
       // Get current logs
-      const currentLogs = getSWExecutionLogs();
+      const currentLogs = await getLogsIDB();
       
       // Trigger manual sync with profile data
       await triggerManualSync(profiles, currentLogs);
@@ -266,10 +264,10 @@ export default function StorageTestPage() {
       await new Promise(resolve => setTimeout(resolve, 1500));
       
       // Reload logs and status
-      loadSwLogs();
-      loadSwRuntimeStatus();
+      await loadSwLogs();
+      await loadSwRuntimeStatus();
       
-      const logs = getSWExecutionLogs();
+      const logs = await getLogsIDB();
       const lastLog = logs[logs.length - 1];
       
       if (lastLog && lastLog.success) {
@@ -494,8 +492,8 @@ export default function StorageTestPage() {
           <div className="flex justify-between">
             <p className="text-sm">{swLogs.length} execution(s) logged</p>
             <div className="flex gap-2">
-              <Button onClick={() => { loadSwLogs(); loadSwRuntimeStatus(); }} variant="outline" size="sm">🔄 Refresh</Button>
-              <Button onClick={() => { clearSWExecutionLogs(); setSwLogs([]); }} variant="ghost" size="sm">Clear</Button>
+              <Button onClick={async () => { await loadSwLogs(); await loadSwRuntimeStatus(); }} variant="outline" size="sm">🔄 Refresh</Button>
+              <Button onClick={async () => { await clearLogsIDB(); setSwLogs([]); }} variant="ghost" size="sm">Clear</Button>
             </div>
           </div>
           <div className="max-h-64 overflow-y-auto space-y-2">

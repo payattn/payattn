@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>IndexedDB Debug</title>
+  <style>
+    body {
+      font-family: monospace;
+      padding: 20px;
+      background: #1e1e1e;
+      color: #d4d4d4;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 10px 5px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    pre {
+      background: #2d2d2d;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+    .section {
+      margin: 20px 0;
+      padding: 15px;
+      border: 1px solid #444;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>PayAttn IndexedDB Debug</h1>
+  
+  <div class="section">
+    <h2>Database Info</h2>
+    <button onclick="checkDB()">Check Database</button>
+    <pre id="dbInfo">Click button to check...</pre>
+  </div>
+  
+  <div class="section">
+    <h2>All Stores</h2>
+    <button onclick="listAllStores()">List All Stores</button>
+    <pre id="storesInfo">Click button to list...</pre>
+  </div>
+  
+  <div class="section">
+    <h2>Profile Store Contents</h2>
+    <button onclick="dumpProfiles()">Dump Profiles</button>
+    <pre id="profilesInfo">Click button to dump...</pre>
+  </div>
+  
+  <div class="section">
+    <h2>Profile Keys</h2>
+    <button onclick="listKeys()">List All Keys</button>
+    <pre id="keysInfo">Click button to list...</pre>
+  </div>
+
+  <script>
+    async function checkDB() {
+      const output = document.getElementById('dbInfo');
+      try {
+        const dbs = await indexedDB.databases();
+        output.textContent = JSON.stringify(dbs, null, 2);
+      } catch (err) {
+        output.textContent = 'Error: ' + err.message;
+      }
+    }
+
+    async function listAllStores() {
+      const output = document.getElementById('storesInfo');
+      try {
+        const db = await new Promise((resolve, reject) => {
+          const request = indexedDB.open('payattn_db', 1);
+          request.onerror = () => reject(request.error);
+          request.onsuccess = () => resolve(request.result);
+        });
+        
+        const stores = Array.from(db.objectStoreNames);
+        output.textContent = 'Object Stores:\n' + JSON.stringify(stores, null, 2);
+      } catch (err) {
+        output.textContent = 'Error: ' + err.message;
+      }
+    }
+
+    async function dumpProfiles() {
+      const output = document.getElementById('profilesInfo');
+      try {
+        const db = await new Promise((resolve, reject) => {
+          const request = indexedDB.open('payattn_db', 1);
+          request.onerror = () => reject(request.error);
+          request.onsuccess = () => resolve(request.result);
+        });
+        
+        const transaction = db.transaction(['profiles'], 'readonly');
+        const store = transaction.objectStore('profiles');
+        
+        const allData = await new Promise((resolve, reject) => {
+          const request = store.getAll();
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => reject(request.error);
+        });
+        
+        output.textContent = `Found ${allData.length} records:\n\n` + 
+          JSON.stringify(allData.map(r => ({
+            walletAddress: r.walletAddress,
+            encryptedDataLength: r.encryptedData?.length,
+            version: r.version,
+            timestamp: r.timestamp,
+            keys: Object.keys(r)
+          })), null, 2);
+      } catch (err) {
+        output.textContent = 'Error: ' + err.message;
+      }
+    }
+
+    async function listKeys() {
+      const output = document.getElementById('keysInfo');
+      try {
+        const db = await new Promise((resolve, reject) => {
+          const request = indexedDB.open('payattn_db', 1);
+          request.onerror = () => reject(request.error);
+          request.onsuccess = () => resolve(request.result);
+        });
+        
+        const transaction = db.transaction(['profiles'], 'readonly');
+        const store = transaction.objectStore('profiles');
+        
+        const allKeys = await new Promise((resolve, reject) => {
+          const request = store.getAllKeys();
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => reject(request.error);
+        });
+        
+        output.textContent = `Found ${allKeys.length} keys:\n\n` + 
+          JSON.stringify(allKeys, null, 2);
+      } catch (err) {
+        output.textContent = 'Error: ' + err.message;
+      }
+    }
+  </script>
+</body>
+</html>

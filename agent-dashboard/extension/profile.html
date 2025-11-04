@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>PayAttn - Manage Profile</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 32px 16px;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .header {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .header h1 {
+      font-size: 28px;
+      margin-bottom: 8px;
+      color: #1f2937;
+    }
+    
+    .header p {
+      color: #6b7280;
+      font-size: 14px;
+    }
+    
+    .header .badge {
+      display: inline-block;
+      background: #10b981;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: 12px;
+    }
+    
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .card h2 {
+      font-size: 18px;
+      margin-bottom: 16px;
+      color: #1f2937;
+    }
+    
+    .form-group {
+      margin-bottom: 16px;
+    }
+    
+    .form-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 6px;
+      color: #374151;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 14px;
+      font-family: inherit;
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .btn-primary {
+      background: #667eea;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #5568d3;
+    }
+    
+    .btn-primary:disabled {
+      background: #cbd5e1;
+      cursor: not-allowed;
+    }
+    
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #374151;
+      margin-left: 8px;
+    }
+    
+    .btn-secondary:hover {
+      background: #d1d5db;
+    }
+    
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 24px;
+    }
+    
+    .alert {
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+    
+    .alert-success {
+      background: #d1fae5;
+      color: #065f46;
+      border: 1px solid #10b981;
+    }
+    
+    .alert-error {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #ef4444;
+    }
+    
+    .alert-info {
+      background: #dbeafe;
+      color: #1e40af;
+      border: 1px solid #3b82f6;
+    }
+    
+    .hidden {
+      display: none;
+    }
+    
+    .help-text {
+      font-size: 12px;
+      color: #6b7280;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>🎯 Manage Your Profile</h1>
+      <p>Your profile data is stored securely on your device and never leaves this extension.</p>
+      <span class="badge" id="walletBadge">Loading...</span>
+    </div>
+    
+    <!-- Alerts -->
+    <div id="alertContainer"></div>
+    
+    <!-- Demographics -->
+    <div class="card">
+      <h2>👤 Demographics</h2>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="age">Age</label>
+          <input type="number" id="age" min="18" max="120" value="25" />
+        </div>
+        <div class="form-group">
+          <label for="gender">Gender</label>
+          <select id="gender">
+            <option value="prefer not to say">Prefer not to say</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="non-binary">Non-binary</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Interests -->
+    <div class="card">
+      <h2>💭 Interests</h2>
+      <div class="form-group">
+        <label for="interests">Your Interests</label>
+        <textarea 
+          id="interests" 
+          rows="3" 
+          placeholder="e.g. web3, technology, finance, travel, gaming"
+        >web3, technology, finance</textarea>
+        <p class="help-text">Comma-separated list of your interests</p>
+      </div>
+    </div>
+    
+    <!-- Location -->
+    <div class="card">
+      <h2>📍 Location</h2>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="country">Country</label>
+          <input type="text" id="country" placeholder="United States" value="United States" />
+        </div>
+        <div class="form-group">
+          <label for="state">State/Province (Optional)</label>
+          <input type="text" id="state" placeholder="California" />
+        </div>
+      </div>
+    </div>
+    
+    <!-- Financial -->
+    <div class="card">
+      <h2>💰 Financial</h2>
+      <div class="form-group">
+        <label for="incomeRange">Income Range (Optional)</label>
+        <select id="incomeRange">
+          <option value="">Prefer not to say</option>
+          <option value="< $25k">Less than $25,000</option>
+          <option value="$25k - $50k">$25,000 - $50,000</option>
+          <option value="$50k - $75k">$50,000 - $75,000</option>
+          <option value="$75k - $100k">$75,000 - $100,000</option>
+          <option value="$100k - $150k">$100,000 - $150,000</option>
+          <option value="$150k - $250k">$150,000 - $250,000</option>
+          <option value="> $250k">More than $250,000</option>
+        </select>
+      </div>
+    </div>
+    
+    <!-- Preferences -->
+    <div class="card">
+      <h2>⚙️ Ad Preferences</h2>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="maxAdsPerHour">Max Ads Per Hour</label>
+          <input type="number" id="maxAdsPerHour" min="1" max="100" value="10" />
+          <p class="help-text">How many ads you're willing to see per hour</p>
+        </div>
+        <div class="form-group">
+          <label for="painThreshold">Pain Threshold (1-10)</label>
+          <input type="range" id="painThreshold" min="1" max="10" value="5" />
+          <p class="help-text">How annoying can ads be? <span id="painThresholdValue">5</span></p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Actions -->
+    <div class="card">
+      <div class="actions">
+        <button class="btn btn-secondary" id="loadButton">
+          🔄 Load Saved Profile
+        </button>
+        <div>
+          <button class="btn btn-secondary" id="cancelButton">
+            Cancel
+          </button>
+          <button class="btn btn-primary" id="saveButton">
+            💾 Save Profile
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="crypto.js"></script>
+  <script src="profile.js"></script>
+</body>
+</html>
