@@ -1,0 +1,7 @@
+# Verification keys are kept in version control (small files)
+# These are needed by the backend to verify proofs
+
+# Only exclude large test artifacts
+**/*.ptau
+**/*.r1cs
+**/*.sym
