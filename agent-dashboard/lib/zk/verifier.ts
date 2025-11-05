@@ -1,12 +1,19 @@
 /**
- * ZK-SNARK Proof Verification (Backend)
+ * ZK-SNARK Proof Verification (Backend Only)
  * 
- * Handles verifying cryptographic proofs on the backend/advertiser side.
+ * VERIFICATION ONLY - Does NOT generate proofs
+ * Receives proofs from extension, verifies them using verification keys
+ * 
+ * Data Flow:
+ *   Extension (proof generation) → private data stays here ✅
+ *   Extension sends proof → /api/verify-proof → backend verification ✅
+ *   Backend receives verified result → advertiser is notified ✅
+ * 
  * Uses verification keys (public, safe to expose) to confirm proofs are valid.
  */
 
 import * as snarkjs from 'snarkjs';
-import { getCircuit } from '../zk/circuits-registry';
+import { getCircuit } from './circuits-registry';
 
 /**
  * Verification result with details

@@ -1,8 +1,14 @@
 /**
- * ZK-SNARK Circuit Registry
+ * ZK-SNARK Circuit Registry - BACKEND REFERENCE ONLY
  * 
  * Central registry of all available circuits with their metadata and artifact paths.
- * This file serves as the source of truth for circuit configuration across the project.
+ * This file serves as reference for circuit configuration on the BACKEND.
+ * 
+ * NOTE: Proof generation happens in EXTENSION only (extension/lib/zk-prover.js)
+ * Backend ONLY uses this for verification (loading verification keys)
+ * 
+ * This file helps document circuit metadata but actual proof generation
+ * happens autonomously in the Chrome extension.
  */
 
 export interface CircuitInputSchema {
