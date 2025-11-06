@@ -1,0 +1,9 @@
+# Large ZK circuit artifacts - keep version-controlled but gitignore binaries
+# .zkey files and .ptau files are large (3-5 MB each) and shouldn't be committed
+
+# Keep .wasm and .js in version control (needed for browser proofs)
+# Keep verification_key.json in version control (small, needed for backend)
+
+# Exclude only the truly large artifacts
+**/*.ptau
+**/*.zkey

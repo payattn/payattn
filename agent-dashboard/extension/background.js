@@ -8,6 +8,25 @@
  */
 
 // ============================================================================
+// Import Libraries (Service Worker)
+// ============================================================================
+
+// Import PATCHED snarkjs for ZK proof generation
+// This version forces singleThread=true in service worker context
+// Original snarkjs tries to use Workers even with {singleThread: true} option
+importScripts('lib/snarkjs-patched.js');
+
+console.log('[Extension] snarkjs loaded:', typeof self.snarkjs !== 'undefined' ? 'SUCCESS' : 'FAILED');
+
+// ============================================================================
+// Global State (Service Worker Scope)
+// ============================================================================
+
+// Store pending proof generation promises
+// Service workers don't have window object, so we use module-level variable
+let proofGenerationPromise = null;
+
+// ============================================================================
 // Chrome Storage Helpers
 // ============================================================================
 
@@ -159,6 +178,194 @@ function base64ToArrayBuffer(base64) {
 }
 
 // ============================================================================
+// ZK-SNARK Proof Generation (Service Worker)
+// ============================================================================
+
+/**
+ * BN128 field prime used in Groth16 proofs
+ * This is the order of the scalar field for the BN128 elliptic curve
+ */
+const FIELD_PRIME = BigInt('21888242871839275222246405745257275088548364400416034343698204186575808495617');
+
+/**
+ * Hash a string to a field element for ZK circuits
+ * Used to convert strings (like country codes, interests) to numbers for circuits
+ * 
+ * IMPORTANT: Backend must use the SAME hashing algorithm for verification
+ * Algorithm: SHA-256(string) mod FIELD_PRIME
+ * 
+ * @param {string} str - String to hash (e.g., "uk", "technology")
+ * @returns {string} Field element as string (compatible with circom circuits)
+ * 
+ * @example
+ * // Hash country code
+ * const ukHash = hashToField("uk");
+ * // Result: "15507270989273941579486529782961168076878965616246236476325961487637715879146"
+ * 
+ * // Hash interest
+ * const techHash = hashToField("technology");
+ * 
+ * // Use in circuit
+ * const proof = await generateProofInServiceWorker('set_membership', 
+ *   { value: ukHash },
+ *   { set: ["us", "uk", "ca"].map(hashToField) }
+ * );
+ */
+async function hashToField(str) {
+  // Encode string to UTF-8 bytes
+  const encoder = new TextEncoder();
+  const data = encoder.encode(str);
+  
+  // SHA-256 hash
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = new Uint8Array(hashBuffer);
+  
+  // Convert to BigInt
+  let num = BigInt(0);
+  for (let i = 0; i < hashArray.length; i++) {
+    num = (num << BigInt(8)) | BigInt(hashArray[i]);
+  }
+  
+  // Modulo field prime to ensure it fits in the field
+  const fieldElement = num % FIELD_PRIME;
+  
+  return fieldElement.toString();
+}
+
+/**
+ * Hash multiple strings to field elements
+ * Convenience function for hashing arrays
+ * 
+ * @param {string[]} strings - Array of strings to hash
+ * @returns {Promise<string[]>} Array of field elements
+ * 
+ * @example
+ * const countryHashes = await hashStringsToField(["us", "uk", "ca", "au"]);
+ */
+async function hashStringsToField(strings) {
+  return Promise.all(strings.map(s => hashToField(s)));
+}
+
+/**
+ * Circuit registry - maps circuit names to file paths
+ */
+const CIRCUITS_REGISTRY = {
+  age_range: {
+    name: 'age_range',
+    wasmPath: 'circuits/age_range/age_range.wasm',
+    zKeyPath: 'circuits/age_range/age_range_0000.zkey',
+    description: 'Proves user age is within specified range'
+  },
+  range_check: {
+    name: 'range_check',
+    wasmPath: 'circuits/range_check/range_check.wasm',
+    zKeyPath: 'circuits/range_check/range_check_0000.zkey',
+    description: 'Proves a value is within a range (age, income, credit score, etc.)'
+  },
+  set_membership: {
+    name: 'set_membership',
+    wasmPath: 'circuits/set_membership/set_membership.wasm',
+    zKeyPath: 'circuits/set_membership/set_membership_0000.zkey',
+    description: 'Proves a hashed value exists in a set (countries, interests, etc.)'
+  }
+};
+
+/**
+ * Generate ZK-SNARK proof in service worker
+ * All private data stays here - only proof is exported
+ * 
+ * @param {string} circuitName - Name of circuit from registry
+ * @param {Object} privateInputs - Private inputs (never leave extension)
+ * @param {Object} publicInputs - Public inputs (included in proof)
+ * @param {Object} options - Generation options (e.g., {verbose: true})
+ * @returns {Promise<Object>} Proof package ready for backend verification
+ */
+async function generateProofInServiceWorker(circuitName, privateInputs, publicInputs, options = {}) {
+  const { verbose = false } = options;
+
+  try {
+    if (verbose) console.log(`[Service Worker ZK] Generating proof for: ${circuitName}`);
+
+    // Get circuit metadata
+    const circuit = CIRCUITS_REGISTRY[circuitName];
+    if (!circuit) {
+      throw new Error(`Circuit not found: ${circuitName}`);
+    }
+
+    // Combine inputs
+    const allInputs = { ...privateInputs, ...publicInputs };
+
+    if (verbose) console.log(`[Service Worker ZK] Loading WASM...`);
+
+    // Load WASM file - convert to Uint8Array for snarkjs
+    const wasmUrl = chrome.runtime.getURL(circuit.wasmPath);
+    const wasmResponse = await fetch(wasmUrl);
+    if (!wasmResponse.ok) {
+      throw new Error(`Failed to fetch WASM: ${wasmResponse.statusText}`);
+    }
+    const wasmArrayBuffer = await wasmResponse.arrayBuffer();
+    const wasmCode = new Uint8Array(wasmArrayBuffer);
+    
+    if (verbose) console.log(`[Service Worker ZK] Loading proving key...`);
+    
+    // Load proving key as Uint8Array
+    const zKeyUrl = chrome.runtime.getURL(circuit.zKeyPath);
+    const zKeyResponse = await fetch(zKeyUrl);
+    if (!zKeyResponse.ok) {
+      throw new Error(`Failed to fetch proving key: ${zKeyResponse.statusText}`);
+    }
+    const zKeyArrayBuffer = await zKeyResponse.arrayBuffer();
+    const zKeyCode = new Uint8Array(zKeyArrayBuffer);
+
+    if (verbose) console.log(`[Service Worker ZK] Generating proof using fullProve()...`);
+
+    // Create a simple logger for snarkjs
+    const logger = {
+      debug: (msg) => { if (verbose) console.log(`[snarkjs] ${msg}`); },
+      info: (msg) => { if (verbose) console.log(`[snarkjs] ${msg}`); },
+      warn: (msg) => { if (verbose) console.warn(`[snarkjs] ${msg}`); },
+      error: (msg) => { console.error(`[snarkjs] ${msg}`); }
+    };
+
+    // Use groth16.fullProve() which does witness calculation + proof generation
+    // Pass Uint8Arrays directly for both WASM and zkey
+    // CRITICAL: Use {singleThread: true} for service worker compatibility
+    const { proof, publicSignals } = await self.snarkjs.groth16.fullProve(
+      allInputs,
+      wasmCode,
+      zKeyCode,
+      logger,
+      { singleThread: true }
+    );
+
+    if (verbose) {
+      console.log(`[Service Worker ZK] Proof generated successfully`);
+      console.log(`[Service Worker ZK] Public signals:`, publicSignals);
+    }
+
+    // Return proof package (ready to send to backend)
+    // Note: privateInputs are NOT included
+    return {
+      circuitName,
+      proof: {
+        pi_a: proof.pi_a,
+        pi_b: proof.pi_b,
+        pi_c: proof.pi_c,
+        protocol: proof.protocol,
+        curve: proof.curve
+      },
+      publicSignals,
+      timestamp: Date.now(),
+      version: '1.0'
+    };
+
+  } catch (error) {
+    console.error(`[Service Worker ZK] Proof generation failed:`, error);
+    throw new Error(`Failed to generate proof: ${error.message}`);
+  }
+}
+
+// ============================================================================
 // Extension Logic
 // ============================================================================
 
@@ -196,6 +403,32 @@ chrome.alarms.onAlarm.addListener((alarm) => {
 // Listen for manual trigger from popup
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log('[Extension] Message received:', message);
+  
+  // Handle proof generation request
+  if (message.type === 'GENERATE_PROOF') {
+    console.log('[Service Worker] Generating proof:', message.circuitName);
+    
+    generateProofInServiceWorker(
+      message.circuitName,
+      message.privateInputs,
+      message.publicInputs,
+      message.options || {}
+    ).then((proofPackage) => {
+      console.log('[Service Worker] Proof generated successfully');
+      sendResponse({ 
+        success: true, 
+        proof: proofPackage 
+      });
+    }).catch((error) => {
+      console.error('[Service Worker] Proof generation failed:', error);
+      sendResponse({ 
+        success: false, 
+        error: error.message 
+      });
+    });
+    
+    return true; // Keep channel open for async response
+  }
   
   if (message.type === 'SAVE_AUTH') {
     // Save authentication from website
@@ -274,6 +507,25 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true; // Keep channel open for async response
   }
   
+  if (message.type === 'GENERATE_PROOF_RESPONSE') {
+    // Proof generation result from helper page
+    console.log('[Extension] Received proof generation response:', 
+      message.success ? 'Success' : 'Failed');
+    
+    // Store the response for the waiting request
+    if (proofGenerationPromise) {
+      if (message.success) {
+        proofGenerationPromise.resolve(message.proof);
+      } else {
+        proofGenerationPromise.reject(new Error(message.error));
+      }
+      proofGenerationPromise = null;
+    }
+    
+    sendResponse({ success: true });
+    return true;
+  }
+  
   if (message.type === 'GET_STATUS') {
     getStatusFromIDB().then(data => {
       sendResponse(data);
@@ -324,6 +576,47 @@ async function getStatusFromIDB() {
   
   const [logs, status] = await Promise.all([logsPromise, statusPromise]);
   return { logs, status };
+}
+
+// ============================================================================
+// ZK Proof Generation (via helper page)
+// ============================================================================
+
+/**
+ * Generate ZK proof by delegating to a helper page
+ * Service workers can't load snarkjs directly, so we use messaging
+ */
+async function generateProofViaHelper(circuitName, privateInputs, publicInputs) {
+  return new Promise((resolve, reject) => {
+    console.log('[Extension] Requesting proof generation for:', circuitName);
+    
+    // Store promise resolvers for the response handler
+    // Use module-level variable (service workers don't have window object)
+    proofGenerationPromise = { resolve, reject };
+    
+    // Send message to any open helper pages
+    // The helper page will receive this and generate the proof
+    chrome.runtime.sendMessage({
+      type: 'GENERATE_PROOF_REQUEST',
+      circuitName,
+      privateInputs,
+      publicInputs
+    }).catch(error => {
+      // If no helper page is open, we need to create one
+      console.log('[Extension] No helper page found, would need to create offscreen document');
+      console.log('[Extension] For now, proof generation requires test page to be open');
+      reject(new Error('Proof helper page not available. Open age-proof-test.html first.'));
+      proofGenerationPromise = null;
+    });
+    
+    // Timeout after 60 seconds
+    setTimeout(() => {
+      if (proofGenerationPromise) {
+        proofGenerationPromise = null;
+        reject(new Error('Proof generation timed out after 60 seconds'));
+      }
+    }, 60000);
+  });
 }
 
 /**
@@ -473,7 +766,30 @@ async function processProfile(profileRecord) {
       // TODO: Implement actual processing
       // 1. Fetch available ads
       // 2. Match against profile preferences
-      // 3. Generate ZK proofs
+      
+      // 3. Generate ZK proofs (example)
+      // Example: Generate age proof if campaign requires it
+      if (profile.age) {
+        console.log(`[Extension] Profile has age data - proof generation available`);
+        
+        // Example proof generation (commented out - requires helper page to be open)
+        // Uncomment when ready to test end-to-end
+        /*
+        try {
+          const proof = await generateProofViaHelper('ageCheck', {
+            age: profile.age
+          }, {
+            minAge: 21,
+            maxAge: 65
+          });
+          console.log('[Extension] Age proof generated:', proof);
+        } catch (proofError) {
+          console.error('[Extension] Proof generation failed:', proofError.message);
+          // Continue processing even if proof generation fails
+        }
+        */
+      }
+      
       // 4. Submit bids
       
       console.log(`[Extension] Profile processed successfully`);

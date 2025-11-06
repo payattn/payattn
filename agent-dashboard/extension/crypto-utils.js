@@ -15,26 +15,37 @@ const CRYPTO_CONSTANTS = {
 /**
  * Fetch key material from KDS endpoint
  */
-async function fetchKeyMaterial(keyHash) {
+async function fetchKeyMaterial(keyHash, walletAddress, authToken) {
   const endpoint = `${CRYPTO_CONSTANTS.KDS_ENDPOINT}/${keyHash}`;
   
   try {
-    const response = await fetch(endpoint);
+    const response = await fetch(endpoint, {
+      headers: {
+        'X-Wallet': walletAddress,
+        'X-Auth-Token': authToken,
+      },
+    });
     
     if (!response.ok) {
+      if (response.status === 401) {
+        throw new Error('Authentication required');
+      }
+      if (response.status === 403) {
+        throw new Error('Invalid authentication');
+      }
       throw new Error(`KDS returned ${response.status}`);
     }
     
     const data = await response.json();
     
-    if (!data.material) {
+    if (!data.keyMaterial) {
       throw new Error('Invalid KDS response');
     }
     
-    return data.material;
+    return data.keyMaterial;
   } catch (error) {
     console.error('[Extension] Failed to fetch key material:', error);
-    throw new Error('Key derivation service unavailable');
+    throw error;
   }
 }
 
