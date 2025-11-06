@@ -62,6 +62,8 @@
         "prompt-lab.js",
         "age-proof-test.html",
         "age-proof-test.js",
+        "test-proof.html",
+        "test-proof.js",
         "lib/snarkjs.min.js",
         "lib/snarkjs-config.js",
         "lib/witness-calculator-init.js",

@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>PayAttn: Multi-Circuit Proof Generator - Test</title>
+  <title>PayAttn: Age Proof Generator - Test</title>
   <style>
     * {
       box-sizing: border-box;
@@ -199,8 +199,7 @@
       margin-bottom: 4px;
     }
     
-    .input-group input,
-    .input-group select {
+    .input-group input {
       width: 100%;
       padding: 8px 12px;
       background: #0f172a;
@@ -210,8 +209,7 @@
       font-size: 12px;
     }
     
-    .input-group input:focus,
-    .input-group select:focus {
+    .input-group input:focus {
       outline: none;
       border-color: #6366f1;
       box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
@@ -270,6 +268,32 @@
       color: #fbbf24;
     }
     
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      background: #334155;
+      color: #cbd5e1;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      margin: 2px 4px 2px 0;
+    }
+    
+    .badge.success {
+      background: #10b981;
+      color: white;
+    }
+    
+    .badge.error {
+      background: #dc2626;
+      color: white;
+    }
+    
+    .badge.pending {
+      background: #f59e0b;
+      color: white;
+    }
+    
     .proof-json {
       background: #0f172a;
       border: 1px solid #334155;
@@ -317,33 +341,17 @@
       border-top: 1px solid #334155;
       margin: 20px 0;
     }
-
-    .circuit-options {
-      display: none;
-    }
-
-    .circuit-options.active {
-      display: block;
-    }
-
-    .circuit-section {
-      background: #0f172a;
-      border: 1px solid #334155;
-      border-radius: 6px;
-      padding: 12px;
-      margin-bottom: 12px;
-    }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
-      <h1>🔐 ZK-SNARK Multi-Circuit Proof Generator</h1>
-      <p>Test page for proof generation and verification with all supported circuits</p>
+      <h1>🧪 PayAttn: Zero-Knowledge Proof Testing Lab</h1>
+      <p>Test ZK-SNARK proof generation and backend verification</p>
     </div>
     
     <div class="grid">
-      <!-- Left Column: Profile & Circuit Selection -->
+      <!-- Left Column: Profile & Test Data -->
       <div>
         <!-- Profile Loading -->
         <div class="panel">
@@ -362,76 +370,69 @@
           <button class="btn-secondary" id="reloadProfile">🔄 Reload Profile</button>
         </div>
         
-        <!-- Circuit Selection -->
+        <!-- Test Configuration -->
         <div class="panel">
-          <h2>🎯 Circuit Selection</h2>
+          <h2>🎯 Test Configuration</h2>
           
           <div class="input-group">
-            <label>Select Proof Type</label>
-            <select id="circuitSelect">
-              <option value="age_range">Age Range (prove age is in range)</option>
-              <option value="range_check">Range Check (prove value in range)</option>
-              <option value="set_membership">Set Membership (prove value in set)</option>
+            <label>Proof Type</label>
+            <select id="proofType" style="width: 100%; padding: 8px 12px; background: #0f172a; border: 1px solid #334155; border-radius: 4px; color: #e2e8f0; font-size: 12px;">
+              <option value="age_range">Age in Target Range</option>
+              <option value="location_check">Location in Allowed Countries</option>
+              <option value="interest_check">Interest Match</option>
             </select>
           </div>
-
-          <!-- Age Range Circuit Options -->
-          <div id="ageRangeOptions" class="circuit-options active">
-            <div class="circuit-section">
-              <h3 style="margin: 0 0 8px 0; font-size: 14px;">Age Range Proof Configuration</h3>
-              
-              <div class="input-group">
-                <label>Min Age (advertiser criteria)</label>
-                <input type="number" id="ageRangeMin" value="18" min="0" max="150">
-              </div>
-              
-              <div class="input-group">
-                <label>Max Age (advertiser criteria)</label>
-                <input type="number" id="ageRangeMax" value="65" min="0" max="150">
-              </div>
-              
-              <div class="status-box status-info">
-                ℹ️ Your actual age from profile will be used to generate the proof.
-              </div>
+          
+          <!-- Age Range Proof -->
+          <div id="ageRangeInputs">
+            <div class="input-group">
+              <label>Your Age (private)</label>
+              <input type="number" id="userAge" readonly style="opacity: 0.6;">
+            </div>
+            <div class="input-group">
+              <label>Min Age (advertiser criteria)</label>
+              <input type="number" id="minAge" value="25">
+            </div>
+            <div class="input-group">
+              <label>Max Age (advertiser criteria)</label>
+              <input type="number" id="maxAge" value="65">
+            </div>
+            <div class="status-box status-info">
+              ℹ️ Proves your age is within advertiser's target range
             </div>
           </div>
-
-          <!-- Range Check Circuit Options -->
-          <div id="rangeCheckOptions" class="circuit-options">
-            <div class="circuit-section">
-              <h3 style="margin: 0 0 8px 0; font-size: 14px;">Range Check Configuration</h3>
-              
-              <div class="input-group">
-                <label>Minimum Value</label>
-                <input type="number" id="rangeMin" value="10000" min="0">
-              </div>
-              
-              <div class="input-group">
-                <label>Maximum Value</label>
-                <input type="number" id="rangeMax" value="100000" min="0">
-              </div>
-              
-              <div class="status-box status-info">
-                ℹ️ Will use your age as the test value.
-              </div>
+          
+          <!-- Location Check -->
+          <div id="locationInputs" style="display: none;">
+            <div class="input-group">
+              <label>Your Location (private)</label>
+              <input type="text" id="userLocation" readonly style="opacity: 0.6;">
+            </div>
+            <div class="input-group">
+              <label>Allowed Countries (comma-separated)</label>
+              <input type="text" id="allowedCountries" value="US,UK,CA,AU,DE">
+            </div>
+            <div class="status-box status-info">
+              ℹ️ Proves your location is in advertiser's target countries
             </div>
           </div>
-
-          <!-- Set Membership Options -->
-          <div id="setMembershipOptions" class="circuit-options">
-            <div class="circuit-section">
-              <h3 style="margin: 0 0 8px 0; font-size: 14px;">Set Membership Configuration</h3>
-              
-              <div class="input-group">
-                <label>Set Values (comma-separated, up to 5)</label>
-                <input type="text" id="setValues" value="18, 21, 25, 30, 35" placeholder="18, 21, 25, 30, 35">
-              </div>
-              
-              <div class="status-box status-info">
-                ℹ️ Your age must be in this set for a valid proof.
-              </div>
+          
+          <!-- Interest Check -->
+          <div id="interestInputs" style="display: none;">
+            <div class="input-group">
+              <label>Your Interests (private)</label>
+              <input type="text" id="userInterests" readonly style="opacity: 0.6;">
+            </div>
+            <div class="input-group">
+              <label>Target Interests (comma-separated)</label>
+              <input type="text" id="targetInterests" value="cars,sports,technology,travel,food">
+            </div>
+            <div class="status-box status-info">
+              ℹ️ Proves you have at least one matching interest
             </div>
           </div>
+          
+          <button class="btn-secondary" id="resetConfig">↻ Reset to Defaults</button>
         </div>
       </div>
       
@@ -484,8 +485,11 @@
   </div>
   
   <!-- Load required scripts -->
+  <!-- Load snarkjs (UMD build for browser with singleThread support) -->
   <script src="lib/snarkjs.min.js"></script>
+  <!-- Load witness calculator for age_range circuit -->
   <script src="circuits/age_range/witness_calculator.js"></script>
+  <!-- Save witness calculator builder before zk-prover.js overwrites module.exports -->
   <script src="lib/witness-calculator-init.js"></script>
   <script src="crypto-utils.js"></script>
   <script src="lib/zk-prover.js"></script>

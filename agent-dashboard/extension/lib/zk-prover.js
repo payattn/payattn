@@ -168,6 +168,14 @@ async function generateProof(circuitName, privateInputs, publicInputs, options =
 
     if (verbose) console.log(`[Extension ZK] Generating proof using fullProve()...`);
 
+    // Create a simple logger for snarkjs (4th parameter)
+    const logger = {
+      debug: (msg) => { if (verbose) console.log(`[snarkjs] ${msg}`); },
+      info: (msg) => { if (verbose) console.log(`[snarkjs] ${msg}`); },
+      warn: (msg) => { if (verbose) console.warn(`[snarkjs] ${msg}`); },
+      error: (msg) => { console.error(`[snarkjs] ${msg}`); }
+    };
+
     // Use groth16.fullProve() which does witness calculation + proof generation
     // Pass Uint8Arrays directly for both WASM and zkey
     // See: https://github.com/iden3/snarkjs#in-the-browser
@@ -175,6 +183,7 @@ async function generateProof(circuitName, privateInputs, publicInputs, options =
       allInputs,
       wasmCode,
       zKeyCode,
+      logger,
       { singleThread: true }
     );
 

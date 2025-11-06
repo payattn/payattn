@@ -1,16 +1,13 @@
 /**
- * Multi-Circuit Proof Generator Test Page
+ * Age Proof Generator Test Page
  * 
- * Supports all PayAttn ZK-SNARK circuits:
- * - age_range: Prove age is in a specified range
- * - range_check: Prove any numeric value is in a range
- * - set_membership: Prove a value exists in a set
+ * This is a comprehensive testing interface for the ZK-SNARK age proof system.
  * 
  * Flow:
  * 1. Load user profile from chrome.storage (encrypted)
  * 2. Decrypt using keyHash + authToken
- * 3. Extract user data from profile
- * 4. Accept circuit type and parameters
+ * 3. Extract age from profile
+ * 4. Accept advertiser criteria (age range)
  * 5. Generate proof using extension/lib/zk-prover.js
  * 6. Send proof to backend /api/verify-proof
  * 7. Display verification result
@@ -38,40 +35,42 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function setupEventListeners() {
-  // Circuit selection
-  document.getElementById('circuitSelect').addEventListener('change', handleCircuitChange);
+  // Proof type selector
+  document.getElementById('proofType').addEventListener('change', handleProofTypeChange);
   
-  // Proof generation
   document.getElementById('generateProof').addEventListener('click', handleGenerateProof);
   document.getElementById('verifyProof').addEventListener('click', handleVerifyProof);
-  document.getElementById('clearProof').addEventListener('click', handleClearProof);
-  document.getElementById('copyProof').addEventListener('click', handleCopyProof);
-  
-  // Profile
   document.getElementById('reloadProfile').addEventListener('click', () => {
     logConsole('🔄 User clicked reload profile', 'info');
     loadProfile();
   });
-  
-  // Console
+  document.getElementById('clearProof').addEventListener('click', handleClearProof);
+  document.getElementById('copyProof').addEventListener('click', handleCopyProof);
+  document.getElementById('resetConfig').addEventListener('click', handleResetConfig);
   document.getElementById('clearConsole').addEventListener('click', () => {
     document.getElementById('debugConsole').innerHTML = '';
     logConsole('Console cleared', 'log');
   });
 }
 
-function handleCircuitChange() {
-  const circuit = document.getElementById('circuitSelect').value;
+function handleProofTypeChange() {
+  const proofType = document.getElementById('proofType').value;
   
-  // Hide all options
-  document.getElementById('ageRangeOptions').classList.remove('active');
-  document.getElementById('rangeCheckOptions').classList.remove('active');
-  document.getElementById('setMembershipOptions').classList.remove('active');
+  // Hide all input sections
+  document.getElementById('ageRangeInputs').style.display = 'none';
+  document.getElementById('locationInputs').style.display = 'none';
+  document.getElementById('interestInputs').style.display = 'none';
   
   // Show selected
-  document.getElementById(`${circuit}Options`).classList.add('active');
+  if (proofType === 'age_range') {
+    document.getElementById('ageRangeInputs').style.display = 'block';
+  } else if (proofType === 'location_check') {
+    document.getElementById('locationInputs').style.display = 'block';
+  } else if (proofType === 'interest_check') {
+    document.getElementById('interestInputs').style.display = 'block';
+  }
   
-  logConsole(`📋 Circuit changed to: ${circuit}`, 'info');
+  logConsole(`📋 Proof type changed to: ${proofType}`, 'info');
 }
 
 // ============================================================================
@@ -124,19 +123,46 @@ async function loadProfile() {
       
       userProfile = JSON.parse(decryptedJson);
       
-      // Extract age
-      if (userProfile.demographics && userProfile.demographics.age) {
-        userAge = userProfile.demographics.age;
-        logConsole(`🎯 User age extracted: ${userAge}`, 'success');
-      } else {
-        throw new Error('Age not found in profile. Please ensure profile has demographics.age');
+      // DEBUG: Show full profile structure
+      logConsole('🔍 Full profile structure:', 'info');
+      logConsole(JSON.stringify(userProfile, null, 2), 'log');
+      
+      // Extract data from profile (robust to different structures)
+      if (!userProfile.demographics && !userProfile.age) {
+        throw new Error('Profile missing demographics data');
       }
+      
+      userAge = userProfile.demographics?.age || userProfile.age;
+      
+      let userLocation = userProfile.demographics?.location || 
+                         userProfile.location || 
+                         userProfile.demographics?.country ||
+                         userProfile.country;
+      
+      // If location is an object, extract the actual string value
+      if (userLocation && typeof userLocation === 'object') {
+        logConsole(`📍 Location is object, extracting: ${JSON.stringify(userLocation)}`, 'info');
+        userLocation = userLocation.code || userLocation.name || userLocation.country || userLocation.value;
+      }
+      
+      const userInterests = userProfile.interests || [];
+      
+      if (!userAge) {
+        throw new Error('Age not found in profile');
+      }
+      
+      logConsole(`🎯 User age: ${userAge}`, 'success');
+      logConsole(`📍 User location: ${userLocation || 'not set'}`, userLocation ? 'success' : 'warn');
+      logConsole(`❤️ User interests: ${userInterests.length ? userInterests.join(', ') : 'none'}`, userInterests.length ? 'success' : 'warn');
       
       displayProfileData();
       updateProfileStatus('✅ Profile loaded successfully!', 'success');
       
       // Enable generate button
       document.getElementById('generateProof').disabled = false;
+      
+      // Update test values in UI
+      updateTestValues();
       
     } catch (decryptError) {
       logConsole(`❌ Decryption error: ${decryptError.message}`, 'error');
@@ -147,6 +173,35 @@ async function loadProfile() {
     logConsole(`❌ Failed to load profile: ${error.message}`, 'error');
     updateProfileStatus(`❌ Error: ${error.message}`, 'error');
     document.getElementById('generateProof').disabled = true;
+  }
+}
+
+function updateTestValues() {
+  // Update UI fields with profile data
+  if (userProfile) {
+    // Age
+    const age = userProfile.demographics?.age || userProfile.age;
+    document.getElementById('userAge').value = age || '';
+    
+    // Location - check multiple possible paths and extract string value
+    let location = userProfile.demographics?.location || 
+                   userProfile.location || 
+                   userProfile.demographics?.country ||
+                   userProfile.country;
+    
+    // If location is an object, try to extract the actual value
+    if (location && typeof location === 'object') {
+      logConsole(`📍 Location is an object: ${JSON.stringify(location)}`, 'info');
+      location = location.code || location.name || location.country || location.value || String(location);
+    }
+    
+    document.getElementById('userLocation').value = location || '';
+    logConsole(`📍 Location field value: "${location}"`, location ? 'success' : 'error');
+    
+    // Interests
+    const interests = userProfile.interests || [];
+    document.getElementById('userInterests').value = interests.length ? interests.join(', ') : '';
+    logConsole(`❤️ Interests field value: "${interests.join(', ')}"`, interests.length ? 'success' : 'error');
   }
 }
 
@@ -237,16 +292,131 @@ function updateProfileStatus(message, type) {
 
 async function handleGenerateProof() {
   try {
-    const circuit = document.getElementById('circuitSelect').value;
+    // Validate
+    if (!userProfile) {
+      throw new Error('User profile not loaded');
+    }
     
-    if (!userAge) {
-      throw new Error('User age not loaded');
+    const proofType = document.getElementById('proofType').value;
+    let circuitName, privateInputs, publicInputs;
+    
+    // Build inputs based on proof type
+    if (proofType === 'age_range') {
+      const minAge = parseInt(document.getElementById('minAge').value);
+      const maxAge = parseInt(document.getElementById('maxAge').value);
+      
+      if (isNaN(minAge) || isNaN(maxAge) || minAge >= maxAge) {
+        throw new Error('Invalid age range values');
+      }
+      
+      const age = userProfile.demographics.age;
+      if (!age) {
+        throw new Error('Age not found in profile');
+      }
+      
+      circuitName = 'range_check';
+      privateInputs = { value: age };
+      publicInputs = { min: minAge, max: maxAge };
+      
+      logConsole(`📊 Age Range: ${age} in [${minAge}, ${maxAge}] = ${age >= minAge && age <= maxAge ? 'SHOULD BE VALID ✅' : 'SHOULD BE INVALID ❌'}`, 'info');
+      
+    } else if (proofType === 'location_check') {
+      const allowedStr = document.getElementById('allowedCountries').value;
+      const allowedCountries = allowedStr.split(',').map(s => s.trim().toUpperCase()).filter(Boolean);
+      
+      if (allowedCountries.length === 0 || allowedCountries.length > 10) {
+        throw new Error('Set must have 1-10 countries');
+      }
+      
+      // Check multiple possible paths for location
+      let userLocation = userProfile.demographics?.location || 
+                         userProfile.location || 
+                         userProfile.demographics?.country ||
+                         userProfile.country;
+      
+      // If location is an object, extract the string value
+      if (userLocation && typeof userLocation === 'object') {
+        logConsole(`📍 Location is object: ${JSON.stringify(userLocation)}`, 'info');
+        userLocation = userLocation.code || userLocation.name || userLocation.country || userLocation.value;
+      }
+      
+      if (!userLocation) {
+        logConsole('❌ Profile structure:', 'error');
+        logConsole(JSON.stringify(userProfile, null, 2), 'log');
+        throw new Error('Location not found in profile. Check console for profile structure.');
+      }
+      
+      logConsole(`📍 Using location: "${userLocation}"`, 'success');
+      
+      // Hash the user's location and the allowed countries
+      const userHash = await hashToFieldElement(userLocation.toUpperCase());
+      const setHashes = await Promise.all(allowedCountries.map(v => hashToFieldElement(v)));
+      
+      // Pad to 10 values (circuit requirement)
+      while (setHashes.length < 10) {
+        setHashes.push('0');
+      }
+      
+      circuitName = 'set_membership';
+      privateInputs = { value: userHash };
+      publicInputs = { set: setHashes };  // Array, not individual fields!
+      
+      const isInSet = allowedCountries.includes(userLocation.toUpperCase());
+      logConsole(`📊 Location Check: "${userLocation}" in [${allowedCountries.join(', ')}] = ${isInSet ? 'SHOULD BE VALID ✅' : 'SHOULD BE INVALID ❌'}`, 'info');
+      
+    } else if (proofType === 'interest_check') {
+      const targetStr = document.getElementById('targetInterests').value;
+      const targetInterests = targetStr.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+      
+      if (targetInterests.length === 0 || targetInterests.length > 10) {
+        throw new Error('Set must have 1-10 interests');
+      }
+      
+      if (!userProfile.interests || userProfile.interests.length === 0) {
+        throw new Error('No interests found in profile');
+      }
+      
+      // PRE-PROCESSING: Find which of the user's interests matches the advertiser's target
+      const userInterests = userProfile.interests.map(i => i.toLowerCase());
+      
+      logConsole(`🔍 User's interests: [${userInterests.join(', ')}]`, 'info');
+      logConsole(`🎯 Advertiser targets: [${targetInterests.join(', ')}]`, 'info');
+      
+      // Find first matching interest
+      const matchingInterest = userInterests.find(ui => targetInterests.includes(ui));
+      
+      if (!matchingInterest) {
+        logConsole(`⚠️ No matching interest found!`, 'warn');
+        logConsole(`   Using first user interest "${userInterests[0]}" (proof will be INVALID)`, 'warn');
+      }
+      
+      // Use the matching interest, or first interest if no match (for testing invalid case)
+      const interestToProve = matchingInterest || userInterests[0];
+      logConsole(`✅ Pre-processing: Will prove "${interestToProve}" is in target set`, 'success');
+      
+      // Hash the selected interest and the target interests
+      const userHash = await hashToFieldElement(interestToProve);
+      const setHashes = await Promise.all(targetInterests.map(v => hashToFieldElement(v)));
+      
+      // Pad to 10 values (circuit requirement)
+      while (setHashes.length < 10) {
+        setHashes.push('0');
+      }
+      
+      circuitName = 'set_membership';
+      privateInputs = { value: userHash };
+      publicInputs = { set: setHashes };  // Array, not individual fields!
+      
+      const isMatch = targetInterests.includes(interestToProve);
+      logConsole(`📊 Interest Check: "${interestToProve}" in [${targetInterests.join(', ')}] = ${isMatch ? 'SHOULD BE VALID ✅' : 'SHOULD BE INVALID ❌'}`, 'info');
+      
+    } else {
+      throw new Error(`Unknown proof type: ${proofType}`);
     }
     
     logConsole('', 'log');
     logConsole('═'.repeat(60), 'log');
     logConsole('⚡ PROOF GENERATION STARTED', 'info');
-    logConsole(`📌 Circuit: ${circuit}`, 'info');
     logConsole('═'.repeat(60), 'log');
     
     // Disable button
@@ -263,18 +433,24 @@ async function handleGenerateProof() {
     
     // Start progress
     updateProgress(10);
+    logConsole(`🔄 Sending proof request to service worker...`, 'info');
     
-    let proof;
+    updateProgress(20);
     
-    if (circuit === 'age_range') {
-      proof = await generateAgeRangeProof();
-    } else if (circuit === 'range_check') {
-      proof = await generateRangeCheckProof();
-    } else if (circuit === 'set_membership') {
-      proof = await generateSetMembershipProof();
-    } else {
-      throw new Error(`Unknown circuit: ${circuit}`);
+    // Generate proof via service worker
+    const response = await chrome.runtime.sendMessage({
+      type: 'GENERATE_PROOF',
+      circuitName,
+      privateInputs,
+      publicInputs,
+      options: { verbose: true }
+    });
+    
+    if (!response.success) {
+      throw new Error(response.error || 'Proof generation failed');
     }
+    
+    const proof = response.proof;
     
     updateProgress(60);
     logConsole('✅ Proof generated successfully', 'success');
@@ -285,7 +461,7 @@ async function handleGenerateProof() {
     updateProgress(80);
     
     // Display proof
-    displayProof(proof);
+    displayProof(proof, publicInputs);
     
     updateProgress(100);
     logConsole('', 'log');
@@ -315,90 +491,23 @@ async function handleGenerateProof() {
   }
 }
 
-async function generateAgeRangeProof() {
-  const minAge = parseInt(document.getElementById('ageRangeMin').value);
-  const maxAge = parseInt(document.getElementById('ageRangeMax').value);
+// Helper function for hashing (same as in console test functions)
+async function hashToFieldElement(str) {
+  const FIELD_PRIME = BigInt('21888242871839275222246405745257275088548364400416034343698204186575808495617');
+  const encoder = new TextEncoder();
+  const data = encoder.encode(str);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = new Uint8Array(hashBuffer);
   
-  if (isNaN(minAge) || isNaN(maxAge)) {
-    throw new Error('Invalid age range values');
+  let num = BigInt(0);
+  for (let i = 0; i < hashArray.length; i++) {
+    num = (num << BigInt(8)) | BigInt(hashArray[i]);
   }
   
-  if (minAge >= maxAge) {
-    throw new Error('Min age must be less than max age');
-  }
-  
-  logConsole(`📊 Age Range Configuration:`, 'info');
-  logConsole(`  • User age (PRIVATE): ${userAge}`, 'log');
-  logConsole(`  • Advertiser wants: age ${minAge}-${maxAge}`, 'log');
-  logConsole(`  • Match: ${userAge >= minAge && userAge <= maxAge ? '✅ YES' : '❌ NO'}`, 'warn');
-  
-  updateProgress(20);
-  logConsole(`🔄 Calling generateAgeProof(${userAge}, ${minAge}, ${maxAge})...`, 'info');
-  
-  updateProgress(30);
-  const proof = await generateAgeProof(userAge, minAge, maxAge);
-  
-  return proof;
+  return (num % FIELD_PRIME).toString();
 }
 
-async function generateRangeCheckProof() {
-  const minVal = parseInt(document.getElementById('rangeMin').value);
-  const maxVal = parseInt(document.getElementById('rangeMax').value);
-  
-  if (isNaN(minVal) || isNaN(maxVal)) {
-    throw new Error('Invalid range values');
-  }
-  
-  if (minVal >= maxVal) {
-    throw new Error('Min value must be less than max value');
-  }
-  
-  logConsole(`📊 Range Check Configuration:`, 'info');
-  logConsole(`  • Test value (PRIVATE): ${userAge}`, 'log');
-  logConsole(`  • Range: ${minVal}-${maxVal}`, 'log');
-  logConsole(`  • Match: ${userAge >= minVal && userAge <= maxVal ? '✅ YES' : '❌ NO'}`, 'warn');
-  
-  updateProgress(20);
-  logConsole(`🔄 Calling generateRangeProof(${userAge}, ${minVal}, ${maxVal})...`, 'info');
-  
-  updateProgress(30);
-  const proof = await generateRangeProof(userAge, minVal, maxVal);
-  
-  return proof;
-}
-
-async function generateSetMembershipProof() {
-  const setValuesStr = document.getElementById('setValues').value;
-  const setValues = setValuesStr.split(',').map(v => parseInt(v.trim())).filter(v => !isNaN(v));
-  
-  if (setValues.length === 0) {
-    throw new Error('Invalid set values');
-  }
-  
-  if (setValues.length > 5) {
-    throw new Error('Maximum 5 set values supported');
-  }
-  
-  // Pad set to 5 values
-  while (setValues.length < 5) {
-    setValues.push(0);
-  }
-  
-  logConsole(`📊 Set Membership Configuration:`, 'info');
-  logConsole(`  • Test value (PRIVATE): ${userAge}`, 'log');
-  logConsole(`  • Allowed set: [${setValues.slice(0, setValues.length - (setValues.length === 5 && setValues[4] === 0 ? 1 : 0)).join(', ')}]`, 'log');
-  logConsole(`  • In set: ${setValues.includes(userAge) ? '✅ YES' : '❌ NO'}`, 'warn');
-  
-  updateProgress(20);
-  logConsole(`🔄 Calling generateSetMembershipProof(${userAge}, [${setValues.join(', ')}])...`, 'info');
-  
-  updateProgress(30);
-  const proof = await generateSetMembershipProof(userAge, setValues);
-  
-  return proof;
-}
-
-function displayProof(proof) {
+function displayProof(proof, publicInputs) {
   logConsole('📋 Proof details:', 'log');
   
   // Details table
@@ -406,7 +515,6 @@ function displayProof(proof) {
     { label: 'Circuit Name', value: proof.circuitName },
     { label: 'Proof Type', value: 'Groth16' },
     { label: 'Public Signals Count', value: proof.publicSignals.length },
-    { label: 'Proof Status', value: '✅ Generated (not yet verified)' },
   ];
   
   const detailsHtml = details.map(d => `
@@ -425,7 +533,8 @@ function displayProof(proof) {
   logConsole(`  • Circuit: ${proof.circuitName}`, 'log');
   logConsole(`  • Public signals: [${proof.publicSignals.join(', ')}]`, 'log');
   logConsole(`  • Proof (first 50 chars): ${JSON.stringify(proof.proof).slice(0, 50)}...`, 'log');
-  logConsole(`  • ℹ️ Your actual private data is NOT in the proof or signals`, 'success');
+  logConsole(`  • ℹ️ Public inputs: ${JSON.stringify(publicInputs)}`, 'info');
+  logConsole(`  • ℹ️ Private data (age ${userAge}) is NOT in the proof`, 'success');
 }
 
 function handleClearProof() {
@@ -502,11 +611,27 @@ async function handleVerifyProof() {
     const result = await response.json();
     
     logConsole('✅ Response received from backend', 'success');
-    logConsole(`  • Valid: ${result.valid ? '✅ YES' : '❌ NO'}`, result.valid ? 'success' : 'error');
-    logConsole(`  • Verification Time: ${result.verificationTime}ms`, 'log');
+    logConsole(`📋 Full response: ${JSON.stringify(result)}`, 'log');
     
-    if (result.message) {
-      logConsole(`  • Message: ${result.message}`, 'log');
+    // Backend returns: { success: boolean, result: { valid: boolean, ... }, metadata: {...} }
+    // Check multiple possible field names for the validity result
+    const isValid = result.success !== undefined ? result.success : 
+                    result.result?.valid !== undefined ? result.result.valid :
+                    result.isValid !== undefined ? result.isValid : 
+                    result.valid;
+    
+    logConsole(`  • success field: ${result.success}`, 'log');
+    logConsole(`  • result.valid field: ${result.result?.valid}`, 'log');
+    logConsole(`  • isValid field: ${result.isValid}`, 'log');
+    logConsole(`  • valid field: ${result.valid}`, 'log');
+    logConsole(`  • Computed isValid: ${isValid}`, isValid ? 'success' : 'error');
+    
+    if (result.message || result.result?.message) {
+      logConsole(`  • Message: ${result.message || result.result?.message}`, 'log');
+    }
+    
+    if (result.result?.verificationTime) {
+      logConsole(`  • Time: ${result.result.verificationTime}ms`, 'log');
     }
     
     // Display result
@@ -536,13 +661,24 @@ function displayVerificationResult(result) {
   
   const resultDiv = document.getElementById('verificationResult');
   
-  if (result.valid) {
+  // Backend returns: { success: boolean, result: { valid: boolean, verificationTime: number }, ... }
+  // Check multiple possible field names
+  const isValid = result.success !== undefined ? result.success : 
+                  result.result?.valid !== undefined ? result.result.valid :
+                  result.isValid !== undefined ? result.isValid : 
+                  result.valid;
+  
+  const verificationTime = result.result?.verificationTime || result.verificationTime;
+  const message = result.message || result.result?.message;
+  
+  if (isValid) {
     resultDiv.className = 'verification-result valid';
     resultDiv.innerHTML = `
       <h3>✅ Proof Valid!</h3>
-      <p>The zero-knowledge proof was successfully verified by the backend in ${result.verificationTime}ms.</p>
+      <p>The zero-knowledge proof was successfully verified by the backend.</p>
+      ${verificationTime ? `<p style="margin-top: 4px; font-size: 11px; color: #cbd5e1;">Verified in ${verificationTime}ms</p>` : ''}
       <p style="margin-top: 8px; font-size: 12px; color: #cbd5e1;">
-        The backend confirmed the proof without learning your actual private data.
+        The backend confirmed the proof without learning your private data.
       </p>
     `;
   } else {
@@ -550,7 +686,7 @@ function displayVerificationResult(result) {
     resultDiv.innerHTML = `
       <h3>❌ Proof Invalid</h3>
       <p>The backend rejected the proof.</p>
-      ${result.message ? `<p style="margin-top: 8px; font-size: 12px;">${result.message}</p>` : ''}
+      ${message || result.error ? `<p style="margin-top: 8px; font-size: 12px;">${message || result.error}</p>` : ''}
     `;
   }
 }
@@ -568,6 +704,18 @@ function displayVerificationError(error) {
       Check the console for details. Make sure the backend is running at http://localhost:3000
     </p>
   `;
+}
+
+// ============================================================================
+// CONFIGURATION
+// ============================================================================
+
+function handleResetConfig() {
+  document.getElementById('minAge').value = 25;
+  document.getElementById('maxAge').value = 65;
+  document.getElementById('allowedCountries').value = 'US,UK,CA,AU,DE';
+  document.getElementById('targetInterests').value = 'cars,sports,technology,travel,food';
+  logConsole('↻ Configuration reset to defaults', 'log');
 }
 
 // ============================================================================
@@ -598,4 +746,241 @@ function logConsole(message, type = 'log') {
   consoleEl.scrollTop = consoleEl.scrollHeight;
 }
 
-console.log('[Test Page] Loaded - Ready to generate proofs for all circuit types');
+// ============================================================================
+// SERVICE WORKER MESSAGING
+// ============================================================================
+
+/**
+ * Listen for proof generation requests from service worker
+ */
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === 'GENERATE_PROOF_REQUEST') {
+    console.log('[Helper Page] Received proof generation request from service worker');
+    logConsole('Proof request received from background service worker', 'info');
+    
+    // Generate the proof asynchronously
+    (async () => {
+      try {
+        const proofPackage = await window.generateProof(
+          message.circuitName,
+          message.privateInputs,
+          message.publicInputs,
+          { verbose: true }
+        );
+        
+        console.log('[Helper Page] Proof generated successfully');
+        logConsole('✓ Proof generated for background service', 'success');
+        
+        // Send response back to service worker
+        chrome.runtime.sendMessage({
+          type: 'GENERATE_PROOF_RESPONSE',
+          success: true,
+          proof: proofPackage
+        });
+        
+      } catch (error) {
+        console.error('[Helper Page] Proof generation failed:', error);
+        logConsole(`✗ Proof generation failed: ${error.message}`, 'error');
+        
+        // Send error response
+        chrome.runtime.sendMessage({
+          type: 'GENERATE_PROOF_RESPONSE',
+          success: false,
+          error: error.message
+        });
+      }
+    })();
+    
+    // Return true to keep the message channel open for async response
+    return true;
+  }
+});
+
+console.log('[Helper Page] Message listener registered - ready to handle proof requests');
+
+// ============================================================================
+// SERVICE WORKER TEST FUNCTION
+// ============================================================================
+
+/**
+ * Test proof generation in service worker
+ * Call from console: testServiceWorkerProof(30, 18, 65)
+ */
+window.testServiceWorkerProof = async function(age, minAge, maxAge) {
+  console.log(`[Test] Requesting proof from service worker...`);
+  console.log(`[Test] Inputs: age=${age}, range=[${minAge}, ${maxAge}]`);
+  
+  try {
+    const response = await chrome.runtime.sendMessage({
+      type: 'GENERATE_PROOF',
+      circuitName: 'age_range',
+      privateInputs: { age },
+      publicInputs: { minAge, maxAge },
+      options: { verbose: true }
+    });
+    
+    if (response.success) {
+      console.log('[Test] ✅ Proof generated successfully!');
+      console.log('[Test] Proof:', response.proof);
+      return response.proof;
+    } else {
+      console.error('[Test] ❌ Proof generation failed:', response.error);
+      throw new Error(response.error);
+    }
+  } catch (error) {
+    console.error('[Test] ❌ Service worker communication failed:', error);
+    throw error;
+  }
+};
+
+console.log('[Test] Service worker test function loaded. Call: testServiceWorkerProof(30, 18, 65)');
+
+// ============================================================================
+// NEW CIRCUITS TEST FUNCTIONS
+// ============================================================================
+
+/**
+ * Test range_check circuit (generic range proof)
+ * Works for any numeric value: age, income, credit score, etc.
+ * 
+ * @example
+ * // Test income proof
+ * testRangeCheck(35000, 25000, 50000)  // Prove income $35k is in range $25k-$50k
+ * 
+ * // Test age proof
+ * testRangeCheck(30, 18, 65)  // Prove age 30 is in range 18-65
+ */
+window.testRangeCheck = async function(value, min, max) {
+  console.log(`[Test] Testing range_check circuit...`);
+  console.log(`[Test] Inputs: value=${value}, range=[${min}, ${max}]`);
+  
+  try {
+    const response = await chrome.runtime.sendMessage({
+      type: 'GENERATE_PROOF',
+      circuitName: 'range_check',
+      privateInputs: { value },      // Private: actual value stays secret
+      publicInputs: { min, max },    // Public: range bounds in proof
+      options: { verbose: true }
+    });
+    
+    if (response.success) {
+      console.log('[Test] ✅ Range check proof generated!');
+      console.log('[Test] Proof:', response.proof);
+      console.log('[Test] Public signals:', response.proof.publicSignals);
+      return response.proof;
+    } else {
+      console.error('[Test] ❌ Proof generation failed:', response.error);
+      throw new Error(response.error);
+    }
+  } catch (error) {
+    console.error('[Test] ❌ Test failed:', error);
+    throw error;
+  }
+};
+
+/**
+ * Hash a string to field element (for set_membership circuit)
+ * Uses SHA-256 mod FIELD_PRIME
+ * 
+ * @param {string} str - String to hash
+ * @returns {Promise<string>} Field element as string
+ * 
+ * @example
+ * const ukHash = await hashToField("uk");
+ * console.log(ukHash);  // "15507270989273941579486529782961168076878965616246236476325961487637715879146"
+ */
+window.hashToField = async function(str) {
+  const FIELD_PRIME = BigInt('21888242871839275222246405745257275088548364400416034343698204186575808495617');
+  
+  const encoder = new TextEncoder();
+  const data = encoder.encode(str);
+  
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = new Uint8Array(hashBuffer);
+  
+  let num = BigInt(0);
+  for (let i = 0; i < hashArray.length; i++) {
+    num = (num << BigInt(8)) | BigInt(hashArray[i]);
+  }
+  
+  const fieldElement = num % FIELD_PRIME;
+  return fieldElement.toString();
+};
+
+/**
+ * Test set_membership circuit
+ * Proves a value exists in a set without revealing which one
+ * Works with hashed strings (countries, interests, etc.)
+ * 
+ * @param {string} userValue - User's actual value (e.g., "uk", "technology")
+ * @param {string[]} allowedSet - Array of allowed values (max 10)
+ * 
+ * @example
+ * // Test country verification
+ * testSetMembership("uk", ["us", "uk", "ca", "au", "de"])
+ * 
+ * // Test interest verification
+ * testSetMembership("technology", ["technology", "finance", "health"])
+ */
+window.testSetMembership = async function(userValue, allowedSet) {
+  console.log(`[Test] Testing set_membership circuit...`);
+  console.log(`[Test] User value: "${userValue}" (will be hashed)`);
+  console.log(`[Test] Allowed set: [${allowedSet.map(v => `"${v}"`).join(', ')}]`);
+  
+  try {
+    // Hash everything
+    console.log(`[Test] Hashing values...`);
+    const userHash = await window.hashToField(userValue);
+    console.log(`[Test] User hash: ${userHash}`);
+    
+    const setHashes = await Promise.all(allowedSet.map(v => window.hashToField(v)));
+    console.log(`[Test] Set hashes:`, setHashes);
+    
+    // Pad to size 10 (circuit parameter)
+    while (setHashes.length < 10) {
+      setHashes.push("0");
+    }
+    
+    if (setHashes.length > 10) {
+      throw new Error('Set too large! Maximum 10 elements');
+    }
+    
+    console.log(`[Test] Generating proof...`);
+    const response = await chrome.runtime.sendMessage({
+      type: 'GENERATE_PROOF',
+      circuitName: 'set_membership',
+      privateInputs: { value: userHash },    // Private: user's hashed value
+      publicInputs: { set: setHashes },      // Public: hashed allowed values
+      options: { verbose: true }
+    });
+    
+    if (response.success) {
+      console.log('[Test] ✅ Set membership proof generated!');
+      console.log('[Test] Proof:', response.proof);
+      console.log('[Test] Public signals:', response.proof.publicSignals);
+      
+      // Decode the result
+      const isMember = response.proof.publicSignals[0] === '1';
+      console.log(`[Test] Is member: ${isMember ? 'YES' : 'NO'}`);
+      
+      return response.proof;
+    } else {
+      console.error('[Test] ❌ Proof generation failed:', response.error);
+      throw new Error(response.error);
+    }
+  } catch (error) {
+    console.error('[Test] ❌ Test failed:', error);
+    throw error;
+  }
+};
+
+console.log('[Test] New circuit test functions loaded:');
+console.log('  - testRangeCheck(value, min, max)');
+console.log('  - testSetMembership(userValue, allowedSet)');
+console.log('  - hashToField(string)');
+console.log('');
+console.log('Examples:');
+console.log('  testRangeCheck(35000, 25000, 50000)  // Income proof');
+console.log('  testSetMembership("uk", ["us", "uk", "ca"])  // Country proof');
+console.log('  hashToField("technology")  // Hash a string');
+
