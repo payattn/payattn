@@ -2,20 +2,36 @@
  * ZK-SNARK Proof Verification (Backend Only)
  * 
  * VERIFICATION ONLY - Does NOT generate proofs
- * Receives proofs from extension, verifies them using Cloudflare Worker
+ * Receives proofs from extension, verifies them using Rapidsnark CLI
  * 
  * Data Flow:
  *   Extension (proof generation) → private data stays here ✅
- *   Extension sends proof → /api/verify-proof → Cloudflare Worker → backend ✅
+ *   Extension sends proof → /api/verify-proof → Rapidsnark verifier (CLI) → backend ✅
  *   Backend receives verified result → advertiser is notified ✅
  * 
- * Uses Cloudflare Workers (V8 runtime) to avoid Node.js BN128 hanging issue.
+ * Uses Rapidsnark C++ verifier CLI for fast, reliable verification.
  */
 
 import { getCircuit } from './circuits-registry';
+import { exec } from 'child_process';
+import { promisify } from 'util';
+import fs from 'fs';
+import path from 'path';
+import { tmpdir } from 'os';
 
-// Cloudflare Worker endpoint for verification
-const CLOUDFLARE_WORKER_URL = process.env.CLOUDFLARE_WORKER_URL || 'https://payattn-zk-verifier.jmd-1bc.workers.dev';
+const execAsync = promisify(exec);
+
+// Rapidsnark verifier binary path (relative to project root)
+const RAPIDSNARK_VERIFIER = path.join(
+  process.cwd(),
+  '../rapidsnark-server/rapidsnark/package_macos_arm64/bin/verifier'
+);
+
+// Verification keys directory
+const VERIFICATION_KEYS_DIR = path.join(
+  process.cwd(),
+  '../rapidsnark-server/keys'
+);
 
 /**
  * Verification result with details
@@ -30,43 +46,7 @@ export interface VerificationResult {
 }
 
 /**
- * Internal cache for verification keys (small files, safe to cache)
- */
-const verificationKeyCache = new Map<string, any>();
-
-/**
- * Load verification key from file
- * 
- * @param keyPath - Path to verification_key.json (relative to public folder)
- * @returns Parsed verification key
- */
-async function loadVerificationKey(keyPath: string): Promise<any> {
-  // Check cache first
-  if (verificationKeyCache.has(keyPath)) {
-    return verificationKeyCache.get(keyPath);
-  }
-
-  try {
-    // Convert public path to filesystem path
-    // keyPath format: /circuits/verification_keys/range_check_verification_key.json
-    const publicDir = path.join(process.cwd(), 'public');
-    const fullPath = path.join(publicDir, keyPath);
-
-    // Read file from filesystem
-    const fileContent = fs.readFileSync(fullPath, 'utf8');
-    const verificationKey = JSON.parse(fileContent);
-    
-    // Cache for future use
-    verificationKeyCache.set(keyPath, verificationKey);
-
-    return verificationKey;
-  } catch (error) {
-    throw new Error(`Failed to load verification key from ${keyPath}: ${error}`);
-  }
-}
-
-/**
- * Verify a ZK proof using Cloudflare Worker
+ * Verify a ZK proof using Rapidsnark CLI verifier
  * 
  * @param circuitName - Name of circuit (must match what user used to generate proof)
  * @param proof - Groth16 proof from user
@@ -79,8 +59,13 @@ export async function verifyProof(
   publicSignals: string[]
 ): Promise<VerificationResult> {
   console.log('[Verifier] Starting verification for circuit:', circuitName);
-  console.log('[Verifier] Using Cloudflare Worker:', CLOUDFLARE_WORKER_URL);
+  console.log('[Verifier] Using Rapidsnark CLI verifier');
   const startTime = Date.now();
+  
+  // Temporary directory for proof/public signal files
+  const tempDir = path.join(tmpdir(), `zk-verify-${Date.now()}`);
+  const proofPath = path.join(tempDir, 'proof.json');
+  const publicPath = path.join(tempDir, 'public.json');
   
   try {
     // 1. Get circuit metadata (for validation)
@@ -88,42 +73,55 @@ export async function verifyProof(
     const circuit = getCircuit(circuitName);
     console.log('[Verifier] Circuit metadata loaded:', circuit.name);
 
-    // 2. Call Cloudflare Worker to verify proof
-    console.log('[Verifier] Sending proof to Cloudflare Worker...');
-    const verifyStartTime = Date.now();
-    
-    const response = await fetch(`${CLOUDFLARE_WORKER_URL}/verify-proof`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        proof,
-        publicSignals,
-        circuitName
-      })
-    });
+    // 2. Get verification key path
+    const vkeyPath = path.join(
+      VERIFICATION_KEYS_DIR,
+      `${circuitName}_verification_key.json`
+    );
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || `Worker returned ${response.status}`);
+    // Verify verification key exists
+    if (!fs.existsSync(vkeyPath)) {
+      throw new Error(`Verification key not found: ${vkeyPath}`);
     }
 
-    const result = await response.json();
-    const verificationTime = Date.now() - verifyStartTime;
-    
-    console.log('[Verifier] Worker verification completed in', verificationTime, 'ms');
-    console.log('[Verifier] Total verification time:', Date.now() - startTime, 'ms');
-    console.log('[Verifier] Result:', result.valid ? 'VALID ✅' : 'INVALID ❌');
+    // 3. Create temp directory and write proof/signals
+    fs.mkdirSync(tempDir, { recursive: true });
+    fs.writeFileSync(proofPath, JSON.stringify(proof));
+    fs.writeFileSync(publicPath, JSON.stringify(publicSignals));
 
-    return {
-      valid: result.valid,
-      circuitName,
-      publicSignals,
-      message: result.valid ? 'Proof verified successfully' : 'Proof verification failed',
-      timestamp: Date.now(),
-      verificationTime
-    };
+    // 4. Call rapidsnark verifier CLI
+    console.log('[Verifier] Calling Rapidsnark verifier...');
+    const verifyStartTime = Date.now();
+    
+    try {
+      const { stdout, stderr } = await execAsync(
+        `"${RAPIDSNARK_VERIFIER}" "${vkeyPath}" "${publicPath}" "${proofPath}"`,
+        { timeout: 5000 } // 5 second timeout
+      );
+      
+      const verificationTime = Date.now() - verifyStartTime;
+      console.log('[Verifier] Rapidsnark output:', stderr.trim());
+      
+      // Check if proof is valid (rapidsnark outputs to stderr)
+      const isValid = stderr.includes('Valid proof');
+      
+      console.log('[Verifier] Verification completed in', verificationTime, 'ms');
+      console.log('[Verifier] Total time:', Date.now() - startTime, 'ms');
+      console.log('[Verifier] Result:', isValid ? 'VALID ✅' : 'INVALID ❌');
+
+      return {
+        valid: isValid,
+        circuitName,
+        publicSignals,
+        message: isValid ? 'Proof verified successfully' : 'Proof verification failed',
+        timestamp: Date.now(),
+        verificationTime
+      };
+    } catch (execError) {
+      // Rapidsnark execution error (invalid proof or binary error)
+      console.error('[Verifier] Rapidsnark error:', execError);
+      throw new Error(`Verification failed: ${execError instanceof Error ? execError.message : String(execError)}`);
+    }
   } catch (error) {
     console.error('[Verifier] Error during verification:', error);
     return {
@@ -133,6 +131,15 @@ export async function verifyProof(
       message: `Verification error: ${error instanceof Error ? error.message : String(error)}`,
       timestamp: Date.now()
     };
+  } finally {
+    // Cleanup temp files
+    try {
+      if (fs.existsSync(tempDir)) {
+        fs.rmSync(tempDir, { recursive: true, force: true });
+      }
+    } catch (cleanupError) {
+      console.warn('[Verifier] Failed to cleanup temp files:', cleanupError);
+    }
   }
 }
 

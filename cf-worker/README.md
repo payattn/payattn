@@ -1,6 +1,63 @@
-# Cloudflare Worker: ZK-SNARK Proof Verifier
+# Cloudflare Worker: ZK-SNARK Proof Verifier (ABANDONED)
 
-**Purpose:** Server-side ZK-SNARK proof verification using Cloudflare Workers (V8 runtime)
+**⚠️ THIS APPROACH WAS ABANDONED - See `../rapidsnark-server` for the working solution.**
+
+**Purpose:** This was an attempt to implement server-side ZK-SNARK proof verification using Cloudflare Workers (V8 runtime).
+
+## Why This Failed
+
+After 8 deployment iterations, we discovered that Cloudflare Workers is incompatible with snarkjs/ffjavascript for ZK-SNARK verification:
+
+1. **Missing Browser APIs:** CF Workers doesn't support `URL.createObjectURL()` which ffjavascript uses for Web Worker initialization
+2. **No Web Workers:** BN128 curve operations in ffjavascript try to spawn Web Workers via `buildBn128()`
+3. **Edge Runtime Limitations:** CF Workers is neither full Node.js nor full browser - it's missing APIs that both snarkjs paths depend on
+
+## Attempts Made
+
+1. ❌ **Browser bundle (IIFE)** - Export issues, couldn't access `snarkjs.groth16`
+2. ❌ **Custom loader** - Tried wrapping browser bundle, still IIFE problems
+3. ❌ **npm package** - Hit `URL.createObjectURL()` error in ffjavascript
+4. ❌ **`process.browser = false`** - Didn't prevent Worker initialization
+5. ❌ **`{singleThread: true}` option** - Only works for `prove()`, not `verify()`
+6. ❌ **Hiding `globalThis.Worker`** - ffjavascript still tried to use Workers
+7. ❌ **Patched curves.js** - Would require complex module replacement
+8. ❌ **Multiple wrangler versions** - Not a tooling issue
+
+## Current Solution
+
+**Use Rapidsnark C++ verifier CLI instead** (see `/rapidsnark-server`):
+- Native C++ binary, no JavaScript runtime issues
+- Fast verification (~10-50ms)
+- Called as child process from Next.js backend
+- Production-proven (used by Polygon ID, iden3 ecosystem)
+
+## Files in This Directory
+
+This directory contains the abandoned CF Worker attempt and should be archived or removed in production:
+- `worker.js` - Failed worker implementation (8 versions deployed)
+- `verification-keys-embedded.js` - Embedded vkeys (worked fine)
+- `snarkjs-loader.js` - Custom loader attempt (failed)
+- `package.json` - npm snarkjs dependency
+- `wrangler.toml` - CF Worker configuration
+
+## Lessons Learned
+
+1. **ZK-SNARK libraries are Node.js/Browser-specific** - Edge runtimes like CF Workers often lack required APIs
+2. **snarkjs has no official edge runtime support** - The `{singleThread: true}` option is undocumented and only for proving
+3. **Native solutions (C++/Rust) are more portable** - Rapidsnark works everywhere without runtime issues
+4. **Always verify platform compatibility early** - Would have saved 8 deployment iterations
+
+## For Future Reference
+
+If you need server-side ZK-SNARK verification:
+1. ✅ **Use Rapidsnark** (C++) - Works on any platform
+2. ✅ **Use Arkworks** (Rust) - Can compile to WASM without Workers
+3. ⚠️ **Use snarkjs CLI** - Works in Node.js but avoid BN128 curves (hang issues)
+4. ❌ **Avoid CF Workers** - Incompatible with current ZK-SNARK JavaScript libraries
+
+---
+
+**This directory is kept for documentation purposes only.**
 
 This worker solves the Node.js verification hanging issue by running in a V8 environment (same as Chrome extension) instead of Node.js.
 

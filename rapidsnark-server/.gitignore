@@ -1,0 +1,14 @@
+# Rapidsnark source code (cloned from GitHub)
+rapidsnark/
+
+# Build artifacts
+build/
+*.o
+*.a
+
+# System files
+.DS_Store
+*.log
+
+# Keep keys directory structure but ignore large files if needed
+# keys/*.zkey
