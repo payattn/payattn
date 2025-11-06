@@ -143,7 +143,7 @@ export async function generateProof(
 
     const { proof, publicSignals } = await snarkjs.groth16.prove(
       zKey,
-      witnessStrings
+      witnessStrings as any  // Type compatibility with snarkjs
     );
 
     if (verbose) {

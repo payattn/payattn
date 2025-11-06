@@ -70,6 +70,14 @@ web_modules/
 .env.*
 !.env.example
 
+# Cloudflare Worker secrets and config
+.dev.vars
+# wrangler.toml can be committed if it doesn't contain secrets
+# (account_id is not sensitive - it's public in worker URLs)
+.wrangler/
+workers-site/
+worker-configuration.json
+
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 .parcel-cache

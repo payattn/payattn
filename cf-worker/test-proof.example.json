@@ -1,0 +1,27 @@
+{
+  "proof": {
+    "pi_a": [
+      "PASTE_YOUR_PROOF_HERE",
+      "FROM_EXTENSION",
+      "1"
+    ],
+    "pi_b": [
+      ["0", "0"],
+      ["0", "0"],
+      ["1", "0"]
+    ],
+    "pi_c": [
+      "0",
+      "0",
+      "1"
+    ],
+    "protocol": "groth16",
+    "curve": "bn128"
+  },
+  "publicSignals": [
+    "1",
+    "25000",
+    "50000"
+  ],
+  "circuitName": "range_check"
+}

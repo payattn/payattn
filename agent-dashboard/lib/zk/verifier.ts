@@ -2,18 +2,20 @@
  * ZK-SNARK Proof Verification (Backend Only)
  * 
  * VERIFICATION ONLY - Does NOT generate proofs
- * Receives proofs from extension, verifies them using verification keys
+ * Receives proofs from extension, verifies them using Cloudflare Worker
  * 
  * Data Flow:
  *   Extension (proof generation) → private data stays here ✅
- *   Extension sends proof → /api/verify-proof → backend verification ✅
+ *   Extension sends proof → /api/verify-proof → Cloudflare Worker → backend ✅
  *   Backend receives verified result → advertiser is notified ✅
  * 
- * Uses verification keys (public, safe to expose) to confirm proofs are valid.
+ * Uses Cloudflare Workers (V8 runtime) to avoid Node.js BN128 hanging issue.
  */
 
-import * as snarkjs from 'snarkjs';
 import { getCircuit } from './circuits-registry';
+
+// Cloudflare Worker endpoint for verification
+const CLOUDFLARE_WORKER_URL = process.env.CLOUDFLARE_WORKER_URL || 'https://payattn-zk-verifier.jmd-1bc.workers.dev';
 
 /**
  * Verification result with details
@@ -24,6 +26,7 @@ export interface VerificationResult {
   publicSignals: string[];
   message: string;
   timestamp: number;
+  verificationTime?: number;
 }
 
 /**
@@ -34,7 +37,7 @@ const verificationKeyCache = new Map<string, any>();
 /**
  * Load verification key from file
  * 
- * @param keyPath - Path to verification_key.json
+ * @param keyPath - Path to verification_key.json (relative to public folder)
  * @returns Parsed verification key
  */
 async function loadVerificationKey(keyPath: string): Promise<any> {
@@ -44,12 +47,16 @@ async function loadVerificationKey(keyPath: string): Promise<any> {
   }
 
   try {
-    const response = await fetch(keyPath);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch verification key: ${response.statusText}`);
-    }
+    // Convert public path to filesystem path
+    // keyPath format: /circuits/verification_keys/range_check_verification_key.json
+    const publicDir = path.join(process.cwd(), 'public');
+    const fullPath = path.join(publicDir, keyPath);
 
-    const verificationKey = await response.json();
+    // Read file from filesystem
+    const fileContent = fs.readFileSync(fullPath, 'utf8');
+    const verificationKey = JSON.parse(fileContent);
+    
+    // Cache for future use
     verificationKeyCache.set(keyPath, verificationKey);
 
     return verificationKey;
@@ -59,7 +66,7 @@ async function loadVerificationKey(keyPath: string): Promise<any> {
 }
 
 /**
- * Verify a ZK proof
+ * Verify a ZK proof using Cloudflare Worker
  * 
  * @param circuitName - Name of circuit (must match what user used to generate proof)
  * @param proof - Groth16 proof from user
@@ -68,34 +75,57 @@ async function loadVerificationKey(keyPath: string): Promise<any> {
  */
 export async function verifyProof(
   circuitName: string,
-  proof: {
-    pi_a: string[];
-    pi_b: string[][];
-    pi_c: string[];
-    protocol?: string;
-    curve?: string;
-  },
+  proof: any,  // snarkjs proof format
   publicSignals: string[]
 ): Promise<VerificationResult> {
+  console.log('[Verifier] Starting verification for circuit:', circuitName);
+  console.log('[Verifier] Using Cloudflare Worker:', CLOUDFLARE_WORKER_URL);
+  const startTime = Date.now();
+  
   try {
-    // 1. Get circuit metadata
+    // 1. Get circuit metadata (for validation)
+    console.log('[Verifier] Loading circuit metadata...');
     const circuit = getCircuit(circuitName);
+    console.log('[Verifier] Circuit metadata loaded:', circuit.name);
 
-    // 2. Load verification key
-    const verificationKey = await loadVerificationKey(circuit.verificationKeyPath);
+    // 2. Call Cloudflare Worker to verify proof
+    console.log('[Verifier] Sending proof to Cloudflare Worker...');
+    const verifyStartTime = Date.now();
+    
+    const response = await fetch(`${CLOUDFLARE_WORKER_URL}/verify-proof`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        proof,
+        publicSignals,
+        circuitName
+      })
+    });
 
-    // 3. Verify the proof
-    // snarkjs.groth16.verify expects proof and publicSignals as arrays/strings
-    const isValid = await snarkjs.groth16.verify(verificationKey, publicSignals, proof);
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || `Worker returned ${response.status}`);
+    }
+
+    const result = await response.json();
+    const verificationTime = Date.now() - verifyStartTime;
+    
+    console.log('[Verifier] Worker verification completed in', verificationTime, 'ms');
+    console.log('[Verifier] Total verification time:', Date.now() - startTime, 'ms');
+    console.log('[Verifier] Result:', result.valid ? 'VALID ✅' : 'INVALID ❌');
 
     return {
-      valid: isValid,
+      valid: result.valid,
       circuitName,
       publicSignals,
-      message: isValid ? 'Proof verified successfully' : 'Proof verification failed',
-      timestamp: Date.now()
+      message: result.valid ? 'Proof verified successfully' : 'Proof verification failed',
+      timestamp: Date.now(),
+      verificationTime
     };
   } catch (error) {
+    console.error('[Verifier] Error during verification:', error);
     return {
       valid: false,
       circuitName,
@@ -114,13 +144,7 @@ export async function verifyProof(
  * @returns Verification result with age-specific validation
  */
 export async function verifyAgeProof(
-  proof: {
-    pi_a: string[];
-    pi_b: string[][];
-    pi_c: string[];
-    protocol?: string;
-    curve?: string;
-  },
+  proof: any,  // snarkjs proof format
   publicSignals: string[]
 ): Promise<VerificationResult & { ageRange?: { min: number; max: number } }> {
   const result = await verifyProof('age_range', proof, publicSignals);
@@ -155,13 +179,7 @@ export async function verifyAgeProof(
 export async function verifyProofBatch(
   proofs: Array<{
     circuitName: string;
-    proof: {
-      pi_a: string[];
-      pi_b: string[][];
-      pi_c: string[];
-      protocol?: string;
-      curve?: string;
-    };
+    proof: any;  // snarkjs proof format
     publicSignals: string[];
   }>
 ): Promise<VerificationResult[]> {
@@ -178,21 +196,4 @@ export async function verifyProofBatch(
  */
 export function allProofsValid(results: VerificationResult[]): boolean {
   return results.every(r => r.valid);
-}
-
-/**
- * Clear verification key cache
- */
-export function clearVerificationKeyCache(): void {
-  verificationKeyCache.clear();
-}
-
-/**
- * Get verification key cache statistics
- */
-export function getVerificationKeyCacheStats(): { size: number; entries: string[] } {
-  return {
-    size: verificationKeyCache.size,
-    entries: Array.from(verificationKeyCache.keys())
-  };
 }

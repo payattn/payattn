@@ -4,6 +4,9 @@
   "version": "1.0.0",
   "description": "Privacy-first ad agent that runs autonomously in the background",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqK7VkKPZQlgOjXjqPHMeXxQvhYh6LbdMWEcKHnxBGGVH6Hq2qH5L5TYxNzXxKAiYxCPqYGHnJmH5Xq2qZYmZH6Hq2qH5L5TYxNzXxKAiYxCPqYGHnJmH5Xq2qZYmZH6Hq2qH5L5TYxNzXxKAiYxCPqYGHnJmH5Xq2qZYmZH6Hq2qH5L5TYxNzXxKAiYxCPqYGHnJmH5Xq2qZYmZH6Hq2qH5L5TYxNzXxKAiYxCPqYGHnJmH5Xq2qZYmZH6Hq2qH5L5TYxNzXxKAiYxCPqYGHnJmH5Xq2qZYmZQIDAQAB",
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+  },
   "permissions": [
     "alarms",
     "storage"
@@ -47,7 +50,25 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["ad-queue.html", "ad-queue.js", "venice-test.html", "settings.html", "prompt-lab.html", "venice-ai.js", "settings.js", "venice-test.js", "prompt-lab.js"],
+      "resources": [
+        "ad-queue.html",
+        "ad-queue.js",
+        "venice-test.html",
+        "settings.html",
+        "prompt-lab.html",
+        "venice-ai.js",
+        "settings.js",
+        "venice-test.js",
+        "prompt-lab.js",
+        "age-proof-test.html",
+        "age-proof-test.js",
+        "lib/snarkjs.min.js",
+        "lib/snarkjs-config.js",
+        "lib/witness-calculator-init.js",
+        "lib/zk-prover.js",
+        "crypto-utils.js",
+        "circuits/**"
+      ],
       "matches": ["<all_urls>"]
     }
   ]

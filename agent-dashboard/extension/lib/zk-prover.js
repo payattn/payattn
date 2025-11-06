@@ -35,40 +35,44 @@ async function loadWasmFromBundle(wasmPath) {
 }
 
 /**
- * Load witness calculator (circom-generated)
- * This is the JavaScript wrapper that calls WASM
+ * Get snarkjs from global scope (loaded via UMD build)
+ * The snarkjs.min.js file must be loaded before this script
  */
-async function loadWitnessCalculator(wasmPath) {
-  try {
-    // Dynamic import the witness_calculator module
-    const witnessCalculatorPath = wasmPath.replace('.wasm', '.js');
-    
-    // In extension context, we load it as a separate file
-    const scriptUrl = chrome.runtime.getURL(witnessCalculatorPath);
-    
-    // Load the script in global scope
-    const response = await fetch(scriptUrl);
-    const scriptContent = await response.text();
-    
-    // Execute in extension context
-    const module = {};
-    eval(scriptContent);
-    
-    // Return the calculator factory or instance
-    return module.WitnessCalculator || window.WitnessCalculator;
-  } catch (error) {
-    throw new Error(`Failed to load witness calculator: ${error.message}`);
+function getSnarkjs() {
+  if (typeof window.snarkjs === 'undefined') {
+    throw new Error(
+      'snarkjs not found! Make sure snarkjs.min.js is loaded before zk-prover.js.\n' +
+      'Add to HTML: <script src="lib/snarkjs.min.js"></script>'
+    );
   }
+  return window.snarkjs;
 }
 
 /**
- * Generate witness from inputs using WASM
+ * Generate witness using snarkjs directly
+ * snarkjs handles WASM loading internally
  */
-async function generateWitness(calculator, inputs) {
+
+/**
+ * Generate witness using snarkjs directly
+ * snarkjs handles WASM loading internally
+ */
+async function generateWitness(wasmPath, inputs) {
   try {
-    // Convert inputs to strings (circom expects string representation)
-    const stringInputs = {};
+    const snarkjs = getSnarkjs();
     
+    // Load WASM file as buffer
+    const wasmUrl = chrome.runtime.getURL(wasmPath);
+    const wasmResponse = await fetch(wasmUrl);
+    
+    if (!wasmResponse.ok) {
+      throw new Error(`Failed to fetch WASM: ${wasmResponse.statusText}`);
+    }
+    
+    const wasmBuffer = await wasmResponse.arrayBuffer();
+    
+    // Convert inputs to the format snarkjs expects
+    const stringInputs = {};
     for (const [key, value] of Object.entries(inputs)) {
       if (typeof value === 'number') {
         stringInputs[key] = value.toString();
@@ -77,26 +81,22 @@ async function generateWitness(calculator, inputs) {
       } else if (typeof value === 'string') {
         stringInputs[key] = value;
       } else if (Array.isArray(value)) {
-        stringInputs[key] = value.map(v => v.toString()).toString();
+        stringInputs[key] = value.map(v => v.toString());
       } else {
         stringInputs[key] = String(value);
       }
     }
-
-    // Calculate witness using WASM
-    const witness = await calculator.calculateWitness(stringInputs, true);
-
-    return witness;
+    
+    // Calculate witness buffer using snarkjs wtns API
+    const wtnsBuffer = await snarkjs.wtns.calculate(stringInputs, wasmBuffer);
+    
+    // Export witness to array format for proof generation
+    const witnessArray = await snarkjs.wtns.exportJson(wtnsBuffer);
+    
+    return witnessArray;
   } catch (error) {
     throw new Error(`Failed to generate witness: ${error.message}`);
   }
-}
-
-/**
- * Convert witness to format needed by snarkjs
- */
-function witnessToStringArray(witness) {
-  return witness.map(w => w.toString());
 }
 
 /**
@@ -124,6 +124,7 @@ async function loadProvingKey(zKeyPath) {
 /**
  * Main proof generation function
  * All private data is processed here - nothing leaves the extension
+ * Uses manual witness calculation to avoid Web Workers (CSP restriction)
  */
 async function generateProof(circuitName, privateInputs, publicInputs, options = {}) {
   const { verbose = false } = options;
@@ -137,35 +138,44 @@ async function generateProof(circuitName, privateInputs, publicInputs, options =
       throw new Error(`Circuit not found: ${circuitName}`);
     }
 
-    if (verbose) console.log(`[Extension ZK] Loading witness calculator...`);
-
-    // Load witness calculator (stays in extension)
-    const calculator = await loadWitnessCalculator(circuit.wasmPath);
-
     // Combine inputs
     const allInputs = { ...privateInputs, ...publicInputs };
 
-    if (verbose) console.log(`[Extension ZK] Generating witness...`);
+    if (verbose) console.log(`[Extension ZK] Loading WASM...`);
 
-    // Generate witness (stays in extension)
-    const witness = await generateWitness(calculator, allInputs);
-
+    // Get snarkjs from global scope
+    const snarkjs = getSnarkjs();
+    
+    // Load WASM file - convert to Uint8Array for snarkjs
+    const wasmUrl = chrome.runtime.getURL(circuit.wasmPath);
+    const wasmResponse = await fetch(wasmUrl);
+    if (!wasmResponse.ok) {
+      throw new Error(`Failed to fetch WASM: ${wasmResponse.statusText}`);
+    }
+    const wasmArrayBuffer = await wasmResponse.arrayBuffer();
+    const wasmCode = new Uint8Array(wasmArrayBuffer);
+    
     if (verbose) console.log(`[Extension ZK] Loading proving key...`);
+    
+    // Load proving key as Uint8Array
+    const zKeyUrl = chrome.runtime.getURL(circuit.zKeyPath);
+    const zKeyResponse = await fetch(zKeyUrl);
+    if (!zKeyResponse.ok) {
+      throw new Error(`Failed to fetch proving key: ${zKeyResponse.statusText}`);
+    }
+    const zKeyArrayBuffer = await zKeyResponse.arrayBuffer();
+    const zKeyCode = new Uint8Array(zKeyArrayBuffer);
 
-    // Load proving key (stays in extension, never transmitted)
-    const zKey = await loadProvingKey(circuit.zKeyPath);
+    if (verbose) console.log(`[Extension ZK] Generating proof using fullProve()...`);
 
-    if (verbose) console.log(`[Extension ZK] Generating Groth16 proof...`);
-
-    // Need to dynamically import snarkjs for browser/extension
-    // This is fetched at runtime
-    const snarkjs = await importSnarkjs();
-
-    // Generate proof
-    const witnessStrings = witnessToStringArray(witness);
-    const { proof, publicSignals } = await snarkjs.groth16.prove(
-      zKey,
-      witnessStrings
+    // Use groth16.fullProve() which does witness calculation + proof generation
+    // Pass Uint8Arrays directly for both WASM and zkey
+    // See: https://github.com/iden3/snarkjs#in-the-browser
+    const { proof, publicSignals } = await snarkjs.groth16.fullProve(
+      allInputs,
+      wasmCode,
+      zKeyCode,
+      { singleThread: true }
     );
 
     if (verbose) {
@@ -209,19 +219,17 @@ async function generateAgeProof(userAge, minAge, maxAge, options = {}) {
 }
 
 /**
- * Import snarkjs at runtime (for browser/extension)
+ * Get snarkjs from global scope (loaded via UMD build)
+ * The snarkjs.min.js file must be loaded before this script
  */
-async function importSnarkjs() {
-  // In a browser extension, we need to handle this carefully
-  // Option 1: Include snarkjs as bundled library
-  // Option 2: Load from CDN
-  
-  if (typeof snarkjs !== 'undefined') {
-    return snarkjs;
+function getSnarkjs() {
+  if (typeof window.snarkjs === 'undefined') {
+    throw new Error(
+      'snarkjs not found! Make sure snarkjs.min.js is loaded before zk-prover.js.\n' +
+      'Add to HTML: <script src="lib/snarkjs.min.js"></script>'
+    );
   }
-
-  // Load from CDN as fallback (for development)
-  return await import('https://cdn.jsdelivr.net/npm/snarkjs@0.7.0/main.js');
+  return window.snarkjs;
 }
 
 /**
@@ -279,10 +287,8 @@ if (typeof module !== 'undefined' && module.exports) {
     serializeProof,
     deserializeProof,
     CIRCUITS_REGISTRY,
-    loadWasmFromBundle,
     loadProvingKey,
-    generateWitness,
-    loadWitnessCalculator
+    generateWitness
   };
 }
 

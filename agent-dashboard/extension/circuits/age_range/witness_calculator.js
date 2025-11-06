@@ -1,3 +1,8 @@
+// Create module object for browser compatibility
+if (typeof module === 'undefined') {
+  window.module = { exports: {} };
+}
+
 module.exports = async function builder(code, options) {
 
     options = options || {};

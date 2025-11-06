@@ -10,20 +10,28 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyProof, verifyProofBatch, allProofsValid } from '@/lib/zk/verifier';
+import { hashAndPadSet } from '@/lib/zk/hashing';
+
+/**
+ * Campaign requirements for validation
+ */
+interface CampaignRequirements {
+  // For range circuits
+  min?: number;
+  max?: number;
+  
+  // For set_membership circuit
+  allowedValues?: string[];
+}
 
 /**
  * Request body for single proof verification
  */
 interface VerifyProofRequest {
   circuitName: string;
-  proof: {
-    pi_a: string[];
-    pi_b: string[][];
-    pi_c: string[];
-    protocol?: string;
-    curve?: string;
-  };
+  proof: any;  // snarkjs proof format
   publicSignals: string[];
+  campaignRequirements?: CampaignRequirements;
   metadata?: {
     userId?: string;
     campaignId?: string;
@@ -37,13 +45,7 @@ interface VerifyProofRequest {
 interface VerifyProofBatchRequest {
   proofs: Array<{
     circuitName: string;
-    proof: {
-      pi_a: string[];
-      pi_b: string[][];
-      pi_c: string[];
-      protocol?: string;
-      curve?: string;
-    };
+    proof: any;  // snarkjs proof format
     publicSignals: string[];
   }>;
   metadata?: {
@@ -118,6 +120,51 @@ export async function POST(request: NextRequest) {
         singleRequest.publicSignals
       );
 
+      // Additional campaign requirements validation
+      if (result.valid && singleRequest.campaignRequirements) {
+        const req = singleRequest.campaignRequirements;
+        const signals = singleRequest.publicSignals;
+
+        // Validate range circuits (age_range, range_check)
+        if ((singleRequest.circuitName === 'age_range' || singleRequest.circuitName === 'range_check') &&
+            req.min !== undefined && req.max !== undefined) {
+          // Public signals: [valid, min, max]
+          const proofMin = signals[1];
+          const proofMax = signals[2];
+
+          if (proofMin !== req.min.toString() || proofMax !== req.max.toString()) {
+            return NextResponse.json({
+              success: false,
+              result: {
+                ...result,
+                valid: false,
+                message: `Public signals don't match campaign requirements. Expected [${req.min}, ${req.max}], got [${proofMin}, ${proofMax}]`
+              }
+            });
+          }
+        }
+
+        // Validate set_membership circuit
+        if (singleRequest.circuitName === 'set_membership' && req.allowedValues && Array.isArray(req.allowedValues)) {
+          // Public signals: [isMember, ...set[10]]
+          const expectedSet = hashAndPadSet(req.allowedValues);
+          const proofSet = signals.slice(1); // Skip isMember flag
+
+          const setsMatch = proofSet.every((val, i) => val === expectedSet[i]);
+
+          if (!setsMatch) {
+            return NextResponse.json({
+              success: false,
+              result: {
+                ...result,
+                valid: false,
+                message: 'Public set does not match campaign requirements'
+              }
+            });
+          }
+        }
+      }
+
       return NextResponse.json({
         success: result.valid,
         result,
@@ -146,35 +193,31 @@ export async function GET() {
     description: 'POST a proof object to verify ZK-SNARK proofs',
     endpoint: '/api/verify-proof',
     methods: ['POST'],
+    availableCircuits: ['age_range', 'range_check', 'set_membership'],
     examples: {
       singleProof: {
-        circuitName: 'age_range',
+        circuitName: 'range_check',
         proof: {
           pi_a: ['...', '...', '1'],
           pi_b: [['...', '...'], ['...', '...'], ['...', '...']],
           pi_c: ['...', '...', '1']
         },
-        publicSignals: ['1', '40', '60'],
+        publicSignals: ['1', '25000', '50000'],
+        campaignRequirements: {
+          min: 25000,
+          max: 50000
+        },
         metadata: {
           userId: 'user123',
           campaignId: 'campaign456'
         }
       },
-      batchProofs: {
-        proofs: [
-          {
-            circuitName: 'age_range',
-            proof: { /* ... */ },
-            publicSignals: ['1', '40', '60']
-          },
-          {
-            circuitName: 'range_proof',
-            proof: { /* ... */ },
-            publicSignals: ['1', '50000', '200000']
-          }
-        ],
-        metadata: {
-          campaignId: 'campaign456'
+      setMembership: {
+        circuitName: 'set_membership',
+        proof: { /* ... */ },
+        publicSignals: ['1', 'hash1', 'hash2', 'hash3', '0', '0', '0', '0', '0', '0', '0'],
+        campaignRequirements: {
+          allowedValues: ['us', 'uk', 'ca']
         }
       }
     }

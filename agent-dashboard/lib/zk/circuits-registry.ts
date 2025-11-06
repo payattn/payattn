@@ -74,7 +74,7 @@ export const CIRCUITS: Record<string, CircuitRegistry> = {
     type: 'range',
     wasmPath: '/circuits/age_range/age_range.wasm',
     zKeyPath: '/circuits/age_range/age_range_0000.zkey',
-    verificationKeyPath: '/circuits/age_range/verification_key.json',
+    verificationKeyPath: '/circuits/verification_keys/age_range_verification_key.json',
     inputSchema: {
       private: {
         age: 'number'
@@ -93,63 +93,79 @@ export const CIRCUITS: Record<string, CircuitRegistry> = {
   },
 
   /**
-   * Range Proof (Generic)
+   * Range Check (Generic)
    * 
    * Proves: any numeric value is between min and max
    * Reusable for: age, income, score, etc.
    * 
-   * To be implemented in WP02.4
+   * ✅ IMPLEMENTED
+   * 
+   * Example:
+   *   Private: { value: 35000 }
+   *   Public: { min: 25000, max: 50000 }
+   *   Output: [1, 25000, 50000] (valid - 35000 is in range)
    */
-  range_proof: {
-    name: 'range_proof',
+  range_check: {
+    name: 'range_check',
     type: 'range',
-    wasmPath: '/circuits/range_proof/range_proof.wasm',
-    zKeyPath: '/circuits/range_proof/range_proof_0000.zkey',
-    verificationKeyPath: '/circuits/range_proof/verification_key.json',
+    wasmPath: '/circuits/range_check/range_check.wasm',
+    zKeyPath: '/circuits/range_check/range_check_0000.zkey',
+    verificationKeyPath: '/circuits/verification_keys/range_check_verification_key.json',
     inputSchema: {
       private: {
         value: 'number'
       },
       public: {
-        minValue: 'number',
-        maxValue: 'number'
+        min: 'number',
+        max: 'number'
       }
     },
     description: 'Generic circuit for proving any numeric value is within bounds',
     sizeBytes: {
-      wasm: 40 * 1024,
-      zkey: 4.5 * 1024 * 1024,
-      verificationKey: 3.5 * 1024
+      wasm: 34 * 1024,
+      zkey: 4 * 1024 * 1024,
+      verificationKey: 3.2 * 1024
     }
   },
 
   /**
    * Set Membership Proof (Generic)
    * 
-   * Proves: a value is in an allowed set
+   * Proves: a hashed value is in an allowed set
    * Reusable for: countries, interests, categories, etc.
    * 
-   * To be implemented in WP02.4
+   * ✅ IMPLEMENTED
+   * 
+   * IMPORTANT: Uses SHA-256 hashing for string-to-field conversion
+   * 
+   * Example:
+   *   Private: { value: "uk" } → hashed to field element
+   *   Public: { set: ["us", "uk", "ca"] } → each hashed to field element, padded to 10
+   *   Output: [1, hash("us"), hash("uk"), hash("ca"), 0, 0, 0, 0, 0, 0, 0]
+   * 
+   * Backend MUST use identical hashing:
+   *   hashToField(str) = SHA-256(str) mod FIELD_PRIME
+   *   FIELD_PRIME = 21888242871839275222246405745257275088548364400416034343698204186575808495617
    */
   set_membership: {
     name: 'set_membership',
     type: 'set_membership',
     wasmPath: '/circuits/set_membership/set_membership.wasm',
     zKeyPath: '/circuits/set_membership/set_membership_0000.zkey',
-    verificationKeyPath: '/circuits/set_membership/verification_key.json',
+    verificationKeyPath: '/circuits/verification_keys/set_membership_verification_key.json',
     inputSchema: {
       private: {
-        value: 'string'  // Usually a hash of the actual value
+        value: 'string'  // Hash of the actual value
       },
       public: {
-        allowedValues: 'string'  // Array of allowed hashes (will be flattened for circuit)
+        set: 'string'  // Array of 10 hashed values (padded with "0")
       }
     },
-    description: 'Generic circuit for proving a value is in an allowed set',
+    description: 'Generic circuit for proving a hashed value is in an allowed set (max 10 elements)',
     sizeBytes: {
-      wasm: 45 * 1024,
-      zkey: 5 * 1024 * 1024,
-      verificationKey: 4 * 1024
+      wasm: 42 * 1024,
+      zkey: 4.6 * 1024 * 1024,
+      verificationKey: 4.6 * 1024
     }
   }
 };
