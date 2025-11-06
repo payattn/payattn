@@ -119,8 +119,40 @@ export async function verifyProof(
       };
     } catch (execError) {
       // Rapidsnark execution error (invalid proof or binary error)
+      const verificationTime = Date.now() - verifyStartTime;
       console.error('[Verifier] Rapidsnark error:', execError);
-      throw new Error(`Verification failed: ${execError instanceof Error ? execError.message : String(execError)}`);
+      
+      // Extract minimal error information without exposing paths
+      let errorMessage = 'Invalid proof';
+      
+      if (execError instanceof Error) {
+        const errorStr = execError.message.toLowerCase();
+        
+        // Check for specific error patterns and provide minimal context
+        if (errorStr.includes('invalid proof')) {
+          errorMessage = 'Invalid proof';
+        } else if (errorStr.includes('timeout')) {
+          errorMessage = 'Verification timeout';
+        } else if (errorStr.includes('not found')) {
+          errorMessage = 'Verification key not found';
+        } else {
+          // Generic error - don't expose details
+          errorMessage = 'Verification failed';
+        }
+      }
+      
+      console.log('[Verifier] Verification completed in', verificationTime, 'ms');
+      console.log('[Verifier] Total time:', Date.now() - startTime, 'ms');
+      console.log('[Verifier] Result: INVALID ❌');
+      
+      return {
+        valid: false,
+        circuitName,
+        publicSignals,
+        message: errorMessage,
+        timestamp: Date.now(),
+        verificationTime
+      };
     }
   } catch (error) {
     console.error('[Verifier] Error during verification:', error);
