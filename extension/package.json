@@ -1,0 +1,16 @@
+{
+  "name": "payattn-extension",
+  "version": "1.0.0",
+  "description": "PayAttn browser extension with Max (user agent)",
+  "private": true,
+  "scripts": {
+    "install-deps": "npm install"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.32.1",
+    "@solana/web3.js": "^1.98.4"
+  },
+  "devDependencies": {},
+  "author": "PayAttn",
+  "license": "MIT"
+}

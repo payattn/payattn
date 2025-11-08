@@ -38,22 +38,10 @@ Create the Anchor project as a subdirectory of your main project:
 
 ```
 /Users/jmd/nosync/org.payattn.main/
-├── backend/              # Your existing backend
-├── extension/            # Your existing extension
-├── website/              # Your existing Next.js site
-├── solana/               # ← NEW: Anchor project here
-│   ├── programs/
-│   │   └── payattn_escrow/
-│   │       └── src/
-│   │           └── lib.rs
-│   ├── tests/
-│   ├── target/
-│   │   ├── idl/
-│   │   │   └── payattn_escrow.json    # Auto-generated, import from backend/extension
-│   │   └── types/
-│   │       └── payattn_escrow.ts      # Auto-generated TypeScript types
-│   ├── Anchor.toml
-│   └── Cargo.toml
+├── agent-dashboard/      # Next.js backend (x402 facilitator)
+├── extension/            # Browser extension (Max - user agent)
+├── solana/               # Anchor project (smart contracts)
+│   └── payattn_escrow/
 ├── package.json
 └── README.md
 ```
@@ -344,22 +332,27 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
 
 **Goal:** Max (user agent) validates escrow before queueing ad
 
-- [ ] **03.1** - Install Solana dependencies in extension
+- [x] **03.1** - Install Solana dependencies in extension
+  ✅ DONE: Installed @solana/web3.js and @coral-xyz/anchor
   ```bash
-  # In extension directory
+  cd extension
   npm install @solana/web3.js @coral-xyz/anchor
   ```
+  - Extension moved to project root: `/extension/` (cleaner structure for submission)
+  - Created package.json for extension dependency management
 
-- [ ] **03.2** - Copy IDL to extension (auto-available after build)
-  ```bash
-  # After 'anchor build', IDL is at:
-  # ../solana/target/idl/payattn_escrow.json
-  
-  # Extension can import directly:
-  # import idl from '../solana/target/idl/payattn_escrow.json'
-  ```
+- [x] **03.2** - Create escrow validator module
+  ✅ DONE: Created `/extension/lib/escrow-validator.js`
+  - Imports IDL from symlinked `solana-idl/payattn_escrow.json`
+  - Derives PDA using same seeds as contract: `["escrow", offer_id]`
+  - Fetches escrow account on-chain via Solana RPC
+  - Validates: not settled, amount matches, user matches, not expired
+  - Returns detailed validation result with all checks
+  - Supports batch validation for multiple escrows
+  - Created test page: `/extension/escrow-validator-test.html`
+  - Updated manifest.json to include validator module and IDL
 
-- [ ] **03.3** - Create validation module (`extension/lib/escrow-validator.js`)
+- [ ] **03.3** - Integrate into ad queueing flow
   ```javascript
   import { Connection, PublicKey } from '@solana/web3.js';
   import { Program, AnchorProvider } from '@coral-xyz/anchor';

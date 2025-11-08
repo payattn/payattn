@@ -53,7 +53,7 @@ npm run dev
 1. Open Chrome → `chrome://extensions/`
 2. Enable "Developer mode"
 3. Click "Load unpacked"
-4. Select `agent-dashboard/extension/` directory
+4. Select `extension/` directory
 
 ---
 
