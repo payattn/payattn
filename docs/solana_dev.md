@@ -170,11 +170,12 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
 - [x] **01.2** - Write smart contract in `programs/payattn_escrow/src/lib.rs`
   - Three instructions: `create_escrow()`, `settle_impression()`, `refund_escrow()`
   - Escrow account stores: offer_id, advertiser, user, platform, amount, created_at, settled flag
-  - **NOTE:** Publisher NOT in escrow (unknown at creation time, passed at settlement)
+  - **CRITICAL FIX (Nov 8):** Publisher REMOVED from CreateEscrow (unknown at creation time)
+  - Publisher will be passed as parameter during settlement (only known when user views ad)
   - PDA seeds: `[b"escrow", offer_id.as_bytes()]`
-  - Settlement: Backend calls settle 3 times with different recipients
+  - Settlement: Backend calls settle with publisher pubkey parameter
   - Refund: After 14 days, advertiser can reclaim funds if unsettled
-  ✅ DONE: Professional contract with comprehensive docs, error handling, overflow protection
+  ✅ DONE: Professional contract with proper x402 flow, comprehensive docs, error handling
 
 - [x] **01.3** - Build the program
   ```bash
@@ -331,10 +332,11 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
 
 **Success criteria:** ✅ **COMPLETE** - x402 flow tested end-to-end successfully!
 - HTTP 402 response working with all required headers
-- Escrow funded on-chain: [Transaction](https://explorer.solana.com/tx/2h9CYNrsk8qcP5dt5B73KNr7BG9tw7BYxXojoverq8KpYPbwWQsPJ3Wib6ewjjVcNfKM5aTPNyCj8Q1rGtjZjTna?cluster=devnet)
-- Escrow PDA: `B6a1aL5g4oP9iAqCU1egBszdB1CBcYBmEBaUBeVQoeKo`
+- Escrow funded on-chain WITHOUT publisher (correct x402 flow): [Transaction](https://explorer.solana.com/tx/5tx1mGUjD5hgqaLkunuGUq4fK6KhDTcZVFMCYr2c2WnTdvsAnpCS1EYAZbhgfpXTz7dczuYmHwYCT4DAoqffH7CG?cluster=devnet)
+- Escrow PDA: `EqCj1kyPwB8pCXUAiLoubFFMBdCTc7XYuEBb3MRpcys3`
+- Publisher will be specified at settlement time (when user views ad) ✓
 - Payment verification working, offer status updated to "funded"
-- Ready for settlement implementation
+- Ready for settlement implementation with publisher parameter
 
 ---
 

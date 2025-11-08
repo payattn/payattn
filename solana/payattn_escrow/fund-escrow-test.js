@@ -14,14 +14,13 @@ const { AnchorProvider, Program, Wallet, BN } = require('@coral-xyz/anchor');
 const fs = require('fs');
 
 // Configuration
-const OFFER_ID = 'offer_41f8f17d3b6bebd6';
+const OFFER_ID = 'offer_test_v2_nopub';
 const AMOUNT_LAMPORTS = new BN(10_000_000); // 0.01 SOL
 const RPC_URL = 'https://api.devnet.solana.com';
 const PROGRAM_ID = new PublicKey('6ZEekbTJZ6D6KrfSGDY2ByoWENWfe8RzhvpBS4KtPdZr');
 const ADVERTISER_KEYPAIR_PATH = `${process.env.HOME}/.config/solana/advertiser.json`;
 const USER_PUBKEY = new PublicKey('9kXHUnoYjB7eVUafsKFibrdHJWiYiX26vP7p7QX77nux');
 const PLATFORM_PUBKEY = new PublicKey('G6Lbdq9JyQ3QR5YvKqpVC9KjPqAd9hSwWtHv3bPDrWTY');
-const PUBLISHER_PUBKEY = new PublicKey('ELD9PKHo5qwyt3o5agPPMuQLRzidDnR2g4DmJDfH55Z7'); // Placeholder
 
 async function fundEscrow() {
   console.log('========================================');
@@ -51,19 +50,18 @@ async function fundEscrow() {
   console.log('Escrow PDA:', escrowPda.toBase58());
   console.log('Amount:', AMOUNT_LAMPORTS, 'lamports (0.01 SOL)');
   console.log('User:', USER_PUBKEY.toBase58());
-  console.log('Publisher:', PUBLISHER_PUBKEY.toBase58(), '(placeholder)');
   console.log('Platform:', PLATFORM_PUBKEY.toBase58());
+  console.log('Publisher: Will be specified at settlement time ✓');
   console.log('\nStep 1: Creating escrow on-chain...\n');
 
   try {
-    // Create escrow instruction
+    // Create escrow instruction (no publisher required!)
     const tx = await program.methods
       .createEscrow(OFFER_ID, AMOUNT_LAMPORTS)
       .accounts({
         escrow: escrowPda,
         advertiser: advertiserKeypair.publicKey,
         user: USER_PUBKEY,
-        publisher: PUBLISHER_PUBKEY,
         platform: PLATFORM_PUBKEY,
         systemProgram: SystemProgram.programId,
       })

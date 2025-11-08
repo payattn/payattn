@@ -20,6 +20,10 @@ pub mod payattn_escrow {
     /// until the user views the ad and the impression is settled, or until
     /// the escrow expires and can be refunded.
     ///
+    /// **Note:** Publisher is NOT required at creation time. The publisher
+    /// will only be known when the user actually views the ad, and will be
+    /// specified during settlement.
+    ///
     /// # Arguments
     /// * `offer_id` - Unique identifier for this offer (used as PDA seed)
     /// * `amount` - Amount in lamports to lock in escrow
@@ -40,11 +44,10 @@ pub mod payattn_escrow {
         let clock = Clock::get()?;
         let escrow = &mut ctx.accounts.escrow;
 
-        // Initialize escrow state
+        // Initialize escrow state (publisher unknown at this point)
         escrow.offer_id = offer_id.clone();
         escrow.advertiser = ctx.accounts.advertiser.key();
         escrow.user = ctx.accounts.user.key();
-        escrow.publisher = ctx.accounts.publisher.key();
         escrow.platform = ctx.accounts.platform.key();
         escrow.amount = amount;
         escrow.created_at = clock.unix_timestamp;
@@ -78,6 +81,9 @@ pub mod payattn_escrow {
     /// - 25% to the publisher hosting the ad
     /// - 5% to the platform
     ///
+    /// **Note:** Publisher is specified at settlement time (not at escrow creation)
+    /// because the publisher is only known when the user actually views the ad.
+    ///
     /// # Errors
     /// * `AlreadySettled` - If this escrow has already been settled
     /// * `EscrowExpired` - If the escrow has expired (should be refunded instead)
@@ -93,13 +99,9 @@ pub mod payattn_escrow {
             EscrowError::EscrowExpired
         );
 
-        // Verify participants match escrow
+        // Verify user matches escrow
         require!(
             ctx.accounts.user.key() == escrow.user,
-            EscrowError::Unauthorized
-        );
-        require!(
-            ctx.accounts.publisher.key() == escrow.publisher,
             EscrowError::Unauthorized
         );
         require!(
@@ -250,7 +252,7 @@ pub struct CreateEscrow<'info> {
     #[account(
         init,
         payer = advertiser,
-        space = 8 + 128 + 32 + 32 + 32 + 32 + 8 + 8 + 1 + 1,
+        space = 8 + 128 + 32 + 32 + 32 + 8 + 8 + 1 + 1, // Removed publisher (32 bytes)
         seeds = [b"escrow", offer_id.as_bytes()],
         bump
     )]
@@ -261,9 +263,6 @@ pub struct CreateEscrow<'info> {
 
     /// CHECK: User pubkey is validated and stored in escrow
     pub user: UncheckedAccount<'info>,
-
-    /// CHECK: Publisher pubkey is validated and stored in escrow
-    pub publisher: UncheckedAccount<'info>,
 
     /// CHECK: Platform pubkey is validated and stored in escrow
     pub platform: UncheckedAccount<'info>,
@@ -315,8 +314,6 @@ pub struct Escrow {
     pub advertiser: Pubkey,
     /// User who will view the ad and receive 70%
     pub user: Pubkey,
-    /// Publisher hosting the ad, receives 25%
-    pub publisher: Pubkey,
     /// Platform wallet, receives 5%
     pub platform: Pubkey,
     /// Amount locked in escrow (lamports)
