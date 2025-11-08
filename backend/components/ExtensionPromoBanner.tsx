@@ -74,7 +74,7 @@ export function ExtensionPromoBanner() {
 
             <div className="flex gap-3">
               <a 
-                href="https://github.com/payattn/payattn/blob/main/agent-dashboard/extension/README.md" 
+                href="https://github.com/payattn/payattn/blob/main/extension/README.md" 
                 target="_blank"
                 rel="noopener noreferrer"
               >

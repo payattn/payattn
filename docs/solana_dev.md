@@ -37,13 +37,14 @@
 Create the Anchor project as a subdirectory of your main project:
 
 ```
+```
 /Users/jmd/nosync/org.payattn.main/
-├── agent-dashboard/      # Next.js backend (x402 facilitator)
-├── extension/            # Browser extension (Max - user agent)
+├── backend/              # Next.js backend (x402 facilitator)
+├── extension/            # Chrome extension (Max - user agent)
 ├── solana/               # Anchor project (smart contracts)
 │   └── payattn_escrow/
 ├── package.json
-└── README.md
+```
 ```
 
 **Why subdirectory:**
@@ -269,7 +270,7 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
   cd /path/to/backend
   npm install @coral-xyz/anchor @solana/web3.js
   ```
-  ✅ DONE: Dependencies installed in agent-dashboard
+  ✅ DONE: Dependencies installed in backend
 
 - [x] **02B.2** - Create `lib/solana-escrow.ts`
   ✅ DONE: Created with functions:

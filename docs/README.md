@@ -55,7 +55,7 @@ This directory contains all project documentation.
 
 | Component | Location | Purpose |
 |-----------|----------|---------|
-| **Backend** | `/agent-dashboard/` | Next.js API server, Solana escrow verification |
+| **Backend** | `/backend/` | Next.js API server, Solana escrow verification |
 | **Extension** | `/extension/` | Chrome extension, ZK proof generation, Max agent |
 | **Smart Contract** | `/solana/payattn_escrow/` | Solana escrow program |
 | **CF Worker** | `/cf-worker/` | Cloudflare Worker (experimental) |

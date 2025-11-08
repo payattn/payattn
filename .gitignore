@@ -145,3 +145,28 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Solana/Anchor build artifacts
+**/target/
+**/*.so
+test-ledger/
+
+# Chrome Extension build artifacts
+*.crx
+*.pem
+*.zip
+
+# Keep circuit artifacts (these are needed)
+!extension/circuits/**/*.wasm
+!extension/circuits/**/*.zkey
+!extension/circuits/**/verification_key.json
+
+# Keypairs and secrets (Solana)
+*.json
+!extension/circuits/**/verification_key.json
+!**/tsconfig.json
+!**/package.json
+!**/package-lock.json
+!**/.vscode/*.json
+!**/components.json
+!**/mock-campaigns.json

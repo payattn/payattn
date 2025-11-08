@@ -2,8 +2,15 @@
 
 const { createClient } = require('@supabase/supabase-js');
 
-const supabaseUrl = 'https://uytcohrqiqmtfdopdrpe.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV5dGNvaHJxaXFtdGZkb3BkcnBlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI0NjE3NTEsImV4cCI6MjA3ODAzNzc1MX0.KO7ekJzbeoz0AgLyltwVfzP3HOVJ4eFSVOgaJDODJg8';
+// Load from environment variables
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://your-project.supabase.co';
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'your-anon-key';
+
+if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+  console.error('❌ Error: NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY must be set');
+  console.error('   Load from backend/.env.local: source <(grep -v "^#" ../backend/.env.local | sed "s/^/export /")');
+  process.exit(1);
+}
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 

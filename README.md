@@ -32,7 +32,7 @@ cd payattn
 
 ### 2. Install Dependencies
 ```bash
-cd agent-dashboard
+cd backend
 npm install
 ```
 
@@ -44,7 +44,7 @@ cd ../rapidsnark-server
 
 ### 4. Start Development Server
 ```bash
-cd ../agent-dashboard
+cd ../backend
 npm run dev
 # Server runs at http://localhost:3000
 ```
@@ -53,7 +53,7 @@ npm run dev
 1. Open Chrome → `chrome://extensions/`
 2. Enable "Developer mode"
 3. Click "Load unpacked"
-4. Select `extension/` directory
+4. Select `extension/` directory (at root level, NOT in backend)
 
 ---
 
@@ -69,7 +69,7 @@ payattn/
 │   ├── API.md                     # API reference
 │   └── TESTING.md                 # Testing guide
 │
-├── agent-dashboard/               # 🎨 Next.js backend + dashboard
+├── backend/                       # 🎨 Next.js backend + dashboard
 │   ├── app/                       # Next.js 16 App Router
 │   │   ├── api/                   # API routes
 │   │   │   ├── verify-proof/     # POST /api/verify-proof
@@ -80,16 +80,24 @@ payattn/
 │   │   └── zk/                    # ZK verification logic
 │   │       ├── verifier.ts        # Rapidsnark integration
 │   │       └── circuits-registry.ts
-│   └── extension/                 # 🔐 Chrome Extension
-│       ├── manifest.json          # Manifest V3
-│       ├── background.js          # Service worker
-│       ├── content.js             # Content script
-│       ├── popup.html/js          # Extension popup
-│       ├── crypto-utils.js        # ZK proof generation
-│       └── circuits/              # Circom circuits
-│           ├── range_check.circom
-│           ├── age_range.circom
-│           └── set_membership.circom
+│
+├── extension/                     # 🔐 Chrome Extension (Max agent)
+│   ├── manifest.json              # Manifest V3
+│   ├── background.js              # Service worker
+│   ├── content.js                 # Content script
+│   ├── popup.html/js              # Extension popup
+│   ├── crypto-utils.js            # ZK proof generation
+│   ├── node_modules/              # Extension dependencies (separate)
+│   └── circuits/                  # Circom circuits
+│       ├── range_check.circom
+│       ├── age_range.circom
+│       └── set_membership.circom
+│
+├── solana/                        # 🔗 Solana smart contracts
+│   └── payattn_escrow/           # Trustless escrow program
+│       ├── programs/              # Anchor program
+│       ├── tests/                 # Integration tests
+│       └── schema.sql             # Database schema
 │
 ├── rapidsnark-server/             # ⚡ C++ verification server
 │   ├── rapidsnark/                # Compiled Rapidsnark binary
@@ -213,8 +221,8 @@ TBD
 ## 🔗 Links
 
 - **Documentation:** [/docs](/docs)
-- **Extension:** [/agent-dashboard/extension](/agent-dashboard/extension)
-- **Backend:** [/agent-dashboard](/agent-dashboard)
+- **Extension:** [/extension](/extension)
+- **Backend:** [/backend](/backend)
 - **Rapidsnark:** [/rapidsnark-server](/rapidsnark-server)
 
 ---

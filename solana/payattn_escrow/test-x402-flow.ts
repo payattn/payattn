@@ -11,7 +11,7 @@
 
 import { Keypair, PublicKey, SystemProgram, Transaction, sendAndConfirmTransaction } from '@solana/web3.js';
 import { AnchorProvider, Program, Wallet } from '@coral-xyz/anchor';
-import { connection, program, PROGRAM_ID, derivePDA } from '../agent-dashboard/lib/solana-escrow';
+import { connection, program, PROGRAM_ID, derivePDA } from '../../backend/lib/solana-escrow';
 import fs from 'fs';
 
 const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:3000';
