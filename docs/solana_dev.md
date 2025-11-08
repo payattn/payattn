@@ -483,7 +483,15 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
 
 #### 4B: Backend Settlement Service (3 hours)
 
-- [ ] **04B.1** - Create settlement service (`lib/settlement-service.ts`)
+- [x] **04B.1** - Create settlement service (`lib/settlement-service.ts`)
+  ✅ DONE: Created with full implementation
+  - `settleWithPrivacy()` - Main function with 3 unlinked transactions
+  - Random ordering + delays (0-5s) for privacy
+  - 70% user / 25% publisher / 5% platform split
+  - Failed settlement tracking in `settlement_queue`
+  - `retryFailedSettlements()` - Cron job function
+  - `getFailedSettlements()` - Admin dashboard query
+  - Committed: 23679f0
   ```typescript
   import { settleImpression } from './solana-escrow';
   import { PublicKey } from '@solana/web3.js';
@@ -576,7 +584,14 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
   }
   ```
 
-- [ ] **04B.2** - Implement `POST /api/publisher/impressions`
+- [x] **04B.2** - Implement `POST /api/publisher/impressions`
+  ✅ DONE: Created `/app/api/publisher/impressions/route.ts`
+  - Validates impression duration (>= 1 second)
+  - Fetches offer from database (must be status='funded')
+  - Looks up publisher wallet address
+  - Triggers `settleWithPrivacy()` with user/publisher/platform pubkeys
+  - Returns detailed results with Solana Explorer links
+  - Handles failures gracefully (added to retry queue)
   ```typescript
   router.post('/api/publisher/impressions', async (req, res) => {
     const { offerId, publisherId, duration } = req.body;
@@ -627,7 +642,12 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
   });
   ```
 
-- [ ] **04B.3** - Add failed settlement tracking
+- [x] **04B.3** - Add failed settlement tracking
+  ✅ DONE: Created `/app/api/admin/settlements/failed/route.ts`
+  - Endpoint to view failed settlements (admin only)
+  - Returns settlement_queue entries with < 10 attempts
+  - Shows offer details (amount, status)
+  - TODO: Add authentication middleware before production
   ```typescript
   // Endpoint to view failed settlements (admin only)
   router.get('/api/admin/settlements/failed', async (req, res) => {
