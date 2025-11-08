@@ -224,7 +224,7 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
 
 #### 2A: Endpoint Structure (1 hour)
 
-- [ ] **02A.1** - Define endpoint architecture
+- [x] **02A.1** - Define endpoint architecture
   ```
   /api/user/*           - Max (user agent) endpoints
     GET  /adstream      - Get available ads
@@ -244,7 +244,11 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
     GET  /settlements/failed - View failed settlement queue
   ```
 
-- [ ] **02A.2** - Add offer status state machine to database
+- [x] **02A.2** - Add offer status state machine to database
+  ✅ DONE: Schema applied to Supabase
+  - Tables created: offers (with status state machine), settlement_queue, publishers (with wallet_address)
+  - Sample test data inserted
+  - Status flow: "offer_made" → "accepted" → "funded" → "settling" → "settled"
   ```sql
   -- Offer status flow:
   -- "offer_made" → "accepted" → "funded" → "settling" → "settled"
@@ -271,159 +275,66 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
 
 #### 2B: Solana Service Module (2 hours)
 
-- [ ] **02B.1** - Install dependencies
+- [x] **02B.1** - Install dependencies
   ```bash
   cd /path/to/backend
   npm install @coral-xyz/anchor @solana/web3.js
   ```
+  ✅ DONE: Dependencies installed in agent-dashboard
 
-- [ ] **02B.2** - Create `lib/solana-escrow.ts`
-  ```typescript
-  import { AnchorProvider, Program } from '@coral-xyz/anchor';
-  import { Connection, Keypair, PublicKey } from '@solana/web3.js';
-  import idl from '../../solana/target/idl/payattn_escrow.json';
-  
-  // Initialize connection to devnet
-  const connection = new Connection(process.env.SOLANA_RPC_URL);
-  const programId = new PublicKey(process.env.SOLANA_PROGRAM_ID);
-  
-  // Load platform wallet (pays gas fees)
-  const platformWallet = Keypair.fromSecretKey(
-    JSON.parse(fs.readFileSync(process.env.SOLANA_PLATFORM_KEYPAIR_PATH))
-  );
-  
-  export async function derivePDA(offerId: string): Promise<[PublicKey, number]> {
-    return PublicKey.findProgramAddressSync(
-      [Buffer.from("escrow"), Buffer.from(offerId)],
-      programId
-    );
-  }
-  
-  export async function verifyEscrow(offerId: string, expectedAmount: number) {
-    const [escrowPda] = await derivePDA(offerId);
-    const escrowAccount = await program.account.escrow.fetch(escrowPda);
-    
-    // Verify escrow state
-    if (escrowAccount.amount.toNumber() !== expectedAmount) {
-      throw new Error('Escrow amount mismatch');
-    }
-    if (escrowAccount.settled) {
-      throw new Error('Escrow already settled');
-    }
-    
-    return { escrowPda: escrowPda.toBase58(), valid: true };
-  }
-  
-  export async function settleImpression(
-    offerId: string,
-    recipient: PublicKey,
-    amount: number,
-    recipientType: 'user' | 'publisher' | 'platform'
-  ): Promise<string> {
-    const [escrowPda, bump] = await derivePDA(offerId);
-    
-    // Call settle_impression with specific recipient
-    const tx = await program.methods
-      .settleImpression()
-      .accounts({
-        escrow: escrowPda,
-        [recipientType]: recipient,
-        systemProgram: SystemProgram.programId,
-      })
-      .rpc();
-    
-    return tx; // Return tx signature
-  }
-  ```
+- [x] **02B.2** - Create `lib/solana-escrow.ts`
+  ✅ DONE: Created with functions:
+  - `derivePDA(offerId)` - Derive escrow PDA from offer_id
+  - `verifyEscrow(offerId, amount, userPubkey, advertiserPubkey)` - Verify on-chain escrow
+  - `settleImpression(offerId, recipientPubkey, recipientType)` - Submit settlement tx
+  - `getEscrowBalance(offerId)` - Get current escrow balance
+  - `getEscrowDetails(offerId)` - Get full escrow account data
+  - `getPlatformPubkey()` - Export platform wallet for x402 headers
+  - `getProgramId()` - Export program ID for x402 headers
 
-- [ ] **02B.3** - Add environment variables
-  ```bash
-  # .env
-  SOLANA_RPC_URL=https://api.devnet.solana.com
-  SOLANA_PROGRAM_ID=6ZEekbTJZ6D6KrfSGDY2ByoWENWfe8RzhvpBS4KtPdZr
-  SOLANA_PLATFORM_KEYPAIR_PATH=/Users/jmd/.config/solana/payattn-backend.json
-  SOLANA_PLATFORM_PUBKEY=G6Lbdq9JyQ3QR5YvKqpVC9KjPqAd9hSwWtHv3bPDrWTY
-  ```
+- [x] **02B.3** - Add environment variables
+  ✅ DONE: Added to `.env.local`:
+  - SOLANA_RPC_URL=https://api.devnet.solana.com
+  - SOLANA_PROGRAM_ID=6ZEekbTJZ6D6KrfSGDY2ByoWENWfe8RzhvpBS4KtPdZr
+  - SOLANA_PLATFORM_KEYPAIR_PATH=/Users/jmd/.config/solana/payattn-backend.json
+  - SOLANA_PLATFORM_PUBKEY=G6Lbdq9JyQ3QR5YvKqpVC9KjPqAd9hSwWtHv3bPDrWTY
+  - NEXT_PUBLIC_SUPABASE_URL + KEY
 
 #### 2C: x402 Payment Required Flow (2 hours)
 
-- [ ] **02C.1** - Implement `POST /api/advertiser/offers/:id/accept`
-  ```typescript
-  // When Peggy accepts an offer
-  router.post('/api/advertiser/offers/:id/accept', async (req, res) => {
-    const { id: offerId } = req.params;
-    const advertiserId = req.auth.advertiserId; // From JWT
-    
-    // Update offer status
-    await db.query(
-      'UPDATE offers SET status = $1 WHERE offer_id = $2',
-      ['accepted', offerId]
-    );
-    
-    // Get offer details
-    const offer = await db.query(
-      'SELECT * FROM offers WHERE offer_id = $1',
-      [offerId]
-    );
-    
-    // Derive escrow PDA
-    const [escrowPda] = await derivePDA(offerId);
-    
-    // Send x402 Payment Required response
-    res.status(402).set({
-      'X-Payment-Chain': 'solana',
-      'X-Payment-Network': 'devnet',
-      'X-Payment-Amount': offer.amount_lamports.toString(),
-      'X-Payment-Token': 'SOL',
-      'X-Offer-Id': offerId,
-      'X-User-Pubkey': offer.user_pubkey,
-      'X-Platform-Pubkey': process.env.SOLANA_PLATFORM_PUBKEY,
-      'X-Escrow-Program': process.env.SOLANA_PROGRAM_ID,
-      'X-Escrow-PDA': escrowPda.toBase58(),
-      'X-Verification-Endpoint': '/api/advertiser/payments/verify'
-    }).json({
-      message: 'Payment Required',
-      instructions: 'Fund escrow using createEscrow() instruction'
-    });
-  });
-  ```
+- [x] **02C.1** - Implement `POST /api/advertiser/offers/:id/accept`
+  ✅ DONE: Created `/app/api/advertiser/offers/[id]/accept/route.ts`
+  - Updates offer status from "offer_made" → "accepted"
+  - Derives escrow PDA for the offer
+  - Responds with HTTP 402 "Payment Required"
+  - Includes x402 headers:
+    - X-Payment-Chain, X-Payment-Network, X-Payment-Amount
+    - X-Offer-Id, X-User-Pubkey, X-Platform-Pubkey
+    - X-Escrow-Program, X-Escrow-PDA
+    - X-Verification-Endpoint
 
-- [ ] **02C.2** - Implement `POST /api/advertiser/payments/verify`
-  ```typescript
-  // Peggy submits payment proof after funding escrow
-  router.post('/api/advertiser/payments/verify', async (req, res) => {
-    const { offerId, txSignature } = req.body;
-    const advertiserId = req.auth.advertiserId;
-    
-    // Verify transaction on-chain
-    const tx = await connection.getTransaction(txSignature);
-    if (!tx || !tx.meta.err === null) {
-      return res.status(400).json({ error: 'Invalid transaction' });
-    }
-    
-    // Verify escrow account exists with correct data
-    const { escrowPda, valid } = await verifyEscrow(offerId, expectedAmount);
-    
-    if (!valid) {
-      return res.status(400).json({ error: 'Escrow verification failed' });
-    }
-    
-    // Update offer status
-    await db.query(
-      'UPDATE offers SET status = $1, escrow_pda = $2, escrow_tx_signature = $3 WHERE offer_id = $4',
-      ['funded', escrowPda, txSignature, offerId]
-    );
-    
-    res.json({
-      verified: true,
-      offerStatus: 'funded',
-      escrowPda,
-      resourceUrl: `/api/user/offers/${offerId}`
-    });
-  });
-  ```
+- [x] **02C.2** - Implement `POST /api/advertiser/payments/verify`
+  ✅ DONE: Created `/app/api/advertiser/payments/verify/route.ts`
+  - Verifies transaction exists on-chain (getTransaction)
+  - Derives PDA and fetches escrow account
+  - Validates: amount, user_pubkey, advertiser_pubkey match
+  - Updates offer status to "funded"
+  - Returns success with escrowPda and resource URL
 
-**Success criteria:** x402 flow working, Peggy can fund escrows, backend verifies on-chain
+- [x] **02C.3** - Test x402 flow
+  ✅ DONE: End-to-end test successful
+  - HTTP 402 response with all x402 headers verified
+  - Escrow PDA derivation working: B6a1aL5g4oP9iAqCU1egBszdB1CBcYBmEBaUBeVQoeKo
+  - Status transitions working: offer_made → accepted
+  - Next.js 16 async params pattern implemented (await context.params)
+  - Test script created: `/solana/payattn_escrow/test-x402-complete.sh`
+
+**Success criteria:** ✅ **COMPLETE** - x402 flow tested end-to-end successfully!
+- HTTP 402 response working with all required headers
+- Escrow funded on-chain: [Transaction](https://explorer.solana.com/tx/2h9CYNrsk8qcP5dt5B73KNr7BG9tw7BYxXojoverq8KpYPbwWQsPJ3Wib6ewjjVcNfKM5aTPNyCj8Q1rGtjZjTna?cluster=devnet)
+- Escrow PDA: `B6a1aL5g4oP9iAqCU1egBszdB1CBcYBmEBaUBeVQoeKo`
+- Payment verification working, offer status updated to "funded"
+- Ready for settlement implementation
 
 ---
 
@@ -883,9 +794,19 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
 - ✅ WP-SOL-01 (Smart contract with refund mechanism)
 
 **Day 2 (Nov 8):**
-- Morning: WP-SOL-02 (Backend x402 integration) 
-- Afternoon: WP-SOL-03 (Extension validation)
-- Evening: WP-SOL-04 (Privacy-preserving settlement)
+- ✅ **COMPLETE:** WP-SOL-02 (Backend x402 integration)
+  - Database schema applied (offers, settlement_queue, publishers with wallet_address)
+  - Solana service module created with all functions (derivePDA, verifyEscrow, settleImpression)
+  - x402 endpoint working (HTTP 402 with proper headers)
+  - Payment verification endpoint tested successfully
+  - Fixed Next.js 16 async params issue
+  - **END-TO-END TEST PASSED:** Complete flow working
+    - Accept offer → HTTP 402 response ✅
+    - Fund escrow → On-chain escrow created ✅
+    - Verify payment → Backend verified on-chain ✅
+    - Offer status: `offer_made` → `accepted` → `funded` ✅
+    - Test transaction: [View on Explorer](https://explorer.solana.com/tx/2h9CYNrsk8qcP5dt5B73KNr7BG9tw7BYxXojoverq8KpYPbwWQsPJ3Wib6ewjjVcNfKM5aTPNyCj8Q1rGtjZjTna?cluster=devnet)
+- **NEXT:** WP-SOL-03 (Extension validation) or WP-SOL-04 (Privacy-preserving settlement)
 
 **Day 3 (Nov 9):**
 - Morning: WP-SOL-05 (Demo polish)
@@ -1046,6 +967,16 @@ Any fail → add to settlement_queue for retry
 
 
 ## Wallets
+
+**Current Balances (Nov 8, 2025):**
+- Backend/Platform: 12.07 SOL ✅
+- Advertiser: 4.51 SOL ✅ (just funded escrow)
+- Test User: 0.51 SOL ✅
+- Publisher: 0.01 SOL ✅
+
+All wallets funded and ready for testing.
+
+**Wallet Addresses:**
 
 ```
 export PATH="/tmp/solana-release/bin:$PATH" && echo "=== WALLET ADDRESSES ===" && echo "" && echo "1. 
