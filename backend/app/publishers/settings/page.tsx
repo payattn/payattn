@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { PublicKey } from '@solana/web3.js';
+import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 export default function PublisherSettingsPage() {
   const [walletAddress, setWalletAddress] = useState('');
-  const [publisherId, setPublisherId] = useState('pub_001'); // Demo publisher ID
+  const [publisherId, setPublisherId] = useState('8k3m9x2p'); // Demo publisher ID
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState('');
@@ -130,22 +131,35 @@ export default function PublisherSettingsPage() {
   };
 
   return (
-    <div className="container mx-auto p-6 max-w-4xl">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">💼 Publisher Settings</h1>
-        <p className="text-muted-foreground">
-          Configure your Solana wallet to receive payments from ad impressions
-        </p>
-      </div>
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 py-12">
+      <div className="container mx-auto px-4 max-w-3xl">
+        <div className="mb-8">
+          <nav className="mb-4 text-sm text-gray-600 dark:text-gray-400">
+            <Link href="/publishers" className="hover:text-blue-600 dark:hover:text-blue-400">
+              Publishers
+            </Link>
+            {' / '}
+            <span className="text-gray-900 dark:text-gray-100">Settings</span>
+          </nav>
+          <div className="mb-4 inline-block bg-blue-100 dark:bg-blue-900 px-3 py-1 rounded-full text-sm font-medium text-blue-800 dark:text-blue-200">
+            Your Publisher ID: {publisherId}
+          </div>
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+            PayAttn: Publisher Settings
+          </h1>
+          <p className="text-lg text-gray-600 dark:text-gray-400">
+            Configure your wallet to receive payments
+          </p>
+        </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Solana Wallet Address</CardTitle>
-          <CardDescription>
-            Payments will be sent to this wallet (25% of each impression)
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Solana Wallet Address</CardTitle>
+            <CardDescription>
+              Payments will be sent to this wallet (25% of each impression)
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
           {/* Current Wallet Display */}
           {currentWallet && (
             <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
@@ -181,37 +195,6 @@ export default function PublisherSettingsPage() {
             <p className="text-xs text-muted-foreground">
               Paste your Solana wallet address. Supports Phantom, Solflare, and any SPL wallet.
             </p>
-          </div>
-
-          {/* Test Wallets */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Quick Fill (Test Wallets):</label>
-            <div className="flex gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => handleTestWallets('publisher')}
-              >
-                Publisher Wallet
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => handleTestWallets('user')}
-              >
-                User Wallet
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => handleTestWallets('advertiser')}
-              >
-                Advertiser Wallet
-              </Button>
-            </div>
           </div>
 
           {/* Warning */}
@@ -256,7 +239,7 @@ export default function PublisherSettingsPage() {
                 <div className="text-xs text-muted-foreground">User</div>
               </div>
               <div className="space-y-1">
-                <div className="text-2xl font-bold text-green-600">25%</div>
+                <div className="text-3xl font-bold text-green-600">25%</div>
                 <div className="text-xs text-muted-foreground">Publisher (You)</div>
               </div>
               <div className="space-y-1">
@@ -296,16 +279,16 @@ export default function PublisherSettingsPage() {
             <div>
               <div className="font-semibold">User Views Ad</div>
               <div className="text-muted-foreground">
-                User views ad on your site for at least 1 second
+                A user views an ad on your site for longer than the valid view threshold
               </div>
             </div>
           </div>
           <div className="flex gap-3">
             <div className="text-2xl">2️⃣</div>
             <div>
-              <div className="font-semibold">SDK Reports Impression</div>
+              <div className="font-semibold">SDK on your site reports ad impression</div>
               <div className="text-muted-foreground">
-                Publisher SDK sends impression event to backend
+                The PayAttn Publisher SDK sends impression event
               </div>
             </div>
           </div>
@@ -314,21 +297,22 @@ export default function PublisherSettingsPage() {
             <div>
               <div className="font-semibold">Privacy-Preserving Settlement</div>
               <div className="text-muted-foreground">
-                3 separate, unlinked transactions sent with random delays (0-5s)
+                Obfuscated transactions keep your users on-chain activity masked
               </div>
             </div>
           </div>
           <div className="flex gap-3">
             <div className="text-2xl">4️⃣</div>
             <div>
-              <div className="font-semibold">Payment Arrives</div>
+              <div className="font-semibold">Payment Received</div>
               <div className="text-muted-foreground">
-                SOL arrives in your wallet within seconds (devnet for demo)
+                SOL arrives in your wallet (above) within seconds
               </div>
             </div>
           </div>
         </CardContent>
       </Card>
+    </div>
     </div>
   );
 }
