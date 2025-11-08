@@ -82,18 +82,20 @@ export async function verifyEscrow(
     console.log('Escrow account data:', {
       offerId: escrowAccount.offerId,
       amount: escrowAccount.amount.toString(),
-      settled: escrowAccount.settled,
+      userSettled: escrowAccount.userSettled,
+      publisherSettled: escrowAccount.publisherSettled,
+      platformSettled: escrowAccount.platformSettled,
       advertiser: escrowAccount.advertiser.toBase58(),
       user: escrowAccount.user.toBase58(),
       platform: escrowAccount.platform.toBase58()
     });
     
-    // Verify escrow state
-    if (escrowAccount.settled) {
+    // Verify escrow not fully settled
+    if (escrowAccount.userSettled && escrowAccount.publisherSettled && escrowAccount.platformSettled) {
       return {
         valid: false,
         escrowPda: escrowPda.toBase58(),
-        error: 'Escrow already settled'
+        error: 'Escrow already fully settled'
       };
     }
     
@@ -138,61 +140,123 @@ export async function verifyEscrow(
 }
 
 /**
- * Submit a settlement transaction for one recipient
- * This is called 3 times (user, publisher, platform) with random delays
- * 
- * NOTE: The smart contract's settle_impression instruction will transfer
- * the full escrow amount and mark it as settled on the FIRST call.
- * We need to update the contract to support partial settlements.
- * 
- * For now, this function signature is ready for the updated contract.
+ * Settle user portion (70%) of escrow
+ * Part of privacy-preserving 3-transaction settlement flow
  */
-export async function settleImpression(
+export async function settleUser(
   offerId: string,
-  recipientPubkey: string,
-  recipientType: 'user' | 'publisher' | 'platform'
+  userPubkey: string
 ): Promise<{ success: boolean; txSignature?: string; error?: string }> {
   try {
-    const [escrowPda, bump] = await derivePDA(offerId);
-    const recipient = new PublicKey(recipientPubkey);
+    const [escrowPda] = await derivePDA(offerId);
+    const user = new PublicKey(userPubkey);
     
-    console.log(`Settling impression for ${recipientType}:`, {
+    console.log(`Settling user (70%):`, {
       offerId,
       escrowPda: escrowPda.toBase58(),
-      recipient: recipientPubkey
+      user: userPubkey
     });
     
-    // Build accounts object based on recipient type
-    const accounts: any = {
+    const accounts = {
       escrow: escrowPda,
+      user,
       systemProgram: SystemProgram.programId,
     };
     
-    // Add the specific recipient account
-    accounts[recipientType] = recipient;
-    
-    // Submit transaction
     const txSignature = await program.methods
-      .settleImpression()
+      .settleUser()
       .accounts(accounts)
       .rpc();
     
-    console.log(`✅ Settlement tx for ${recipientType}:`, txSignature);
-    
-    // Wait for confirmation
+    console.log(`✅ User settlement tx:`, txSignature);
     await connection.confirmTransaction(txSignature, 'confirmed');
     
-    return {
-      success: true,
-      txSignature
-    };
+    return { success: true, txSignature };
     
   } catch (err: any) {
-    console.error(`❌ Settlement failed for ${recipientType}:`, err);
-    return {
-      success: false,
-      error: err.message || 'Transaction failed'
+    console.error(`❌ User settlement failed:`, err);
+    return { success: false, error: err.message || 'Transaction failed' };
+  }
+}
+
+/**
+ * Settle publisher portion (25%) of escrow
+ * Part of privacy-preserving 3-transaction settlement flow
+ */
+export async function settlePublisher(
+  offerId: string,
+  publisherPubkey: string
+): Promise<{ success: boolean; txSignature?: string; error?: string }> {
+  try {
+    const [escrowPda] = await derivePDA(offerId);
+    const publisher = new PublicKey(publisherPubkey);
+    
+    console.log(`Settling publisher (25%):`, {
+      offerId,
+      escrowPda: escrowPda.toBase58(),
+      publisher: publisherPubkey
+    });
+    
+    const accounts = {
+      escrow: escrowPda,
+      publisher,
+      systemProgram: SystemProgram.programId,
     };
+    
+    const txSignature = await program.methods
+      .settlePublisher()
+      .accounts(accounts)
+      .rpc();
+    
+    console.log(`✅ Publisher settlement tx:`, txSignature);
+    await connection.confirmTransaction(txSignature, 'confirmed');
+    
+    return { success: true, txSignature };
+    
+  } catch (err: any) {
+    console.error(`❌ Publisher settlement failed:`, err);
+    return { success: false, error: err.message || 'Transaction failed' };
+  }
+}
+
+/**
+ * Settle platform portion (5%) of escrow
+ * Part of privacy-preserving 3-transaction settlement flow
+ * This should be called LAST as it validates all parties have been settled
+ */
+export async function settlePlatform(
+  offerId: string,
+  platformPubkey: string
+): Promise<{ success: boolean; txSignature?: string; error?: string }> {
+  try {
+    const [escrowPda] = await derivePDA(offerId);
+    const platform = new PublicKey(platformPubkey);
+    
+    console.log(`Settling platform (5%):`, {
+      offerId,
+      escrowPda: escrowPda.toBase58(),
+      platform: platformPubkey
+    });
+    
+    const accounts = {
+      escrow: escrowPda,
+      platform,
+      systemProgram: SystemProgram.programId,
+    };
+    
+    const txSignature = await program.methods
+      .settlePlatform()
+      .accounts(accounts)
+      .rpc();
+    
+    console.log(`✅ Platform settlement tx:`, txSignature);
+    await connection.confirmTransaction(txSignature, 'confirmed');
+    
+    return { success: true, txSignature };
+    
+  } catch (err: any) {
+    console.error(`❌ Platform settlement failed:`, err);
+    return { success: false, error: err.message || 'Transaction failed' };
   }
 }
 
@@ -226,7 +290,9 @@ export async function getEscrowDetails(offerId: string) {
       platform: escrowAccount.platform.toBase58(),
       amount: escrowAccount.amount.toNumber(),
       createdAt: escrowAccount.createdAt.toNumber(),
-      settled: escrowAccount.settled,
+      userSettled: escrowAccount.userSettled,
+      publisherSettled: escrowAccount.publisherSettled,
+      platformSettled: escrowAccount.platformSettled,
       bump: escrowAccount.bump,
       balance,
       pda: escrowPda.toBase58()

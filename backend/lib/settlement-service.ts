@@ -18,7 +18,7 @@
  */
 
 import { PublicKey } from '@solana/web3.js';
-import { settleImpression } from './solana-escrow';
+import { settleUser, settlePublisher, settlePlatform } from './solana-escrow';
 import { getSupabase } from './supabase';
 
 export interface SettlementRequest {
@@ -102,7 +102,14 @@ async function addToRetryQueue(
 }
 
 /**
- * Main settlement function - submits 3 unlinked transactions
+ * Main settlement function - submits 3 separate privacy-preserving transactions
+ * 
+ * Implements the privacy-preserving approach with:
+ * - 3 separate transactions (user, publisher, platform)
+ * - Random ordering of transactions
+ * - Random delays between transactions (0-5 seconds)
+ * 
+ * This makes it harder to link transactions and track user/publisher relationships
  */
 export async function settleWithPrivacy(
   settlement: SettlementRequest
@@ -129,76 +136,67 @@ export async function settleWithPrivacy(
     .update({ settling: true })
     .eq('offer_id', offerId);
 
-  // Create settlement transactions
-  const settlements: Array<{
-    type: 'user' | 'publisher' | 'platform';
-    pubkey: string;
-    amount: number;
-  }> = [
-    { type: 'user', pubkey: userPubkey, amount: splits.user },
-    { type: 'publisher', pubkey: publisherPubkey, amount: splits.publisher },
-    { type: 'platform', pubkey: platformPubkey, amount: splits.platform },
+  // Create 3 separate settlement tasks with random order
+  const settlements = [
+    { type: 'user' as const, pubkey: userPubkey, amount: splits.user, fn: settleUser },
+    { type: 'publisher' as const, pubkey: publisherPubkey, amount: splits.publisher, fn: settlePublisher },
+    { type: 'platform' as const, pubkey: platformPubkey, amount: splits.platform, fn: settlePlatform }
   ];
 
   // Randomize order for unlinkability
   const shuffled = shuffleArray(settlements);
-  console.log('[Settlement] Randomized order:', shuffled.map(s => s.type).join(' → '));
+  console.log('[Settlement] Random order:', shuffled.map(s => s.type).join(' → '));
 
   const results: SettlementResult[] = [];
 
-  // Submit transactions with random delays
-  for (const { type, pubkey, amount: settleAmount } of shuffled) {
+  for (const { type, pubkey, amount, fn } of shuffled) {
     try {
       // Validate pubkey
       new PublicKey(pubkey);
 
-      // Random delay (except for first transaction)
+      // Random delay before each transaction (0-5 seconds)
       if (results.length > 0) {
         const delayMs = Math.floor(Math.random() * 5000);
         console.log(`[Settlement] Waiting ${delayMs}ms before ${type} settlement...`);
         await randomDelay();
       }
 
-      console.log(`[Settlement] Submitting ${type} settlement: ${settleAmount} lamports to ${pubkey}`);
-
-      // NOTE: Current settleImpression() doesn't support partial amounts
-      // This will need to be updated when the smart contract is updated
-      // For now, we'll call it and handle the full settlement on first call
-      const result = await settleImpression(offerId, pubkey, type);
+      console.log(`[Settlement] Settling ${type}: ${pubkey} (${amount} lamports)`);
+      const result = await fn(offerId, pubkey);
 
       if (result.success) {
         results.push({
           type,
           success: true,
           txSignature: result.txSignature,
-          amount: settleAmount,
+          amount,
         });
-        console.log(`✅ [Settlement] ${type} settled: ${result.txSignature}`);
+        console.log(`✅ [Settlement] ${type} settlement succeeded: ${result.txSignature}`);
       } else {
         throw new Error(result.error || 'Transaction failed');
       }
+
     } catch (err: any) {
-      console.error(`❌ [Settlement] Failed for ${type}:`, err.message);
+      console.error(`❌ [Settlement] ${type} settlement failed:`, err.message);
 
       // Add to retry queue
-      await addToRetryQueue(offerId, type, pubkey, settleAmount, err.message);
+      await addToRetryQueue(offerId, type, pubkey, amount, err.message);
 
       results.push({
         type,
         success: false,
         error: err.message,
-        amount: settleAmount,
+        amount,
       });
     }
   }
 
   // Check if all succeeded
   const allSucceeded = results.every(r => r.success);
-  const supabase2 = getSupabase();
 
   if (allSucceeded) {
     // Mark as fully settled
-    await supabase2
+    await supabase
       .from('offers')
       .update({
         status: 'settled',
@@ -206,13 +204,15 @@ export async function settleWithPrivacy(
         settled_at: new Date().toISOString(),
       })
       .eq('offer_id', offerId);
-    console.log(`✅ [Settlement] All transactions succeeded for ${offerId}`);
+    
+    console.log(`✅ [Settlement] All 3 transactions succeeded for ${offerId}`);
   } else {
-    // Mark as partially settled (cron job will retry)
-    await supabase2
+    // Mark as not settling (cron job will retry)
+    await supabase
       .from('offers')
       .update({ settling: false })
       .eq('offer_id', offerId);
+    
     console.log(`⚠️ [Settlement] Some transactions failed for ${offerId}, added to retry queue`);
   }
 
@@ -222,13 +222,15 @@ export async function settleWithPrivacy(
 /**
  * Retry failed settlements from queue
  * Should be called by a cron job every 5-10 minutes
+ * 
+ * Retries individual failed transactions (user, publisher, or platform)
  */
 export async function retryFailedSettlements(): Promise<void> {
   console.log('[Settlement Retry] Checking for failed settlements...');
 
   const supabase = getSupabase();
   
-  // Get failed settlements (attempts < 10, older than 5 minutes)
+  // Get failed settlements
   const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
   const { data: failedSettlements } = await supabase
     .from('settlement_queue')
@@ -236,7 +238,7 @@ export async function retryFailedSettlements(): Promise<void> {
     .lt('attempts', 10)
     .lt('updated_at', fiveMinutesAgo)
     .order('created_at', { ascending: true })
-    .limit(10);
+    .limit(50);
 
   if (!failedSettlements || failedSettlements.length === 0) {
     console.log('[Settlement Retry] No failed settlements to retry');
@@ -245,30 +247,40 @@ export async function retryFailedSettlements(): Promise<void> {
 
   console.log(`[Settlement Retry] Found ${failedSettlements.length} failed settlements to retry`);
 
-  for (const settlement of failedSettlements) {
+  for (const entry of failedSettlements) {
     try {
-      console.log(`[Settlement Retry] Retrying ${settlement.tx_type} for ${settlement.offer_id}`);
+      console.log(`[Settlement Retry] Retrying ${entry.tx_type} settlement for ${entry.offer_id}`);
 
-      const result = await settleImpression(
-        settlement.offer_id,
-        settlement.recipient_pubkey,
-        settlement.tx_type
-      );
+      // Choose the appropriate settlement function
+      let result;
+      if (entry.tx_type === 'user') {
+        result = await settleUser(entry.offer_id, entry.recipient_pubkey);
+      } else if (entry.tx_type === 'publisher') {
+        result = await settlePublisher(entry.offer_id, entry.recipient_pubkey);
+      } else if (entry.tx_type === 'platform') {
+        result = await settlePlatform(entry.offer_id, entry.recipient_pubkey);
+      } else {
+        console.error(`[Settlement Retry] Unknown tx_type: ${entry.tx_type}`);
+        continue;
+      }
 
       if (result.success) {
         // Remove from queue
         await supabase
           .from('settlement_queue')
           .delete()
-          .eq('id', settlement.id);
+          .eq('id', entry.id);
 
-        // Update offer status if this was the last pending settlement
-        const { data: remainingSettlements } = await supabase
+        console.log(`✅ [Settlement Retry] ${entry.tx_type} settlement complete for ${entry.offer_id}`);
+
+        // Check if all settlements are complete
+        const { data: remaining } = await supabase
           .from('settlement_queue')
-          .select('id', { count: 'exact', head: true })
-          .eq('offer_id', settlement.offer_id);
+          .select('id')
+          .eq('offer_id', entry.offer_id);
 
-        if (!remainingSettlements || remainingSettlements.length === 0) {
+        if (!remaining || remaining.length === 0) {
+          // All settlements complete
           await supabase
             .from('offers')
             .update({
@@ -276,8 +288,9 @@ export async function retryFailedSettlements(): Promise<void> {
               settling: false,
               settled_at: new Date().toISOString(),
             })
-            .eq('offer_id', settlement.offer_id);
-          console.log(`✅ [Settlement Retry] All settlements complete for ${settlement.offer_id}`);
+            .eq('offer_id', entry.offer_id);
+          
+          console.log(`✅ [Settlement Retry] All settlements complete for ${entry.offer_id}`);
         }
       } else {
         // Update error and increment attempts
@@ -285,13 +298,25 @@ export async function retryFailedSettlements(): Promise<void> {
           .from('settlement_queue')
           .update({
             last_error: result.error,
-            attempts: settlement.attempts + 1,
+            attempts: entry.attempts + 1,
             updated_at: new Date().toISOString(),
           })
-          .eq('id', settlement.id);
+          .eq('id', entry.id);
+        
+        console.log(`⚠️ [Settlement Retry] ${entry.tx_type} settlement still failing for ${entry.offer_id}`);
       }
     } catch (err: any) {
-      console.error(`[Settlement Retry] Error retrying ${settlement.offer_id}:`, err.message);
+      console.error(`[Settlement Retry] Error retrying ${entry.offer_id}:`, err.message);
+      
+      // Increment attempts
+      await supabase
+        .from('settlement_queue')
+        .update({
+          last_error: err.message,
+          attempts: entry.attempts + 1,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', entry.id);
     }
   }
 }

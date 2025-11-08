@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
     const { data: publisher, error: pubError } = await supabase
       .from('publishers')
       .select('wallet_address, wallet_verified')
-      .eq('id', publisherId)
+      .eq('publisher_id', publisherId)
       .single();
 
     if (pubError || !publisher) {

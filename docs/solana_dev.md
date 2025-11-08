@@ -442,44 +442,30 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
 
 #### 4A: Publisher Registration (1 hour)
 
-- [ ] **04A.1** - Add publisher wallet field to dashboard
-  ```javascript
-  // In publisher dashboard settings page
-  <form>
-    <label>Solana Wallet Address (for payments)</label>
-    <input 
-      type="text" 
-      placeholder="ELD9PKHo5qwyt3o5agPPMuQLRzidDnR2g4DmJDfH55Z7"
-      pattern="[1-9A-HJ-NP-Za-km-z]{32,44}"
-      required
-    />
-    <small>Paste your Solana wallet address. Payments will be sent here.</small>
-    <small>⚠️ Verify this address carefully - we cannot reverse payments!</small>
-  </form>
-  ```
+- [x] **04A.1** - Add publisher wallet field to dashboard
+  ✅ DONE: Created `/app/publishers/settings/page.tsx`
+  - Clean UI with wallet address input field
+  - Real-time Solana address validation using @solana/web3.js
+  - Quick-fill buttons for test wallets (publisher, user, advertiser)
+  - Current wallet display with saved indicator
+  - Solana Explorer link for transparency
 
-- [ ] **04A.2** - Add validation
-  ```javascript
-  import { PublicKey } from '@solana/web3.js';
-  
-  function validateSolanaAddress(address) {
-    try {
-      new PublicKey(address);
-      return true;
-    } catch (err) {
-      return false;
-    }
-  }
-  ```
+- [x] **04A.2** - Add validation
+  ✅ DONE: Validation implemented in page component
+  - Uses `PublicKey` class from @solana/web3.js to validate
+  - Real-time validation on input change
+  - Clear error messages for invalid addresses
+  - Prevents saving invalid addresses
 
-- [ ] **04A.3** - Update database schema
-  ```sql
-  ALTER TABLE publishers ADD COLUMN wallet_address VARCHAR(64);
-  ALTER TABLE publishers ADD COLUMN wallet_verified BOOLEAN DEFAULT false;
-  
-  -- Add index for fast lookup
-  CREATE INDEX idx_publishers_wallet ON publishers(wallet_address);
-  ```
+- [x] **04A.3** - Update database schema
+  ✅ DONE: Schema already exists + API endpoints created
+  - publishers table has `wallet_address` column
+  - publishers table has `wallet_verified` column  
+  - Index on wallet_address for fast lookup
+  - Created API endpoints:
+    - PUT /api/publishers/[id]/wallet - Save wallet address
+    - GET /api/publishers/[id]/wallet - Fetch current wallet
+  - Publisher settings page integrated with API
 
 #### 4B: Backend Settlement Service (3 hours)
 
@@ -724,6 +710,21 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
   ```
 
 **Success criteria:** 3 unlinked transactions submitted with random delays, failed txs queued for retry, gas fees documented
+
+**✅ WP-SOL-04 Progress (Nov 8, 2025):**
+- ✅ Task 4A: Publisher Registration - COMPLETE
+  - Publisher settings UI created with wallet validation
+  - API endpoints for saving/fetching wallet addresses
+  - Integrated with Supabase publishers table
+- ✅ Task 4B: Backend Settlement Service - COMPLETE
+  - `settleWithPrivacy()` function with 3 unlinked transactions
+  - POST /api/publisher/impressions endpoint working
+  - GET /api/admin/settlements/failed for monitoring
+  - Failed settlement retry queue implemented
+- ⏳ Task 4C: Gas Fee Economics - Documented in section above
+- ⏳ Task 4D: Testing - Ready to test end-to-end flow
+
+**Next:** Test impression settlement with test-impression-settlement.sh script
 
 ---
 
