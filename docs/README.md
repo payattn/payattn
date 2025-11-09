@@ -1,177 +1,101 @@
 # PayAttn Documentation
 
-**Privacy-First Attention Verification Platform**
+**Privacy-First Attention Verification Platform with Trustless Escrow**
 
-This directory contains comprehensive documentation for the PayAttn system.
-
----
-
-## 📚 Documentation Index
-
-### Core Architecture
-- **[ARCHITECTURE.md](./ARCHITECTURE.md)** - System overview, components, and data flow
-- **[ZK_PROOF_FLOW.md](./ZK_PROOF_FLOW.md)** - Complete ZK-SNARK proof lifecycle
-
-### Implementation Guides
-- **[BACKEND_VERIFICATION.md](./BACKEND_VERIFICATION.md)** - Rapidsnark verification setup and usage
-- **[EXTENSION.md](./EXTENSION.md)** - Chrome extension architecture and circuits
-- **[API.md](./API.md)** - Backend API endpoints and usage
-
-### Operations
-- **[DEPLOYMENT.md](./DEPLOYMENT.md)** - Deployment guide for production
-- **[TESTING.md](./TESTING.md)** - Testing procedures and guidelines
+This directory contains all project documentation.
 
 ---
 
-## 🎯 Quick Start
+## 📚 Quick Navigation
 
-1. **Understanding the System:** Start with [ARCHITECTURE.md](./ARCHITECTURE.md)
-2. **ZK-SNARK Flow:** Read [ZK_PROOF_FLOW.md](./ZK_PROOF_FLOW.md)
-3. **Backend Setup:** Follow [BACKEND_VERIFICATION.md](./BACKEND_VERIFICATION.md)
-4. **Testing:** See [TESTING.md](./TESTING.md)
+### Core System
+- **[ARCHITECTURE.md](./ARCHITECTURE.md)** - System overview and components
+- **[API.md](./API.md)** - Backend API reference
+- **[solana_dev.md](./solana_dev.md)** - Solana escrow implementation guide
 
----
+### Zero-Knowledge Proofs
+- **[ZK_PROOF_FLOW.md](./ZK_PROOF_FLOW.md)** - ZK-SNARK proof lifecycle
+- **[BACKEND_VERIFICATION.md](./BACKEND_VERIFICATION.md)** - Rapidsnark verification
+- **[ZK-SNARK-ANALYSIS.md](./ZK-SNARK-ANALYSIS.md)** - Circuit analysis
+- **[HASHING_SCHEME.md](./HASHING_SCHEME.md)** - Hashing implementation
 
-## 🔐 Core Principles
+### Implementation
+- **[PROJECT_ARCHITECTURE.md](./PROJECT_ARCHITECTURE.md)** - Project structure
+- **[IMPLEMENTATION_SUMMARY.md](./IMPLEMENTATION_SUMMARY.md)** - Implementation status
+- **[BACKEND_INTEGRATION_COMPLETE.md](./BACKEND_INTEGRATION_COMPLETE.md)** - Backend progress
+- **[TESTING.md](./TESTING.md)** - Testing procedures
 
-### Privacy-First Design
-- **User data NEVER leaves the browser** - All private data (age, preferences) stays in extension
-- **Zero-knowledge proofs only** - Backend receives mathematical proofs, not actual data
-- **No tracking** - No cookies, no analytics, no user profiling
+### Extension
+- **[CIRCUIT_DEVELOPMENT_GUIDE.md](./CIRCUIT_DEVELOPMENT_GUIDE.md)** - Circuit development
+- **[SERVICE_WORKER_ARCHITECTURE.md](./SERVICE_WORKER_ARCHITECTURE.md)** - Service worker design
+- **[EXTENSION_SETUP_FLOW.md](./EXTENSION_SETUP_FLOW.md)** - Setup flow
 
-### Verification Architecture
-```
-User's Browser (Chrome Extension)
-    ↓
-    Private Data (age: 35)
-    ↓
-    ZK-SNARK Circuit (proves: "age is between 25-50")
-    ↓
-    Generates Proof (mathematical proof, ~1-3 seconds)
-    ↓
-Backend (Next.js)
-    ↓
-    Receives Proof (NOT the actual age)
-    ↓
-    Rapidsnark Verifier (C++ binary, ~10-50ms)
-    ↓
-    Result: VALID ✅ (knows "proof is valid" but NOT the actual age)
-```
+### Authentication & Security
+- **[AUTH_SECURITY.md](./AUTH_SECURITY.md)** - Authentication security
+- **[WALLET_AUTH_README.md](./WALLET_AUTH_README.md)** - Wallet authentication
+- **[KDS_ARCHITECTURE.md](./KDS_ARCHITECTURE.md)** - Key derivation storage
+
+### Cloudflare Worker
+- **[DEPLOYMENT_CHECKLIST.md](./DEPLOYMENT_CHECKLIST.md)** - CF Worker deployment
+- **[QUICK_START.md](./QUICK_START.md)** - CF Worker quick start
+
+### Work Packages (Historical)
+- **[WP01_2_3_4_IMPLEMENTATION.md](./WP01_2_3_4_IMPLEMENTATION.md)** - WP01 implementation
+- **[WP02-PHASE1-COMPLETE.md](./WP02-PHASE1-COMPLETE.md)** - WP02 Phase 1
+- **[WP02_3A_CHECKLIST.md](./WP02_3A_CHECKLIST.md)** - WP02.3A checklist
+
+### Venice AI Integration
+- **[VENICE_AI_README.md](./VENICE_AI_README.md)** - Venice AI overview
+- **[VENICE_AI_SETUP.md](./VENICE_AI_SETUP.md)** - Setup guide
+- **[VENICE_AI_INTEGRATION_SUMMARY.md](./VENICE_AI_INTEGRATION_SUMMARY.md)** - Integration summary
 
 ---
 
 ## 🏗️ System Components
 
-| Component | Technology | Purpose |
-|-----------|-----------|---------|
-| **Extension** | Chrome Extension (V3) | User interface, proof generation |
-| **Circuits** | Circom 2.0 + Groth16 | ZK-SNARK proof circuits |
-| **Backend** | Next.js 16 + TypeScript | API server, proof verification |
-| **Verifier** | Rapidsnark (C++) | Fast ZK-SNARK proof verification |
-| **Wallet** | Solana Web3.js | User authentication |
-| **Storage** | IndexedDB (browser) | Private data storage |
+| Component | Location | Purpose |
+|-----------|----------|---------|
+| **Backend** | `/backend/` | Next.js API server, Solana escrow verification |
+| **Extension** | `/extension/` | Chrome extension, ZK proof generation, Max agent |
+| **Smart Contract** | `/solana/payattn_escrow/` | Solana escrow program |
+| **CF Worker** | `/cf-worker/` | Cloudflare Worker (experimental) |
+| **Rapidsnark** | `/rapidsnark-server/` | Fast ZK verification |
 
 ---
 
-## 📖 Document Summaries
+## 🎯 Recent Updates
 
-### ARCHITECTURE.md
-Complete system overview including:
-- Component relationships
-- Data flow diagrams
-- Privacy guarantees
-- Technology stack details
+### Solana Integration (November 2025)
+- ✅ Trustless escrow smart contract deployed
+- ✅ HTTP 402 "Payment Required" x402 protocol implementation
+- ✅ Backend escrow verification via RPC
+- ✅ Privacy-preserving settlement (3 unlinked transactions)
 
-### ZK_PROOF_FLOW.md
-Detailed ZK-SNARK lifecycle:
-- Proof generation in extension
-- Circuit types and inputs
-- Verification in backend
-- Error handling and edge cases
-
-### BACKEND_VERIFICATION.md
-Rapidsnark implementation:
-- Why we use Rapidsnark (vs Node.js snarkjs)
-- Compilation and setup
-- CLI integration via child_process
-- Performance characteristics
-
-### EXTENSION.md
-Extension architecture:
-- Manifest V3 structure
-- Circuit implementation
-- Service worker architecture
-- Content scripts and popup
-
-### API.md
-Backend API reference:
-- `/api/verify-proof` - Proof verification
-- `/api/k/{hash}` - Key-derivation storage
-- Authentication and security
-- Request/response formats
-
-### DEPLOYMENT.md
-Production deployment:
-- Environment configuration
-- Rapidsnark compilation for Linux
-- Docker setup (optional)
-- Monitoring and maintenance
-
-### TESTING.md
-Testing procedures:
-- End-to-end proof testing
-- Circuit testing
-- Backend verification testing
-- Performance benchmarks
+### ZK-SNARK Proofs
+- ✅ 3 circuits working (age_range, location_check, interest_check)
+- ✅ Extension proof generation (1-3 seconds)
+- ✅ Backend Rapidsnark verification (10-50ms)
 
 ---
 
-## 🚀 Current Status
+## 📖 Key Documents
 
-✅ **Extension:** All 3 circuits working (1-3 second proof generation)
-✅ **Backend:** Rapidsnark verification working (10-50ms verification)
-✅ **Privacy:** Zero user data leaves browser
-✅ **Performance:** Fast enough for production use
+### For New Developers
+1. Start with **[PROJECT_ARCHITECTURE.md](./PROJECT_ARCHITECTURE.md)**
+2. Read **[ARCHITECTURE.md](./ARCHITECTURE.md)** for system overview
+3. See **[solana_dev.md](./solana_dev.md)** for escrow implementation
 
----
+### For Backend Work
+- **[API.md](./API.md)** - API endpoints
+- **[BACKEND_VERIFICATION.md](./BACKEND_VERIFICATION.md)** - Proof verification
+- **[KDS_ARCHITECTURE.md](./KDS_ARCHITECTURE.md)** - Key storage
 
-## 📝 Related Documentation
-
-### In Project Root
-- `/README.md` - Project overview and quick start
-- `/BACKEND_VERIFICATION_COMPLETE.md` - Implementation summary
-- `/RAPIDSNARK_TEST_GUIDE.md` - Testing guide
-
-### Component-Specific
-- `/agent-dashboard/README.md` - Backend/dashboard setup
-- `/rapidsnark-server/README.md` - Rapidsnark server details
-- `/cf-worker/README.md` - Cloudflare Worker (abandoned approach)
-
-### Extension Documentation
-- `/agent-dashboard/extension/CIRCUIT_DEVELOPMENT_GUIDE.md` - Circuit development
-- Various markdown files in `/agent-dashboard/` directory
+### For Extension Work
+- **[CIRCUIT_DEVELOPMENT_GUIDE.md](./CIRCUIT_DEVELOPMENT.md)** - Circuit development
+- **[prompt_max.md](./prompt_max.md)** - Max agent prompt
+- **[SERVICE_WORKER_ZK_PROOF_GUIDE.md](./SERVICE_WORKER_ZK_PROOF_GUIDE.md)** - Service worker proofs
 
 ---
 
-## 🤝 Contributing
-
-When adding new features or making changes:
-1. Update relevant documentation in `/docs`
-2. Add architectural diagrams if needed
-3. Document API changes in `API.md`
-4. Update testing procedures in `TESTING.md`
-
----
-
-## 📞 Support
-
-For questions about:
-- **Architecture/Design:** See `ARCHITECTURE.md`
-- **ZK-SNARK Circuits:** See `ZK_PROOF_FLOW.md` and extension docs
-- **Backend/Verification:** See `BACKEND_VERIFICATION.md`
-- **Deployment:** See `DEPLOYMENT.md`
-
----
-
-**Last Updated:** November 6, 2025
-**Version:** 1.0 (Rapidsnark verification, 3 circuits live)
+**Last Updated:** November 8, 2025
+**Version:** 2.0 (Solana escrow + ZK proofs)
