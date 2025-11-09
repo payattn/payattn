@@ -269,12 +269,12 @@ const CIRCUITS_REGISTRY = {
     description: 'Proves user age is within specified range'
   },
   
-  range_proof: {
-    name: 'range_proof',
+  range_check: {
+    name: 'range_check',
     type: 'range',
-    wasmPath: 'circuits/range_proof/range_proof.wasm',
-    zKeyPath: 'circuits/range_proof/range_proof_0000.zkey',
-    verificationKeyPath: 'circuits/range_proof/verification_key.json',
+    wasmPath: 'circuits/range_check/range_check.wasm',
+    zKeyPath: 'circuits/range_check/range_check_0000.zkey',
+    verificationKeyPath: 'circuits/range_check/verification_key.json',
     description: 'Generic circuit for proving any numeric value is within bounds'
   },
 

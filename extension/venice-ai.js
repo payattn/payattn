@@ -116,7 +116,7 @@ async function callVeniceAI(
       };
     }
 
-    // Check if model made a tool call
+    // Check if model made a tool call (standard format)
     if (message.tool_calls && message.tool_calls.length > 0) {
       console.log('[Venice] Tool calls detected:', message.tool_calls);
       
@@ -129,8 +129,51 @@ async function callVeniceAI(
       };
     }
 
+    // FALLBACK: Check for XML-style tool calls in content (some models output this)
+    const completion = message.content || '';
+    if (completion.includes('<tool_call>')) {
+      console.log('[Venice] XML-style tool call detected in content, parsing...');
+      
+      try {
+        // Extract JSON between <tool_call> tags (some models use same tag for open/close)
+        const toolCallMatch = completion.match(/<tool_call>\s*(\{[\s\S]*?\})\s*<\/?tool_call>/);
+        if (toolCallMatch) {
+          const toolCallJson = JSON.parse(toolCallMatch[1]);
+          
+          // Convert to standard tool_calls format
+          const standardToolCall = {
+            id: 'xml_tool_' + Date.now(),
+            type: 'function',
+            function: {
+              name: toolCallJson.name,
+              arguments: typeof toolCallJson.arguments === 'string' 
+                ? toolCallJson.arguments 
+                : JSON.stringify(toolCallJson.arguments)
+            }
+          };
+          
+          // Remove tool call tags from content (handle both </tool_call> and <tool_call> as closing)
+          const contentWithoutToolCall = completion
+            .replace(/<tool_call>[\s\S]*?<\/?tool_call>/g, '')
+            .trim();
+          
+          console.log('[Venice] Converted XML tool call to standard format');
+          console.log('[Venice] Content after tool call removal:', contentWithoutToolCall.substring(0, 200));
+          
+          return {
+            success: true,
+            model: data.model,
+            content: contentWithoutToolCall,
+            toolCalls: [standardToolCall],
+            usage: data.usage,
+          };
+        }
+      } catch (error) {
+        console.error('[Venice] Failed to parse XML tool call:', error);
+      }
+    }
+
     // Regular text response
-    const completion = message.content;
     if (!completion) {
       return {
         success: false,

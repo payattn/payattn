@@ -84,10 +84,17 @@ You're answering TWO questions:
 
 2. **DECIDE**: REJECT or OFFER
 
-3. **IF OFFERING**: 
-   - Call the \`makeOffer\` tool with:
+3. **IF OFFERING** (CRITICAL - READ THIS CAREFULLY):
+   
+   **YOU MUST CALL THE makeOffer TOOL - THIS IS NOT OPTIONAL**
+   
+   If you write "DECISION: OFFER" in your response, you MUST also call the \`makeOffer\` tool.
+   Writing "DECISION: OFFER" without calling the tool will result in automatic rejection.
+   
+   To make an offer, you MUST:
+   - Call the \`makeOffer\` tool with these parameters:
      - \`campaignId\`: Campaign ID from the data
-     - \`price\`: Your calculated price in GBP
+     - \`price\`: Your calculated price in USD (e.g., 0.0280 for $0.0280)
      - \`matchedRequirements\`: Array of ONLY the requirements that match and can be proven
        - requirement: age/location/income/interest/gender/etc
        - advertiserCriteria: The specific values/set the advertiser wants (e.g., ["UK", "US", "CA"] for location)
@@ -101,31 +108,56 @@ You're answering TWO questions:
 - AND we can generate a zero-knowledge proof of that match
 - If you don't match or can't prove it, don't include it
 
+**CRITICAL RULE:** 
+- "DECISION: OFFER" = You MUST call the makeOffer tool
+- "DECISION: REJECT" = Do NOT call any tool
+- If you want to reject an ad, just write your reasoning and say "DECISION: REJECT"
+
 4. **OUTPUT STRUCTURE**:
    \`\`\`
    [Your brief analysis - 2-3 sentences addressing you directly]
    
-   DECISION: OFFER [or REJECT]
-   
    SUMMARY:
-   • [Brief reason 1]
-   • [Brief reason 2]
-   • [Brief reason 3]
+   • [Brief friendly reason 1]
+   • [Brief friendly reason 2]
+   • [Brief friendly reason 3]
+   
+   DECISION: OFFER [or REJECT]
    \`\`\`
    
-   **CRITICAL:** If making an OFFER, you must:
-   1. Write your brief analysis (2-3 sentences)
-   2. State DECISION: OFFER
-   3. Make the tool call (this happens automatically based on your decision)
-   4. **IMMEDIATELY write the SUMMARY section** with 2-4 bullet points
+   **CRITICAL:** Write your response in this EXACT order:
+   1. Brief analysis (2-3 sentences)
+   2. "SUMMARY:" header followed by 2-4 bullet points (friendly, conversational)
+   3. "DECISION: OFFER" or "DECISION: REJECT" (this triggers the tool call if OFFER)
    
-   The SUMMARY is REQUIRED for both OFFER and REJECT decisions. Never stop after the tool call.
+   **SUMMARY BULLETS - Write like a friend talking to a friend:**
+   - ❌ "Perfect age match (43 in 25-50 range)" 
+   - ✅ "You're the perfect age for this"
+   
+   - ❌ "Not in approved countries"
+   - ✅ "You're not in the right place for this one"
+   
+   - ❌ "Income below target range"
+   - ✅ "They're looking for someone who earns more"
+   
+   - ❌ "No interest match for luxury watches"
+   - ✅ "Watches really aren't your thing"
+   
+   Keep it casual, friendly, and varied. Don't be formulaic - mix up your phrasing. You might say:
+   - "Crypto is literally your jam"
+   - "They want someone in the US but you're in France"
+   - "The price makes sense for both of you"
+   - "This brand actually matches your vibe"
+   - "You're exactly who they're hunting for"
+   
+   Be natural and conversational - imagine explaining to a friend over coffee.
 
 **CRITICAL FORMATTING:**
 - Always address the user as "you/your" (NEVER "boss" or "your boss")
-- After stating DECISION, provide a SUMMARY section with 2-4 bullet points
+- SUMMARY must come BEFORE DECISION (this is critical for tool calling to work)
+- Write summary bullets like a friend talking to a friend - casual and direct
 - Keep each bullet point to one short phrase (5-10 words max)
-- Be direct and concise
+- Use natural language: "you're the perfect age" not "age match confirmed"
 
 ## Important Notes
 
@@ -702,6 +734,19 @@ function renderAds(assessedAds) {
 }
 
 /**
+ * Hash a string to a field element for ZK circuits
+ * Simple hash function for demo - in production use proper cryptographic hash
+ */
+function hashToFieldElement(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = ((hash << 5) - hash) + str.charCodeAt(i);
+    hash = hash & hash; // Convert to 32-bit integer
+  }
+  return Math.abs(hash);
+}
+
+/**
  * Generate ZK-SNARK proofs for matched requirements
  * @param {Object} offer - The offer object with matchedRequirements
  * @param {Object} campaign - The campaign being assessed
@@ -743,11 +788,7 @@ async function generateProofsForOffer(offer, campaign) {
   }
   
   try {
-    console.log('[ZK-Proof] Fetching key material...');
     const keyMaterial = await window.fetchKeyMaterial(keyHash, walletAddress, authToken);
-    
-    console.log('[ZK-Proof] Decrypting profile...');
-    console.log('[ZK-Proof] Encrypted profile structure:', typeof encryptedProfile);
     
     // Extract the encryptedData string from the profile object
     const encryptedDataString = encryptedProfile.encryptedData;
@@ -763,77 +804,159 @@ async function generateProofsForOffer(offer, campaign) {
     
     const profileData = JSON.parse(decryptedJson);
     
-    console.log('[ZK-Proof] User profile loaded for proof generation');
-    
     // Process each matched requirement
     for (const requirement of offer.matchedRequirements) {
       try {
-        const reqStr = typeof requirement === 'string' ? requirement : JSON.stringify(requirement);
+        const reqType = requirement.requirement;
+        const advertiserCriteria = requirement.advertiserCriteria;
         
-        console.log('[ZK-Proof] Processing requirement:', reqStr);
-        
-        // AGE PROOF
-        if (reqStr.includes('age')) {
+        // AGE PROOF - Use range_check circuit
+        if (reqType === 'age') {
           const userAge = profileData.demographics?.age;
-          const minAge = campaign.targeting?.age?.min || 18;
-          const maxAge = campaign.targeting?.age?.max || 100;
+          const minAge = advertiserCriteria[0];
+          const maxAge = advertiserCriteria[1];
           
-          if (userAge) {
-            console.log(`[ZK-Proof] Generating age proof: age=${userAge}, range=${minAge}-${maxAge}`);
-            
-            const proofPackage = await window.ZKProver.generateAgeProof(userAge, minAge, maxAge, { verbose: true });
+          if (userAge && minAge !== undefined && maxAge !== undefined) {
+            const proofPackage = await window.ZKProver.generateProof(
+              'range_check',
+              { value: userAge },
+              { min: minAge, max: maxAge },
+              { verbose: false }
+            );
             
             proofs.push({
-              type: 'age_range',
-              requirement: reqStr,
+              type: 'range_check',
+              requirement: 'age',
               proof: proofPackage,
               publicSignals: proofPackage.publicSignals
             });
-            
-            console.log('[ZK-Proof] ✅ Age proof generated successfully');
           }
         }
         
-        // LOCATION PROOF
-        if (reqStr.includes('location') || reqStr.includes('country')) {
-          console.log('[ZK-Proof] Location proof - placeholder (not yet implemented)');
-          proofs.push({
-            type: 'location',
-            requirement: reqStr,
-            proof: null,
-            note: 'Location proof generation pending circuit implementation'
-          });
+        // INCOME PROOF - Use range_check circuit
+        if (reqType === 'income') {
+          const userIncome = profileData.financial?.income;
+          const minIncome = advertiserCriteria[0];
+          // If only one value provided, it's a minimum threshold
+          const maxIncome = advertiserCriteria[1] || 1000000;
+          
+          if (userIncome && minIncome !== undefined) {
+            const proofPackage = await window.ZKProver.generateProof(
+              'range_check',
+              { value: userIncome },
+              { min: minIncome, max: maxIncome },
+              { verbose: false }
+            );
+            
+            proofs.push({
+              type: 'range_check',
+              requirement: 'income',
+              proof: proofPackage,
+              publicSignals: proofPackage.publicSignals
+            });
+          }
         }
         
-        // INCOME PROOF
-        if (reqStr.includes('income')) {
-          console.log('[ZK-Proof] Income proof - placeholder (not yet implemented)');
-          proofs.push({
-            type: 'income',
-            requirement: reqStr,
-            proof: null,
-            note: 'Income proof generation pending circuit implementation'
-          });
+        // LOCATION PROOF - Use set_membership circuit (max 10 countries)
+        if (reqType === 'location') {
+          const userCountry = profileData.location?.country;
+          const allowedCountries = advertiserCriteria;
+          
+          if (userCountry && Array.isArray(allowedCountries) && allowedCountries.length > 0) {
+            // Limit to 10 countries (circuit constraint)
+            const limitedCountries = allowedCountries.slice(0, 10);
+            
+            // Hash country codes to field elements
+            const userCountryHash = hashToFieldElement(userCountry);
+            const allowedHashes = limitedCountries.map(c => hashToFieldElement(c));
+            
+            // Pad to exactly 10 elements (circuit expects fixed size)
+            while (allowedHashes.length < 10) {
+              allowedHashes.push(0);
+            }
+            
+            console.log('[ZK-Debug] Location proof inputs:', {
+              userCountry,
+              userCountryHash,
+              allowedCountries: limitedCountries,
+              allowedHashes,
+              arrayLength: allowedHashes.length
+            });
+            
+            const proofPackage = await window.ZKProver.generateProof(
+              'set_membership',
+              { value: userCountryHash },
+              { set: allowedHashes },  // Note: parameter is 'set' not 'allowedSet'
+              { verbose: false }
+            );
+            
+            proofs.push({
+              type: 'set_membership',
+              requirement: 'location',
+              proof: proofPackage,
+              publicSignals: proofPackage.publicSignals
+            });
+          }
         }
         
-        // INTEREST PROOF
-        if (reqStr.includes('interest')) {
-          console.log('[ZK-Proof] Interest proof - placeholder (not yet implemented)');
-          proofs.push({
-            type: 'interest',
-            requirement: reqStr,
-            proof: null,
-            note: 'Interest proof generation pending circuit implementation'
-          });
+        // INTEREST PROOF - Use set_membership circuit (max 10 interests)
+        if (reqType === 'interest') {
+          const userInterests = profileData.interests || [];
+          const requiredInterests = advertiserCriteria;
+          
+          if (userInterests.length > 0 && Array.isArray(requiredInterests) && requiredInterests.length > 0) {
+            // Check if any user interest matches required interests
+            const matchedInterest = userInterests.find(ui => 
+              requiredInterests.some(ri => ri.toLowerCase() === ui.toLowerCase())
+            );
+            
+            if (matchedInterest) {
+              // Limit to 10 interests (circuit constraint)
+              const limitedInterests = requiredInterests.slice(0, 10);
+              
+              const userInterestHash = hashToFieldElement(matchedInterest.toLowerCase());
+              const allowedHashes = limitedInterests.map(i => hashToFieldElement(i.toLowerCase()));
+              
+              // Pad to exactly 10 elements (circuit expects fixed size)
+              while (allowedHashes.length < 10) {
+                allowedHashes.push(0);
+              }
+              
+              const proofPackage = await window.ZKProver.generateProof(
+                'set_membership',
+                { value: userInterestHash },
+                { set: allowedHashes },  // Note: parameter is 'set' not 'allowedSet'
+                { verbose: false }
+              );
+              
+              proofs.push({
+                type: 'set_membership',
+                requirement: 'interest',
+                proof: proofPackage,
+                publicSignals: proofPackage.publicSignals
+              });
+            }
+          }
         }
       } catch (reqError) {
-        console.error(`[ZK-Proof] Error processing requirement ${reqStr}:`, reqError);
+        console.error(`[ZK-Proof] Error generating proof for ${requirement.requirement}:`, reqError);
       }
     }
   } catch (decryptError) {
-    console.error('[ZK-Proof] Failed to decrypt profile:', decryptError);
-    console.error('[ZK-Proof] This may indicate corrupted profile data or invalid credentials');
+    console.error('[ZK-Proof] Failed to decrypt profile:', decryptError.message);
     return proofs;
+  }
+  
+  // Output generated proofs if any
+  if (proofs.length > 0) {
+    console.log(`\n🔐 [ZK-SNARK] Campaign: ${campaign.id} - Generated ${proofs.length} proof(s):`);
+    proofs.forEach((p, i) => {
+      console.log(`  ${i + 1}. ${p.requirement} (${p.type}):`, {
+        proof: p.proof?.proof,
+        publicSignals: p.publicSignals
+      });
+    });
+    console.log('');
   }
   
   return proofs;
@@ -921,14 +1044,10 @@ async function assessCampaign(campaign) {
             reason = `Max says: Making offer at $${offer.toFixed(4)}`;
             
             // GENERATE ZK-SNARK PROOFS for matched requirements
-            console.log('[ZK-Proof] Generating proofs for matched requirements:', result.offer.matchedRequirements);
-            
             const generatedProofs = await generateProofsForOffer(result.offer, campaign);
             
             // Store proofs in the result
             result.offer.proofs = generatedProofs;
-            
-            console.log('[ZK-Proof] Successfully generated proofs:', generatedProofs);
           }
         } catch (error) {
           console.error('[Max] Error processing tool call:', error);
@@ -1039,41 +1158,36 @@ function createAdElement(campaign, assessment) {
   
   const adName = `${advertiser.name} - ${campaign.metadata?.category}` || campaign.name;
   
-  // Extract main assessment text (before DECISION or SUMMARY)
+  // Extract main assessment text (before SUMMARY)
   let mainAssessment = '';
   let summaryBullets = [];
   
   if (assessment.narrative) {
     const lines = assessment.narrative.split('\n').filter(p => p.trim().length > 0);
     
-    // Find DECISION line
-    const decisionIndex = lines.findIndex(l => l.includes('DECISION:'));
+    // Find SUMMARY and DECISION lines
     const summaryIndex = lines.findIndex(l => l.trim() === 'SUMMARY:');
+    const decisionIndex = lines.findIndex(l => l.includes('DECISION:'));
     
-    console.log('[createAdElement] Parsing narrative:', {
-      totalLines: lines.length,
-      decisionIndex,
-      summaryIndex,
-      isAccepted,
-      sampleLines: lines.slice(0, 5)
-    });
-    
-    // Main assessment is everything before DECISION
-    if (decisionIndex > 0) {
+    // Main assessment is everything before SUMMARY (new order: narrative → SUMMARY → DECISION)
+    if (summaryIndex > 0) {
+      mainAssessment = lines.slice(0, summaryIndex).join(' ').trim();
+    } else if (decisionIndex > 0) {
+      // Fallback for old format (narrative → DECISION → SUMMARY)
       mainAssessment = lines.slice(0, decisionIndex).join(' ').trim();
     } else {
       mainAssessment = lines[0] || '';
     }
     
-    // Extract summary bullets
+    // Extract summary bullets (between SUMMARY: and DECISION:)
     if (summaryIndex >= 0) {
-      summaryBullets = lines.slice(summaryIndex + 1)
+      const bulletLines = decisionIndex > summaryIndex 
+        ? lines.slice(summaryIndex + 1, decisionIndex)
+        : lines.slice(summaryIndex + 1);
+      
+      summaryBullets = bulletLines
         .filter(l => l.trim().startsWith('•'))
         .map(l => l.trim().substring(1).trim());
-      
-      console.log('[createAdElement] Found SUMMARY bullets:', summaryBullets);
-    } else {
-      console.log('[createAdElement] No SUMMARY section found in narrative');
     }
   }
   
@@ -1149,17 +1263,24 @@ function createAdElement(campaign, assessment) {
             🔐 <strong>ZK-Proofs being sent:</strong> 
             ${assessment.toolCallResults && assessment.toolCallResults[0]?.matchedRequirements 
               ? assessment.toolCallResults[0].matchedRequirements.map(req => {
-                  // Convert to string if it's an object
-                  const reqStr = typeof req === 'string' ? req : JSON.stringify(req);
-                  // Format requirement names nicely
-                  if (reqStr.includes('age')) return 'Age';
-                  if (reqStr.includes('location') || reqStr.includes('country')) return 'Location';
-                  if (reqStr.includes('interest')) {
-                    // Extract interest name if possible
-                    const match = reqStr.match(/interest[:\\s]*([^,\\]]+)/i);
-                    return match ? 'Interests (' + match[1].trim() + ')' : 'Interests';
+                  // Extract requirement type from string or object
+                  let reqType = '';
+                  if (typeof req === 'string') {
+                    reqType = req;
+                  } else if (req && req.requirement) {
+                    reqType = req.requirement;
+                  } else {
+                    reqType = JSON.stringify(req);
                   }
-                  return reqStr;
+                  
+                  // Format requirement names nicely
+                  const lowerType = reqType.toLowerCase();
+                  if (lowerType.includes('age')) return 'Age';
+                  if (lowerType.includes('location') || lowerType.includes('country')) return 'Location';
+                  if (lowerType.includes('income')) return 'Income';
+                  if (lowerType.includes('interest')) return 'Interests';
+                  if (lowerType.includes('gender')) return 'Gender';
+                  return reqType.charAt(0).toUpperCase() + reqType.slice(1);
                 }).join(', ')
               : 'Generating...'
             }
