@@ -229,6 +229,185 @@ For production deployment, consider:
 - 🔒 Rate limiting on decryption attempts
 - 🔒 Audit logging for security events
 
+---
+
+## Chrome Extension Profile Storage
+
+**Updated:** November 9, 2025
+
+The Chrome extension uses a different storage format than the web dashboard due to `chrome.storage.local` API requirements.
+
+### Storage Format
+
+**Storage Key:** `payattn_profile_{walletAddress}`
+
+**Value Structure:**
+```javascript
+{
+  walletAddress: string,      // Owner's wallet address
+  encryptedData: string,      // Base64-encoded (IV + ciphertext) - ENTIRE encrypted blob
+  version: number,            // Schema version (currently 1)
+  timestamp: number           // Unix timestamp (milliseconds)
+}
+```
+
+### Critical Implementation Details
+
+⚠️ **IMPORTANT:** The `encryptedData` field contains the complete base64 string that includes both IV and ciphertext concatenated together. This is the output from `encryptDataWithMaterial()`.
+
+**File:** `extension/crypto.js`
+
+#### Encryption (Saving Profile)
+
+```javascript
+// In extension/profile.js
+const profileJson = JSON.stringify(profile);
+const encrypted = await encryptDataWithMaterial(
+  profileJson,      // Plain JSON string
+  keyMaterial,      // From KDS
+  walletAddress     // Salt for key derivation
+);
+
+// encrypted is a base64 string: base64(IV + ciphertext)
+
+const profileData = {
+  walletAddress: walletAddress,
+  encryptedData: encrypted,  // ← Store the complete base64 string
+  version: 1,
+  timestamp: Date.now()
+};
+
+await chrome.storage.local.set({
+  [`payattn_profile_${walletAddress}`]: profileData
+});
+```
+
+#### Decryption (Loading Profile)
+
+```javascript
+// WRONG ❌ - Don't pass the entire object
+const profileData = await decryptDataWithMaterial(
+  encryptedProfile,           // This is an object!
+  keyMaterial,
+  walletAddress
+);
+
+// CORRECT ✅ - Extract encryptedData string first
+const encryptedDataString = encryptedProfile.encryptedData;  // Just the base64 string
+const decryptedJson = await decryptDataWithMaterial(
+  encryptedDataString,        // Pass only the base64 string
+  keyMaterial,
+  walletAddress
+);
+const profileData = JSON.parse(decryptedJson);  // Parse JSON string to object
+```
+
+### Common Mistakes
+
+1. **Passing entire object to decrypt function**
+   - ❌ `decryptDataWithMaterial(encryptedProfile, ...)`
+   - ✅ `decryptDataWithMaterial(encryptedProfile.encryptedData, ...)`
+
+2. **Forgetting to parse JSON after decryption**
+   - ❌ `const profile = await decryptDataWithMaterial(...)`
+   - ✅ `const json = await decryptDataWithMaterial(...); const profile = JSON.parse(json);`
+
+3. **Mixing up storage formats**
+   - Dashboard uses: `{encryptedData, iv}` as separate fields
+   - Extension uses: `encryptedData` as single concatenated base64 string
+
+### Base64 Encoding Details
+
+The `encryptDataWithMaterial()` function in `crypto.js` returns a base64-encoded string where:
+
+```
+encryptedData = base64(IV || ciphertext)
+              = base64(12 bytes || encrypted bytes)
+```
+
+The `decryptDataWithMaterial()` function expects this exact format:
+1. Decode base64 to get raw bytes
+2. Extract first 12 bytes as IV
+3. Remaining bytes are ciphertext
+4. Decrypt using AES-256-GCM
+5. Return decrypted UTF-8 string (which is JSON)
+
+**File Reference:** `extension/crypto.js` lines 85-105
+
+```javascript
+async function decryptDataWithMaterial(encryptedData, keyMaterial, walletAddress) {
+  const key = await deriveKeyFromMaterial(keyMaterial, walletAddress);
+  const combined = base64ToArrayBuffer(encryptedData);  // ← Expects base64 string
+  const iv = combined.slice(0, CRYPTO_CONSTANTS.IV_LENGTH);
+  const ciphertext = combined.slice(CRYPTO_CONSTANTS.IV_LENGTH);
+  
+  const decrypted = await crypto.subtle.decrypt(
+    { name: CRYPTO_CONSTANTS.AES_ALGORITHM, iv: iv },
+    key,
+    ciphertext
+  );
+  
+  const decoder = new TextDecoder();
+  return decoder.decode(decrypted);  // ← Returns JSON string, not object
+}
+```
+
+### ZK-SNARK Proof Generation Integration
+
+When generating ZK-SNARK proofs (in `ad-queue.js`), the profile must be decrypted correctly:
+
+```javascript
+// Load encrypted profile from storage
+const profileResult = await chrome.storage.local.get(`payattn_profile_${walletAddress}`);
+const encryptedProfile = profileResult[`payattn_profile_${walletAddress}`];
+
+// Fetch key material from backend
+const keyMaterial = await window.fetchKeyMaterial(keyHash, walletAddress, authToken);
+
+// Decrypt profile - extract encryptedData string first
+const encryptedDataString = encryptedProfile.encryptedData;
+const decryptedJson = await window.decryptDataWithMaterial(
+  encryptedDataString,
+  keyMaterial,
+  walletAddress
+);
+const profileData = JSON.parse(decryptedJson);
+
+// Now access profile fields for proof generation
+const userAge = profileData.demographics?.age;
+const proofPackage = await window.ZKProver.generateAgeProof(userAge, minAge, maxAge);
+```
+
+### Debugging Tips
+
+If you encounter `InvalidCharacterError` from `atob()`:
+
+1. **Check what you're passing to decrypt:**
+   ```javascript
+   console.log('Type:', typeof encryptedProfile);
+   console.log('Has encryptedData?:', 'encryptedData' in encryptedProfile);
+   console.log('encryptedData type:', typeof encryptedProfile.encryptedData);
+   console.log('Sample:', encryptedProfile.encryptedData.substring(0, 50));
+   ```
+
+2. **Verify base64 format:**
+   - Should only contain: `A-Z a-z 0-9 + / =`
+   - No whitespace, newlines, or special characters
+   - Length should be multiple of 4 (with padding)
+
+3. **Check storage structure:**
+   ```javascript
+   const stored = await chrome.storage.local.get(`payattn_profile_${walletAddress}`);
+   console.log(JSON.stringify(stored, null, 2));
+   ```
+
+### Related Files
+
+- `extension/crypto.js` - Encryption/decryption functions
+- `extension/profile.js` - Profile save/load UI
+- `extension/ad-queue.js` - ZK proof generation (uses decryption)
+- `docs/KDS_ARCHITECTURE.md` - Key Derivation Service details
+
 ## Support
 
 For questions or issues with this implementation, refer to:

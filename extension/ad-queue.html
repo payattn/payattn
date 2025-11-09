@@ -73,6 +73,37 @@
       cursor: not-allowed;
     }
     
+    .fetch-ads-btn {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+      margin-bottom: 24px;
+    }
+    
+    .fetch-ads-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    }
+    
+    .fetch-ads-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .fetch-ads-btn:active:not(:disabled) {
+      transform: translateY(0);
+    }
+    
     .session-info {
       text-align: center;
     }
@@ -127,6 +158,11 @@
       border: 1px solid #3b82f6;
       border-radius: 8px;
       margin-bottom: 24px;
+      display: none; /* Hidden by default */
+    }
+    
+    .status-banner.visible {
+      display: block;
     }
     
     .status-banner.processing {
@@ -166,19 +202,41 @@
       transition: all 0.3s ease;
     }
     
+    .ad-assessment.pending {
+      border-color: #64748b;
+      background: #1e293b;
+      opacity: 0.5;
+    }
+    
+    .ad-assessment.processing {
+      border-color: #f59e0b;
+      background: linear-gradient(135deg, #1e293b 0%, #78350f 100%);
+      opacity: 1;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.7;
+      }
+    }
+    
     .ad-assessment.rejected {
       border-color: #dc2626;
-      background: linear-gradient(135deg, #1e293b 0%, #7f1d1d 100%);
+      background: linear-gradient(135deg, #1e293b 0%, #450a0a 100%);
     }
     
     .ad-assessment.offered {
-      border-color: #d97706;
-      background: linear-gradient(135deg, #1e293b 0%, #78350f 100%);
+      border-color: #10b981;
+      background: linear-gradient(135deg, #1e293b 0%, #064e3b 100%);
     }
     
     .ad-assessment.queued {
-      border-color: #16a34a;
-      background: linear-gradient(135deg, #1e293b 0%, #064e3b 100%);
+      border-color: #64748b;
+      background: #1e293b;
     }
     
     .ad-header {
@@ -256,21 +314,21 @@
     }
     
     .decision.reject {
-      background: #7f1d1d;
+      background: #450a0a;
       color: #fca5a5;
       border: 1px solid #dc2626;
     }
     
     .decision.offered {
-      background: #78350f;
-      color: #fed7aa;
-      border: 1px solid #d97706;
+      background: #064e3b;
+      color: #86efac;
+      border: 1px solid #10b981;
     }
     
     .decision.queued {
-      background: #064e3b;
-      color: #86efac;
-      border: 1px solid #16a34a;
+      background: #334155;
+      color: #cbd5e1;
+      border: 1px solid #64748b;
     }
     
     .zk-proof {
@@ -328,8 +386,8 @@
     }
     
     .complete-summary {
-      background: linear-gradient(135deg, #064e3b 0%, #0f766e 100%);
-      border: 1px solid #14b8a6;
+      background: #1e293b;
+      border: 1px solid #334155;
       border-radius: 8px;
       padding: 20px;
       margin-top: 24px;
@@ -338,7 +396,7 @@
     .summary-title {
       font-size: 16px;
       font-weight: 600;
-      color: #86efac;
+      color: #94a3b8;
       margin: 0 0 12px 0;
     }
     
@@ -358,12 +416,12 @@
     .stat-number {
       font-size: 24px;
       font-weight: bold;
-      color: #4ade80;
+      color: #cbd5e1;
     }
     
     .stat-label {
       font-size: 11px;
-      color: #cbd5e1;
+      color: #94a3b8;
       margin-top: 4px;
     }
   </style>
@@ -371,18 +429,22 @@
 <body>
   <div class="container">
     <div class="header">
-      <h1>🎯 Ad Queue Assessment</h1>
+      <h1>Ad Queue Assessment</h1>
       <p>Max is evaluating ad opportunities on your behalf</p>
     </div>
     
+    <!-- Fetch New Ads Button -->
+    <button id="fetchAdsBtn" class="fetch-ads-btn">
+      Fetch & Assess New Ads
+    </button>
+    
     <!-- Session Pagination -->
     <div class="pagination-container">
-      <button id="prevSession" class="pagination-btn">← Backward</button>
+      <button id="prevSession" class="pagination-btn">← Older</button>
       <div class="session-info">
         <div class="session-date" id="sessionDate">Loading...</div>
-        <div class="session-id" id="sessionId">Session ID: —</div>
       </div>
-      <button id="nextSession" class="pagination-btn">Forward →</button>
+      <button id="nextSession" class="pagination-btn">Newer →</button>
     </div>
     
     <!-- Filter Controls -->
@@ -407,15 +469,23 @@
     
     <!-- Bottom Pagination -->
     <div class="pagination-container" style="margin-top: 32px;">
-      <button id="prevSessionBottom" class="pagination-btn">← Backward</button>
+      <button id="prevSessionBottom" class="pagination-btn">← Older</button>
       <div class="session-info">
         <div class="session-date" id="sessionDateBottom">Loading...</div>
-        <div class="session-id" id="sessionIdBottom">Session ID: —</div>
       </div>
-      <button id="nextSessionBottom" class="pagination-btn">Forward →</button>
+      <button id="nextSessionBottom" class="pagination-btn">Newer →</button>
     </div>
+    
+    <!-- Subtle Session ID below bottom nav -->
+    <div id="subtleSessionId" style="text-align: center; font-size: 10px; color: #64686e; margin-top: 8px; margin-bottom: 16px;">Session ID: —</div>
   </div>
   
+  <script src="dummy-ads.js"></script>
+  <!-- ZK-SNARK proof generation (patched for browser/service worker compatibility) -->
+  <script src="lib/snarkjs-patched.js"></script>
+  <script src="lib/zk-prover.js"></script>
+  <script src="venice-ai.js"></script>
+  <script src="crypto.js"></script>
   <script src="ad-queue.js"></script>
 </body>
 </html>

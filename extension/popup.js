@@ -104,7 +104,6 @@ function showAuthState(walletAddress) {
   // Set up event listeners
   const runNowBtn = document.getElementById('runNow');
   const refreshBtn = document.getElementById('refresh');
-  const checkAdsBtn = document.getElementById('checkAds');
   const manageWalletBtn = document.getElementById('manageWallet');
   const manageProfileBtn = document.getElementById('manageProfile');
   const adDashboardBtn = document.getElementById('adDashboard');
@@ -116,9 +115,6 @@ function showAuthState(walletAddress) {
   }
   if (refreshBtn) {
     refreshBtn.addEventListener('click', loadStatus);
-  }
-  if (checkAdsBtn) {
-    checkAdsBtn.addEventListener('click', handleCheckAds);
   }
   if (manageWalletBtn) {
     manageWalletBtn.addEventListener('click', () => {
@@ -382,42 +378,6 @@ async function handleRunNow() {
   } finally {
     button.disabled = false;
     button.textContent = '🔄 Run Now';
-  }
-}
-
-/**
- * Handle check for new ads
- */
-async function handleCheckAds() {
-  const button = document.getElementById('checkAds');
-  button.disabled = true;
-  button.textContent = '⏳ Checking...';
-  
-  try {
-    // Send message to background script to sync ads
-    const response = await chrome.runtime.sendMessage({ type: 'CHECK_NEW_ADS' });
-    
-    if (response.success) {
-      const count = response.newAdsCount || 0;
-      
-      if (count > 0) {
-        showToast(`✅ Found ${count} new ad${count === 1 ? '' : 's'}!`, 'success');
-      } else {
-        showToast('ℹ️ No new ads available', 'info');
-      }
-      
-      console.log('Ad sync completed:', response);
-    } else {
-      showToast('❌ Failed to check for ads', 'error');
-      console.error('Ad sync failed:', response.error);
-    }
-    
-  } catch (error) {
-    console.error('Failed to check for ads:', error);
-    showToast('❌ Error checking for ads', 'error');
-  } finally {
-    button.disabled = false;
-    button.textContent = '📢 Check for New Ads';
   }
 }
 
