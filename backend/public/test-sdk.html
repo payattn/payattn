@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Publisher SDK Demo | PayAttn</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.6;
+      background: #f3f4f6;
+      padding: 40px 20px;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    h1 {
+      color: #111827;
+      margin-bottom: 16px;
+      font-size: 32px;
+    }
+    
+    .subtitle {
+      color: #6b7280;
+      margin-bottom: 32px;
+      font-size: 18px;
+    }
+    
+    .info-box {
+      background: #eff6ff;
+      border: 1px solid #3b82f6;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 32px;
+    }
+    
+    .info-box h2 {
+      color: #1e40af;
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+    
+    .info-box p {
+      color: #1e3a8a;
+      font-size: 14px;
+    }
+    
+    .info-box ul {
+      margin-top: 12px;
+      margin-left: 20px;
+      color: #1e3a8a;
+      font-size: 14px;
+    }
+    
+    .info-box li {
+      margin-bottom: 4px;
+    }
+    
+    .section {
+      margin-bottom: 40px;
+    }
+    
+    .section h2 {
+      color: #111827;
+      font-size: 24px;
+      margin-bottom: 16px;
+    }
+    
+    .section p {
+      color: #4b5563;
+      margin-bottom: 16px;
+    }
+    
+    code {
+      background: #f3f4f6;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 13px;
+      color: #dc2626;
+    }
+    
+    .console-log {
+      background: #1f2937;
+      color: #10b981;
+      padding: 16px;
+      border-radius: 8px;
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 12px;
+      margin: 16px 0;
+      overflow-x: auto;
+    }
+
+    .warning-box {
+      background: #fef3c7;
+      border: 1px solid #fbbf24;
+      border-radius: 8px;
+      padding: 16px;
+      margin: 16px 0;
+    }
+
+    .warning-box strong {
+      color: #92400e;
+    }
+
+    .warning-box p {
+      color: #78350f;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎯 PayAttn Publisher SDK Demo</h1>
+    <p class="subtitle">
+      This page demonstrates the PayAttn Publisher SDK integration.
+    </p>
+
+    <div class="info-box">
+      <h2>📋 What's Happening:</h2>
+      <ul>
+        <li>The SDK requests an ad from your extension via postMessage</li>
+        <li>Extension responds with ad creative (headline, body, CTA, destination)</li>
+        <li>SDK renders the ad in the slot below</li>
+        <li>SDK tracks impression using Intersection Observer (1+ second visible)</li>
+        <li>SDK reports impression to backend for settlement</li>
+        <li>Settlement triggers 3 Solana transactions (70/25/5 split)</li>
+      </ul>
+    </div>
+
+    <div class="warning-box">
+      <p>
+        <strong>⚠️ Extension Required:</strong> Make sure you have the PayAttn extension installed 
+        and updated with ad sync + content script updates. Without the extension, the SDK will show 
+        a fallback message.
+      </p>
+    </div>
+
+    <div class="section">
+      <h2>📰 Sample Content</h2>
+      <p>
+        This is sample publisher content. The ad will appear below, seamlessly integrated with the page content.
+        In a real scenario, the publisher would place the <code>#payattn-ad-slot</code> div wherever they want 
+        ads to appear on their page.
+      </p>
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore 
+        et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.
+      </p>
+    </div>
+
+    <!-- PayAttn Ad Slot - This is where the ad will be displayed -->
+    <div id="payattn-ad-slot"></div>
+
+    <div class="section">
+      <h2>📊 How It Works</h2>
+      <p>Open your browser console (F12) to see the SDK in action:</p>
+      <div class="console-log">
+[PayAttn SDK] Initialized for publisher: 8k3m9x2p<br>
+[PayAttn SDK] Requesting ad...<br>
+[PayAttn SDK] Ad displayed: offer_abc123<br>
+[PayAttn SDK] Ad became visible, starting timer...<br>
+[PayAttn SDK] 🎯 Reporting impression: offer_abc123 (1234ms)<br>
+✅ [PayAttn SDK] Settlement completed!<br>
+💰 Transactions: [...3 Solana transactions...]
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>🔍 Testing Steps</h2>
+      <ol style="margin-left: 20px; color: #4b5563;">
+        <li style="margin-bottom: 8px;">Install/update the PayAttn extension</li>
+        <li style="margin-bottom: 8px;">Make sure extension has synced ads (check background.js console)</li>
+        <li style="margin-bottom: 8px;">Reload this page</li>
+        <li style="margin-bottom: 8px;">Ad should appear in the slot above</li>
+        <li style="margin-bottom: 8px;">Keep ad visible for 1+ second</li>
+        <li style="margin-bottom: 8px;">Check console for settlement confirmation</li>
+        <li style="margin-bottom: 8px;">Check Solana Explorer for transactions (devnet)</li>
+      </ol>
+    </div>
+
+    <div class="section">
+      <h2>💻 Integration Code</h2>
+      <p>To add PayAttn ads to your website, just add these 2 lines:</p>
+      <div class="console-log" style="color: #93c5fd; background: #1e293b;">
+&lt;script src="http://localhost:3000/publishers/v1/sdk.js" <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data-publisher-id="8k3m9x2p"&gt;&lt;/script&gt;<br>
+&lt;div id="payattn-ad-slot"&gt;&lt;/div&gt;
+      </div>
+      <p style="margin-top: 16px; color: #6b7280; font-size: 14px;">
+        That's it! The SDK handles everything else: ad requests, rendering, impression tracking, 
+        click tracking, and settlement.
+      </p>
+    </div>
+
+    <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb; text-align: center; color: #9ca3af; font-size: 14px;">
+      PayAttn Demo • Privacy-Preserving Advertising on Solana
+    </div>
+  </div>
+
+  <!-- PayAttn SDK - This is the actual integration -->
+  <script src="http://localhost:3000/publishers/v1/sdk.js" 
+          data-publisher-id="8k3m9x2p"></script>
+</body>
+</html>

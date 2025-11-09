@@ -89,6 +89,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Increment impression counter on ad_creative (NEW)
+    if (offer.ad_creative_id) {
+      const { data: adCreative } = await supabase
+        .from('ad_creative')
+        .select('impressions_count')
+        .eq('id', offer.ad_creative_id)
+        .single();
+
+      await supabase
+        .from('ad_creative')
+        .update({ 
+          impressions_count: (adCreative?.impressions_count || 0) + 1 
+        })
+        .eq('id', offer.ad_creative_id);
+
+      console.log(`[Impression] Incremented counter for ad_creative ${offer.ad_creative_id}`);
+    }
+
     console.log(`[Impression] Triggering settlement for ${offerId}`);
     console.log(`[Impression] User: ${offer.user_pubkey}`);
     console.log(`[Impression] Publisher: ${publisher.wallet_address}`);

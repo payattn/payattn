@@ -378,6 +378,7 @@ const STATUS_STORE = 'status';
 // Cache key materials (valid for session duration)
 const keyMaterialCache = new Map(); // keyHash -> {material, expiresAt}
 const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
+const API_BASE = 'http://localhost:3000'; // Backend API base URL
 
 console.log('[Extension] PayAttn Agent loaded');
 
@@ -388,8 +389,16 @@ chrome.runtime.onInstalled.addListener(() => {
   chrome.alarms.create('payattn-agent', {
     periodInMinutes: 30,
   });
+
+  // Set up ad sync alarm (every hour)
+  chrome.alarms.create('payattn-ad-sync', {
+    periodInMinutes: 60,
+  });
   
-  console.log('[Extension] Extension installed and alarm set!');
+  console.log('[Extension] Extension installed and alarms set!');
+  
+  // Run initial ad sync
+  syncNewAds();
 });
 
 // Listen for alarm
@@ -397,6 +406,11 @@ chrome.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name === 'payattn-agent') {
     console.log('[Extension] Alarm triggered - running agent cycle');
     runAgentCycle();
+  }
+  
+  if (alarm.name === 'payattn-ad-sync') {
+    console.log('[Extension] Ad sync alarm triggered');
+    syncNewAds();
   }
 });
 
@@ -503,6 +517,24 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       sendResponse({ success: true, result });
     }).catch((error) => {
       sendResponse({ success: false, error: error.message });
+    });
+    return true; // Keep channel open for async response
+  }
+  
+  if (message.type === 'CHECK_NEW_ADS') {
+    console.log('[Extension] Check new ads requested');
+    syncNewAds().then((result) => {
+      // result contains newAdsCount from syncNewAds
+      sendResponse({ 
+        success: true, 
+        newAdsCount: result?.newAdsCount || 0 
+      });
+    }).catch((error) => {
+      console.error('[Extension] Ad sync failed:', error);
+      sendResponse({ 
+        success: false, 
+        error: error.message 
+      });
     });
     return true; // Keep channel open for async response
   }
@@ -617,6 +649,253 @@ async function generateProofViaHelper(circuitName, privateInputs, publicInputs) 
       }
     }, 60000);
   });
+}
+
+// ============================================================================
+// Ad Sync Functions (NEW)
+// ============================================================================
+
+/**
+ * Sync new ads from backend
+ * Called every hour or on-demand
+ */
+async function syncNewAds() {
+  console.log('[AdSync] Starting ad sync...');
+
+  try {
+    const walletAddress = await getWalletAddress();
+    if (!walletAddress) {
+      console.log('[AdSync] No wallet found, skipping sync');
+      return;
+    }
+
+    // Get last_checked timestamp from storage
+    const result = await new Promise((resolve) => {
+      chrome.storage.local.get(['payattn_last_ad_sync'], (data) => {
+        resolve(data);
+      });
+    });
+
+    const lastChecked = result.payattn_last_ad_sync || new Date(0).toISOString();
+    console.log(`[AdSync] Last checked: ${lastChecked}`);
+
+    // Fetch new ads from backend
+    const response = await fetch(`${API_BASE}/api/user/adstream`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-user-id': walletAddress
+      },
+      body: JSON.stringify({
+        last_checked: lastChecked
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Ad sync failed: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log(`[AdSync] Received ${data.count} new ads`);
+
+    if (data.ads && data.ads.length > 0) {
+      // Store ads in ad_queue for Max to evaluate
+      await new Promise((resolve) => {
+        chrome.storage.local.get(['payattn_ad_queue'], (result) => {
+          const existingQueue = result.payattn_ad_queue || [];
+          const newQueue = [...existingQueue, ...data.ads];
+          
+          chrome.storage.local.set({
+            payattn_ad_queue: newQueue,
+            payattn_last_ad_sync: data.server_time
+          }, () => {
+            console.log(`[AdSync] Stored ${newQueue.length} total ads in queue`);
+            resolve();
+          });
+        });
+      });
+
+      // Trigger Max evaluation
+      console.log('[AdSync] Triggering Max evaluation...');
+      await evaluateAdQueue();
+      
+      // Return count for UI feedback
+      return { newAdsCount: data.count };
+    } else {
+      // Update timestamp even if no new ads
+      await new Promise((resolve) => {
+        chrome.storage.local.set({
+          payattn_last_ad_sync: data.server_time
+        }, resolve);
+      });
+      
+      // Return zero count
+      return { newAdsCount: 0 };
+    }
+
+    console.log('[AdSync] Sync complete!');
+  } catch (err) {
+    console.error('[AdSync] Sync failed:', err);
+    throw err; // Propagate error for UI feedback
+  }
+}
+
+/**
+ * Max evaluates ads in queue
+ * Checks targeting criteria and generates ZK-proofs for matches
+ */
+async function evaluateAdQueue() {
+  console.log('[Max] Evaluating ad queue...');
+
+  try {
+    const walletAddress = await getWalletAddress();
+    if (!walletAddress) {
+      console.log('[Max] No wallet found, skipping evaluation');
+      return;
+    }
+
+    // Get user profile and ad queue
+    const result = await new Promise((resolve) => {
+      chrome.storage.local.get([
+        `payattn_profile_${walletAddress}`,
+        'payattn_ad_queue'
+      ], (data) => {
+        resolve(data);
+      });
+    });
+
+    const profileData = result[`payattn_profile_${walletAddress}`];
+    const adQueue = result.payattn_ad_queue || [];
+
+    if (!profileData) {
+      console.log('[Max] No profile found, cannot evaluate ads');
+      return;
+    }
+
+    if (adQueue.length === 0) {
+      console.log('[Max] No ads in queue to evaluate');
+      return;
+    }
+
+    console.log(`[Max] Evaluating ${adQueue.length} ads against user profile`);
+
+    // Evaluate each ad
+    const remainingAds = [];
+    let offersCreated = 0;
+
+    for (const ad of adQueue) {
+      const result = await evaluateSingleAd(ad, profileData, walletAddress);
+      
+      if (result.approved) {
+        console.log(`✅ [Max] Approved ad: ${ad.ad_creative_id}`);
+        offersCreated++;
+      } else {
+        console.log(`❌ [Max] Rejected ad: ${ad.ad_creative_id} - ${result.reason}`);
+        // Remove rejected ads from queue
+      }
+    }
+
+    // Update queue (remove all evaluated ads)
+    await new Promise((resolve) => {
+      chrome.storage.local.set({
+        payattn_ad_queue: []
+      }, resolve);
+    });
+
+    console.log(`[Max] Evaluation complete: ${offersCreated} offers created`);
+
+  } catch (err) {
+    console.error('[Max] Evaluation failed:', err);
+  }
+}
+
+/**
+ * Evaluate single ad against user profile
+ */
+async function evaluateSingleAd(ad, profileData, walletAddress) {
+  const targeting = ad.targeting;
+
+  // Check age
+  if (targeting.age) {
+    const userAge = profileData.age;
+    if (userAge < targeting.age.min || userAge > targeting.age.max) {
+      return { approved: false, reason: `Age ${userAge} not in range ${targeting.age.min}-${targeting.age.max}` };
+    }
+  }
+
+  // Check interests (at least one required interest must match)
+  if (targeting.interests && targeting.interests.length > 0) {
+    const requiredInterests = targeting.interests
+      .filter(i => i.weight === 'required')
+      .map(i => i.category);
+    
+    if (requiredInterests.length > 0) {
+      const userInterests = profileData.interests || [];
+      const hasMatch = requiredInterests.some(req => 
+        userInterests.some(ui => ui.category === req)
+      );
+      
+      if (!hasMatch) {
+        return { approved: false, reason: `No matching required interests` };
+      }
+    }
+  }
+
+  // Check income
+  if (targeting.income && targeting.income.min) {
+    const userIncome = profileData.income || 0;
+    if (userIncome < targeting.income.min) {
+      return { approved: false, reason: `Income ${userIncome} below minimum ${targeting.income.min}` };
+    }
+  }
+
+  // Check location
+  if (targeting.location && targeting.location.countries) {
+    const userCountry = profileData.location?.country;
+    if (!targeting.location.countries.includes(userCountry)) {
+      return { approved: false, reason: `Country ${userCountry} not in target list` };
+    }
+  }
+
+  // All checks passed - generate ZK-proofs and create offer
+  console.log(`[Max] Ad ${ad.ad_creative_id} passed all checks, creating offer with ZK-proofs...`);
+
+  // TODO: Generate actual ZK-proofs
+  // For now, we'll create offers without proofs (can add proof generation later)
+  const zkProofs = {
+    age: { circuitName: 'age_range', proof: 'placeholder' },
+    interests: { circuitName: 'set_membership', proof: 'placeholder' },
+    income: { circuitName: 'range_check', proof: 'placeholder' },
+    location: { circuitName: 'set_membership', proof: 'placeholder' }
+  };
+
+  // Create offer via backend API
+  try {
+    const response = await fetch(`${API_BASE}/api/user/offer`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-user-id': walletAddress
+      },
+      body: JSON.stringify({
+        ad_creative_id: ad.id,
+        amount_lamports: ad.budget_per_impression_lamports,
+        zk_proofs: zkProofs
+      })
+    });
+
+    const data = await response.json();
+    
+    if (data.success) {
+      console.log(`✅ [Max] Created offer: ${data.offer_id}`);
+      return { approved: true, offerId: data.offer_id };
+    } else {
+      return { approved: false, reason: data.error };
+    }
+  } catch (err) {
+    console.error('[Max] Failed to create offer:', err);
+    return { approved: false, reason: err.message };
+  }
 }
 
 /**

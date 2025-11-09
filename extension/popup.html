@@ -87,6 +87,41 @@
     .hidden {
       display: none;
     }
+    .toast {
+      position: fixed;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      z-index: 1000;
+      animation: slideUp 0.3s ease-out;
+    }
+    .toast-success {
+      background: #10b981;
+      color: white;
+    }
+    .toast-error {
+      background: #ef4444;
+      color: white;
+    }
+    .toast-info {
+      background: #0ea5e9;
+      color: white;
+    }
+    @keyframes slideUp {
+      from {
+        transform: translateX(-50%) translateY(20px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+      }
+    }
   </style>
 </head>
 <body>
@@ -135,6 +170,12 @@
     <div>
       <button class="btn-primary" id="runNow">🔄 Run Now</button>
       <button class="btn-secondary" id="refresh">↻ Refresh</button>
+    </div>
+    
+    <div style="margin-top: 12px;">
+      <button class="btn-primary" id="checkAds" style="width: 100%;">
+        📢 Check for New Ads
+      </button>
     </div>
     
     <div style="margin-top: 12px; display: flex; gap: 8px;">

@@ -1,6 +1,28 @@
 -- WARNING: This schema is for context only and is not meant to be run.
 -- Table order and constraints may not be valid for execution.
 
+CREATE TABLE public.ad_creative (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  ad_creative_id text NOT NULL UNIQUE,
+  advertiser_id text NOT NULL,
+  campaign_id text,
+  type text NOT NULL DEFAULT 'text'::text CHECK (type = ANY (ARRAY['text'::text, 'image'::text, 'video'::text, 'html'::text])),
+  headline text NOT NULL,
+  body text NOT NULL,
+  cta text NOT NULL,
+  destination_url text NOT NULL,
+  targeting jsonb NOT NULL DEFAULT '{}'::jsonb,
+  budget_per_impression_lamports bigint NOT NULL CHECK (budget_per_impression_lamports > 0),
+  total_budget_lamports bigint NOT NULL,
+  spent_lamports bigint NOT NULL DEFAULT 0,
+  impressions_count integer NOT NULL DEFAULT 0,
+  clicks_count integer NOT NULL DEFAULT 0,
+  status text NOT NULL DEFAULT 'active'::text CHECK (status = ANY (ARRAY['active'::text, 'paused'::text, 'completed'::text, 'rejected'::text])),
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT ad_creative_pkey PRIMARY KEY (id),
+  CONSTRAINT ad_creative_campaign_id_fkey FOREIGN KEY (campaign_id) REFERENCES public.campaigns(campaign_id)
+);
 CREATE TABLE public.advertisers (
   id integer NOT NULL DEFAULT nextval('advertisers_id_seq'::regclass),
   advertiser_id character varying NOT NULL UNIQUE,
@@ -8,6 +30,18 @@ CREATE TABLE public.advertisers (
   wallet_pubkey character varying,
   created_at timestamp without time zone DEFAULT now(),
   CONSTRAINT advertisers_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.campaigns (
+  id integer NOT NULL DEFAULT nextval('campaigns_id_seq'::regclass),
+  campaign_id text NOT NULL UNIQUE,
+  advertiser_id text NOT NULL,
+  name text NOT NULL,
+  total_budget_lamports bigint NOT NULL DEFAULT 0,
+  spent_lamports bigint NOT NULL DEFAULT 0,
+  status text NOT NULL DEFAULT 'active'::text CHECK (status = ANY (ARRAY['active'::text, 'paused'::text, 'completed'::text])),
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT campaigns_pkey PRIMARY KEY (id)
 );
 CREATE TABLE public.offers (
   id integer NOT NULL DEFAULT nextval('offers_id_seq'::regclass),
@@ -26,7 +60,10 @@ CREATE TABLE public.offers (
   platform_net_revenue_lamports bigint,
   created_at timestamp without time zone DEFAULT now(),
   updated_at timestamp without time zone DEFAULT now(),
-  CONSTRAINT offers_pkey PRIMARY KEY (id)
+  ad_creative_id uuid,
+  zk_proofs jsonb,
+  CONSTRAINT offers_pkey PRIMARY KEY (id),
+  CONSTRAINT offers_ad_creative_id_fkey FOREIGN KEY (ad_creative_id) REFERENCES public.ad_creative(id)
 );
 CREATE TABLE public.publishers (
   id integer NOT NULL DEFAULT nextval('publishers_id_seq'::regclass),

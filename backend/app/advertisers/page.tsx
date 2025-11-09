@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { WalletContextProvider } from '@/components/WalletProvider';
+import AdvertiserLayout from '@/components/AdvertiserLayout';
 
 // BN128 field prime (must match extension)
 const FIELD_PRIME = BigInt('21888242871839275222246405745257275088548364400416034343698204186575808495617');
@@ -106,12 +108,33 @@ export default function AdvertisersPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
+    <WalletContextProvider>
+      <AdvertiserLayout>
+        {(advertiserData) => (
+          <div className="py-12 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-4xl mx-auto">
+              {/* Header with Create Ad Button */}
+              <div className="mb-6 flex justify-between items-center">
+                <div>
+                  <h1 className="text-3xl font-bold text-gray-900">
+                    🔒 Dashboard
+                  </h1>
+                  <p className="text-gray-600 mt-2">
+                    Manage campaigns and verify zero-knowledge proofs
+                  </p>
+                </div>
+                <a
+                  href="/advertisers/create-campaign"
+                  className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 shadow-md"
+                >
+                  + Create New Ad Campaign
+                </a>
+              </div>
+
         <div className="bg-white shadow rounded-lg p-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-6">
-            🔒 Advertiser Proof Verification
-          </h1>
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">
+            Proof Verification
+          </h2>
           
           <p className="text-gray-600 mb-8">
             This page simulates an advertiser verifying zero-knowledge proofs from users.
@@ -265,5 +288,8 @@ export default function AdvertisersPage() {
         </div>
       </div>
     </div>
+        )}
+      </AdvertiserLayout>
+    </WalletContextProvider>
   );
 }

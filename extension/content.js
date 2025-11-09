@@ -82,4 +82,40 @@ window.addEventListener('message', (event) => {
       }
     });
   }
+
+  // Check for PayAttn ad request (from Publisher SDK)
+  if (event.data?.type === 'PAYATTN_REQUEST_AD') {
+    console.log('[PayAttn Content] Received ad request from publisher:', event.data.publisher_id);
+    
+    // Get funded offers from storage
+    chrome.storage.local.get(['payattn_funded_offers'], (result) => {
+      const fundedOffers = result.payattn_funded_offers || [];
+      
+      if (fundedOffers.length === 0) {
+        console.log('[PayAttn Content] No funded offers available');
+        window.postMessage({
+          type: 'PAYATTN_AD_RESPONSE',
+          ad: null,
+          error: 'No ads available at this time'
+        }, window.location.origin);
+        return;
+      }
+
+      // Select first offer (FIFO)
+      const selectedOffer = fundedOffers[0];
+      console.log('[PayAttn Content] Selected offer:', selectedOffer.offer_id);
+
+      // Return ad creative data to SDK
+      window.postMessage({
+        type: 'PAYATTN_AD_RESPONSE',
+        ad: {
+          offer_id: selectedOffer.offer_id,
+          headline: selectedOffer.headline,
+          body: selectedOffer.body,
+          cta: selectedOffer.cta,
+          destination_url: selectedOffer.destination_url
+        }
+      }, window.location.origin);
+    });
+  }
 }, false);

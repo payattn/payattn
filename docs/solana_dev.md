@@ -1287,3 +1287,10 @@ export PATH="/tmp/solana-release/bin:$PATH" && echo "=== WALLET ADDRESSES ===" &
 - Advertiser: `AE6uwbubDn9WyXrpzvqU58jfirvqZAxWCZCfDDwW5MMb`
 - Test User: `9kXHUnoYjB7eVUafsKFibrdHJWiYiX26vP7p7QX77nux`
 - Publisher: `ELD9PKHo5qwyt3o5agPPMuQLRzidDnR2g4DmJDfH55Z7`
+
+### To get the export for phantom (to test):
+
+```
+cd /Users/jmd/nosync/org.payattn.main
+node convert-keypair-to-base58.js ~/.config/solana/advertiser.json
+```

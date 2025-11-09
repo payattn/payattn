@@ -8,12 +8,9 @@ export default function PublishersPage() {
   const [copied, setCopied] = useState(false);
 
   const sdkSnippet = `<!-- PayAttn SDK - Add this before closing </body> tag -->
-<script src="https://payattn.net/sdk.js"></script>
-<script>
-  PayAttn.init({
-    publisherId: '${publisherId}'
-  });
-</script>`;
+<script src="http://localhost:3000/publishers/v1/sdk.js" 
+        data-publisher-id="${publisherId}"></script>
+<div id="payattn-ad-slot"></div>`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(sdkSnippet);
