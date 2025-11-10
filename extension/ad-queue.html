@@ -429,8 +429,9 @@
 <body>
   <div class="container">
     <div class="header">
-      <h1>Ad Queue Assessment</h1>
-      <p>Max is evaluating ad opportunities on your behalf</p>
+      <img src="payattn_logo_bar01_700x140_trans.png" alt="PayAttn" style="width: 100%; max-width: 350px; height: auto; margin: 0 auto 16px; display: block;">
+      <h2 style="font-size: 24px; margin: 0 0 8px 0; color: #f1f5f9; text-align: center;">Max's Activity</h2>
+      <p style="text-align: center;">Max is continuously evaluating ad opportunities on your behalf so you don't need to do anything. You can scroll through the decisions he's made below. If you want see him work in realtime, press "Fetch & Assess New Ads" below.</p>
     </div>
     
     <!-- Fetch New Ads Button -->
@@ -452,7 +453,6 @@
       <button class="filter-btn filter-active" data-filter="all">All</button>
       <button class="filter-btn" data-filter="offered">💰 Offered</button>
       <button class="filter-btn" data-filter="rejected">❌ Rejected</button>
-      <button class="filter-btn" data-filter="queued">⏳ Queued</button>
     </div>
     
     <div id="statusBanner" class="status-banner">
@@ -480,12 +480,13 @@
     <div id="subtleSessionId" style="text-align: center; font-size: 10px; color: #64686e; margin-top: 8px; margin-bottom: 16px;">Session ID: —</div>
   </div>
   
-  <script src="dummy-ads.js"></script>
   <!-- ZK-SNARK proof generation (patched for browser/service worker compatibility) -->
   <script src="lib/snarkjs-patched.js"></script>
   <script src="lib/zk-prover.js"></script>
-  <script src="venice-ai.js"></script>
+  <script src="llm-service.js"></script>
   <script src="crypto.js"></script>
+  <!-- Max Assessment Module (shared with background.js) -->
+  <script src="lib/max-assessor.js"></script>
   <script src="ad-queue.js"></script>
 </body>
 </html>

@@ -16,7 +16,15 @@
 // Original snarkjs tries to use Workers even with {singleThread: true} option
 importScripts('lib/snarkjs-patched.js');
 
+// Import LLM Service (Max's decision engine - supports Venice AI and local LM Studio)
+importScripts('llm-service.js');
+
+// Import Max Assessment Module (shared with ad-queue.js)
+importScripts('lib/max-assessor.js');
+
 console.log('[Extension] snarkjs loaded:', typeof self.snarkjs !== 'undefined' ? 'SUCCESS' : 'FAILED');
+console.log('[Extension] LLMService loaded:', typeof self.LLMService !== 'undefined' ? 'SUCCESS' : 'FAILED');
+console.log('[Extension] MaxAssessor loaded:', typeof self.MaxAssessor !== 'undefined' ? 'SUCCESS' : 'FAILED');
 
 // ============================================================================
 // Global State (Service Worker Scope)
@@ -382,20 +390,25 @@ const API_BASE = 'http://localhost:3000'; // Backend API base URL
 
 console.log('[Extension] PayAttn Agent loaded');
 
-// Set up alarm to run every 30 minutes
+// Set up polling alarm to check for scheduled runs
 chrome.runtime.onInstalled.addListener(() => {
-  console.log('[Extension] Setting up 30-minute alarm');
+  console.log('[Extension] Setting up scheduled run system');
   
-  chrome.alarms.create('payattn-agent', {
-    periodInMinutes: 30,
-  });
-
-  // Set up ad sync alarm (every hour)
-  chrome.alarms.create('payattn-ad-sync', {
-    periodInMinutes: 60,
+  // Create a single polling alarm that checks every 60 seconds
+  chrome.alarms.create('payattn-poll', {
+    periodInMinutes: 1, // Check every minute
   });
   
-  console.log('[Extension] Extension installed and alarms set!');
+  // Initialize next scheduled run (30 mins from now)
+  const now = Date.now();
+  const nextRun = now + (30 * 60 * 1000);
+  chrome.storage.local.set({
+    payattn_next_scheduled_run: nextRun
+  }, () => {
+    console.log(`[Extension] Next run scheduled for: ${new Date(nextRun).toLocaleString()}`);
+  });
+  
+  console.log('[Extension] Extension installed and polling alarm set!');
   
   // Run initial ad sync
   syncNewAds();
@@ -403,14 +416,21 @@ chrome.runtime.onInstalled.addListener(() => {
 
 // Listen for alarm
 chrome.alarms.onAlarm.addListener((alarm) => {
-  if (alarm.name === 'payattn-agent') {
-    console.log('[Extension] Alarm triggered - running agent cycle');
-    runAgentCycle();
-  }
-  
-  if (alarm.name === 'payattn-ad-sync') {
-    console.log('[Extension] Ad sync alarm triggered');
-    syncNewAds();
+  if (alarm.name === 'payattn-poll') {
+    // Check if it's time to run
+    chrome.storage.local.get(['payattn_next_scheduled_run'], (result) => {
+      const nextScheduledRun = result.payattn_next_scheduled_run;
+      const now = Date.now();
+      
+      if (nextScheduledRun && now >= nextScheduledRun) {
+        console.log('[Extension] Scheduled time reached - running ad sync');
+        
+        // Run ad sync (it will schedule next run in its finally block)
+        syncNewAds().catch(err => {
+          console.error('[Extension] Ad sync failed:', err);
+        });
+      }
+    });
   }
 });
 
@@ -522,8 +542,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
   
   if (message.type === 'CHECK_NEW_ADS') {
-    console.log('[Extension] Check new ads requested');
+    console.log('[Extension] Check new ads requested (manual trigger)');
     syncNewAds().then((result) => {
+      // syncNewAds will schedule next run in its finally block
+      
       // result contains newAdsCount from syncNewAds
       sendResponse({ 
         success: true, 
@@ -679,6 +701,11 @@ async function syncNewAds() {
     const lastChecked = result.payattn_last_ad_sync || new Date(0).toISOString();
     console.log(`[AdSync] Last checked: ${lastChecked}`);
 
+    // UPDATE TIMESTAMP AT START with 60-second buffer to avoid missing ads
+    // This timestamp will be used for NEXT sync to query for ads created since now
+    // The 60-second buffer ensures we don't miss ads if Max takes a couple mins to run
+    const syncStartTime = new Date(Date.now() - 60000).toISOString(); // 60 seconds ago
+    
     // Fetch new ads from backend
     const response = await fetch(`${API_BASE}/api/user/adstream`, {
       method: 'POST',
@@ -698,6 +725,14 @@ async function syncNewAds() {
     const data = await response.json();
     console.log(`[AdSync] Received ${data.count} new ads`);
 
+    // Always create a Max session to record the check, even if 0 ads
+    const maxSession = {
+      id: `max_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      timestamp: new Date().toISOString(),
+      triggerType: 'automated', // Background process
+      ads: []
+    };
+
     if (data.ads && data.ads.length > 0) {
       // Store ads in ad_queue for Max to evaluate
       await new Promise((resolve) => {
@@ -707,42 +742,57 @@ async function syncNewAds() {
           
           chrome.storage.local.set({
             payattn_ad_queue: newQueue,
-            payattn_last_ad_sync: data.server_time
+            payattn_last_ad_sync: syncStartTime  // Update to sync start time (with buffer)
           }, () => {
             console.log(`[AdSync] Stored ${newQueue.length} total ads in queue`);
+            console.log(`[AdSync] Updated last_ad_sync to: ${syncStartTime}`);
             resolve();
           });
         });
       });
 
-      // Trigger Max evaluation
+      // Trigger Max evaluation (this will update the session with results)
       console.log('[AdSync] Triggering Max evaluation...');
       await evaluateAdQueue();
       
       // Return count for UI feedback
       return { newAdsCount: data.count };
     } else {
+      // No new ads - save empty session to show background check happened
+      console.log('[AdSync] No new ads - recording empty session');
+      await saveMaxSession(maxSession);
+      
       // Update timestamp even if no new ads
       await new Promise((resolve) => {
         chrome.storage.local.set({
-          payattn_last_ad_sync: data.server_time
-        }, resolve);
+          payattn_last_ad_sync: syncStartTime  // Update to sync start time (with buffer)
+        }, () => {
+          console.log(`[AdSync] Updated last_ad_sync to: ${syncStartTime}`);
+          resolve();
+        });
       });
       
       // Return zero count
       return { newAdsCount: 0 };
     }
 
-    console.log('[AdSync] Sync complete!');
   } catch (err) {
     console.error('[AdSync] Sync failed:', err);
     throw err; // Propagate error for UI feedback
+  } finally {
+    // Always schedule next run after completion (success or failure)
+    // This ensures consistency whether triggered manually or automatically
+    const nextRun = Date.now() + (30 * 60 * 1000);
+    await chrome.storage.local.set({
+      payattn_next_scheduled_run: nextRun
+    });
+    console.log(`[AdSync] Next run scheduled for: ${new Date(nextRun).toLocaleString()}`);
   }
 }
 
 /**
  * Max evaluates ads in queue
- * Checks targeting criteria and generates ZK-proofs for matches
+ * Uses modular MaxAssessor for consistent assessment logic across manual and automated triggers
  */
 async function evaluateAdQueue() {
   console.log('[Max] Evaluating ad queue...');
@@ -758,16 +808,20 @@ async function evaluateAdQueue() {
     const result = await new Promise((resolve) => {
       chrome.storage.local.get([
         `payattn_profile_${walletAddress}`,
-        'payattn_ad_queue'
+        'payattn_ad_queue',
+        'payattn_keyHash',
+        'payattn_authToken'
       ], (data) => {
         resolve(data);
       });
     });
 
-    const profileData = result[`payattn_profile_${walletAddress}`];
+    const encryptedProfile = result[`payattn_profile_${walletAddress}`];
     const adQueue = result.payattn_ad_queue || [];
+    const keyHash = result.payattn_keyHash;
+    const authToken = result.payattn_authToken;
 
-    if (!profileData) {
+    if (!encryptedProfile) {
       console.log('[Max] No profile found, cannot evaluate ads');
       return;
     }
@@ -777,32 +831,48 @@ async function evaluateAdQueue() {
       return;
     }
 
-    console.log(`[Max] Evaluating ${adQueue.length} ads against user profile`);
-
-    // Evaluate each ad
-    const remainingAds = [];
-    let offersCreated = 0;
-
-    for (const ad of adQueue) {
-      const result = await evaluateSingleAd(ad, profileData, walletAddress);
-      
-      if (result.approved) {
-        console.log(`✅ [Max] Approved ad: ${ad.ad_creative_id}`);
-        offersCreated++;
-      } else {
-        console.log(`❌ [Max] Rejected ad: ${ad.ad_creative_id} - ${result.reason}`);
-        // Remove rejected ads from queue
-      }
+    // Decrypt profile
+    console.log('[Max] Decrypting user profile...');
+    const keyMaterial = await fetchKeyMaterial(keyHash, walletAddress, authToken);
+    const encryptedDataString = encryptedProfile.encryptedData;
+    
+    if (!encryptedDataString) {
+      throw new Error('No encryptedData property found in profile');
     }
+    
+    const decryptedJson = await decryptDataWithMaterial(
+      encryptedDataString,
+      keyMaterial,
+      walletAddress
+    );
+    
+    const userProfile = JSON.parse(decryptedJson);
+    console.log(`[Max] Profile decrypted. Evaluating ${adQueue.length} ads...`);
 
-    // Update queue (remove all evaluated ads)
+    // Use modular MaxAssessor for consistent assessment logic
+    const session = await self.MaxAssessor.assessAds(adQueue, userProfile, {
+      veniceModel: 'qwen3-next-80b',
+      temperature: 0.7,
+      autoSubmit: true // Automatically submit offers to backend
+    });
+
+    // Update session metadata for background context
+    session.triggerType = 'automated';
+    
+    // Count offers
+    const offersCreated = session.ads.filter(a => a.assessment.decision === 'MAKING OFFER').length;
+
+    // Save Max session
+    await saveMaxSession(session);
+
+    // Clear queue (all ads have been evaluated)
     await new Promise((resolve) => {
       chrome.storage.local.set({
         payattn_ad_queue: []
       }, resolve);
     });
 
-    console.log(`[Max] Evaluation complete: ${offersCreated} offers created`);
+    console.log(`[Max] Evaluation complete: ${offersCreated} offers created from ${adQueue.length} ads`);
 
   } catch (err) {
     console.error('[Max] Evaluation failed:', err);
@@ -1112,6 +1182,37 @@ async function saveLog(log) {
     const request = transaction.objectStore(LOGS_STORE).put(logs, 'sw_logs');
     request.onsuccess = () => resolve();
     request.onerror = () => reject(request.error);
+  });
+}
+
+/**
+ * Save Max session to chrome.storage (unified with ad-queue.js)
+ */
+async function saveMaxSession(session) {
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.get('payattn_max_sessions', (result) => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError);
+        return;
+      }
+      
+      const sessions = result.payattn_max_sessions || [];
+      sessions.push(session);
+      
+      // Keep only last 50 sessions
+      if (sessions.length > 50) {
+        sessions.shift();
+      }
+      
+      chrome.storage.local.set({ payattn_max_sessions: sessions }, () => {
+        if (chrome.runtime.lastError) {
+          reject(chrome.runtime.lastError);
+        } else {
+          console.log('[Extension] Max session saved:', session.id);
+          resolve();
+        }
+      });
+    });
   });
 }
 

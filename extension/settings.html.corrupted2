@@ -1,0 +1,1277 @@
+<!DOCTYPE html><!DOCTYPE html><!DOCTYPE html>
+
+<html>
+
+<head><html><html>
+
+  <meta charset="UTF-8">
+
+  <title>PayAttn Settings</title><head><head>
+
+  <style>
+
+    * {  <meta charset="UTF-8">  <meta charset="UTF-8">
+
+      box-sizing: border-box;
+
+    }  <title>PayAttn Settings</title>  <title>PayAttn Settings</title>
+
+    
+
+    body {  <style>  <style>
+
+      width: 400px;
+
+      margin: 0;    * {    * {
+
+      padding: 16px;
+
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;      box-sizing: border-box;      margin: 0;
+
+      background: #000A30;
+
+      color: #e2e8f0;    }      padding: 0;
+
+    }
+
+              box-sizing: border-box;
+
+    .header {
+
+      display: flex;    body {    }
+
+      align-items: center;
+
+      justify-content: space-between;      width: 400px;    body {
+
+      margin-bottom: 20px;
+
+    }      margin: 0;      width: 600px;
+
+    
+
+    .back-button {      padding: 16px;      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+      padding: 8px 12px;
+
+      background: #334155;      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;      background: #f8fafc;
+
+      border: 1px solid #475569;
+
+      border-radius: 6px;      background: #000A30;    }
+
+      color: #e2e8f0;
+
+      cursor: pointer;      color: #e2e8f0;    .container {
+
+      font-size: 13px;
+
+      transition: all 0.2s ease;    }      padding: 24px;
+
+      text-decoration: none;
+
+      display: inline-flex;        }
+
+      align-items: center;
+
+      gap: 6px;    .header {    h1 {
+
+    }
+
+          display: flex;      font-size: 24px;
+
+    .back-button:hover {
+
+      background: #475569;      align-items: center;      margin-bottom: 8px;
+
+    }
+
+          justify-content: space-between;      color: #0f172a;
+
+    h1 {
+
+      font-size: 20px;      margin-bottom: 20px;    }
+
+      color: #FFD100;
+
+      margin: 0;    }    .subtitle {
+
+      font-weight: 600;
+
+    }          font-size: 14px;
+
+    
+
+    .section {    .back-button {      color: #64748b;
+
+      background: #1e293b;
+
+      border: 1px solid #334155;      padding: 8px 12px;      margin-bottom: 24px;
+
+      border-radius: 8px;
+
+      padding: 16px;      background: #334155;    }
+
+      margin-bottom: 16px;
+
+    }      border: 1px solid #475569;    .section {
+
+    
+
+    .section-title {      border-radius: 6px;      background: white;
+
+      font-size: 14px;
+
+      font-weight: 600;      color: #e2e8f0;      border: 1px solid #e2e8f0;
+
+      color: #FFD100;
+
+      margin-bottom: 8px;      cursor: pointer;      border-radius: 8px;
+
+      display: flex;
+
+      align-items: center;      font-size: 13px;      padding: 20px;
+
+      gap: 8px;
+
+    }      transition: all 0.2s ease;      margin-bottom: 16px;
+
+    
+
+    .section-description {      text-decoration: none;    }
+
+      font-size: 12px;
+
+      color: #94a3b8;      display: inline-flex;    .section-title {
+
+      line-height: 1.5;
+
+      margin-bottom: 16px;      align-items: center;      font-size: 16px;
+
+    }
+
+          gap: 6px;      font-weight: 600;
+
+    .form-group {
+
+      margin-bottom: 16px;    }      color: #0f172a;
+
+    }
+
+              margin-bottom: 12px;
+
+    .form-group:last-child {
+
+      margin-bottom: 0;    .back-button:hover {    }
+
+    }
+
+          background: #475569;    .section-description {
+
+    label {
+
+      display: block;    }      font-size: 13px;
+
+      font-size: 13px;
+
+      font-weight: 500;          color: #64748b;
+
+      margin-bottom: 6px;
+
+      color: #cbd5e1;    h1 {      line-height: 1.5;
+
+    }
+
+          font-size: 20px;      margin-bottom: 16px;
+
+    input[type="password"],
+
+    input[type="text"],      color: #FFD100;    }
+
+    input[type="url"],
+
+    select {      margin: 0;    .form-group {
+
+      width: 100%;
+
+      padding: 10px;      font-weight: 600;      margin-bottom: 16px;
+
+      border: 1px solid #475569;
+
+      border-radius: 6px;    }    }
+
+      font-family: inherit;
+
+      font-size: 13px;        .form-group:last-child {
+
+      background: #0f172a;
+
+      color: #e2e8f0;    .section {      margin-bottom: 0;
+
+    }
+
+          background: #1e293b;    }
+
+    input:focus,
+
+    select:focus {      border: 1px solid #334155;    label {
+
+      outline: none;
+
+      border-color: #FFD100;      border-radius: 8px;      display: block;
+
+      box-shadow: 0 0 0 3px rgba(255, 209, 0, 0.1);
+
+    }      padding: 16px;      font-size: 13px;
+
+    
+
+    input::placeholder {      margin-bottom: 16px;      font-weight: 500;
+
+      color: #64748b;
+
+    }    }      margin-bottom: 6px;
+
+    
+
+    .input-helper {          color: #334155;
+
+      font-size: 11px;
+
+      color: #64748b;    .section-title {    }
+
+      margin-top: 6px;
+
+      line-height: 1.4;      font-size: 14px;    input[type="password"],
+
+    }
+
+          font-weight: 600;    input[type="text"] {
+
+    .input-helper a {
+
+      color: #60a5fa;      color: #FFD100;      width: 100%;
+
+      text-decoration: none;
+
+    }      margin-bottom: 8px;      padding: 10px;
+
+    
+
+    .input-helper a:hover {      display: flex;      border: 1px solid #cbd5e1;
+
+      text-decoration: underline;
+
+    }      align-items: center;      border-radius: 6px;
+
+    
+
+    .provider-selector {      gap: 8px;      font-family: inherit;
+
+      display: grid;
+
+      grid-template-columns: 1fr 1fr;    }      font-size: 13px;
+
+      gap: 8px;
+
+      margin-bottom: 16px;        }
+
+    }
+
+        .section-description {    input[type="password"]:focus,
+
+    .provider-option {
+
+      padding: 12px;      font-size: 12px;    input[type="text"]:focus {
+
+      border: 2px solid #334155;
+
+      border-radius: 6px;      color: #94a3b8;      outline: none;
+
+      cursor: pointer;
+
+      text-align: center;      line-height: 1.5;      border-color: #0ea5e9;
+
+      transition: all 0.2s ease;
+
+      background: #0f172a;      margin-bottom: 16px;      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+
+    }
+
+        }    }
+
+    .provider-option:hover {
+
+      border-color: #475569;        input[type="password"].masked {
+
+      background: #1e293b;
+
+    }    .form-group {      font-family: serif;
+
+    
+
+    .provider-option.active {      margin-bottom: 16px;      letter-spacing: 0.3em;
+
+      border-color: #FFD100;
+
+      background: #1e293b;    }    }
+
+    }
+
+            .input-helper {
+
+    .provider-option .icon {
+
+      font-size: 24px;    .form-group:last-child {      font-size: 12px;
+
+      margin-bottom: 6px;
+
+    }      margin-bottom: 0;      color: #64748b;
+
+    
+
+    .provider-option .name {    }      margin-top: 6px;
+
+      font-size: 13px;
+
+      font-weight: 600;        }
+
+      color: #e2e8f0;
+
+      margin-bottom: 4px;    label {    .input-helper a {
+
+    }
+
+          display: block;      color: #0ea5e9;
+
+    .provider-option .desc {
+
+      font-size: 11px;      font-size: 13px;      text-decoration: none;
+
+      color: #94a3b8;
+
+    }      font-weight: 500;    }
+
+    
+
+    .provider-config {      margin-bottom: 6px;    .input-helper a:hover {
+
+      display: none;
+
+    }      color: #cbd5e1;      text-decoration: underline;
+
+    
+
+    .provider-config.active {    }    }
+
+      display: block;
+
+    }        .button-group {
+
+    
+
+    button {    input[type="password"],      display: flex;
+
+      width: 100%;
+
+      padding: 10px 16px;    input[type="text"],      gap: 8px;
+
+      border: none;
+
+      border-radius: 6px;    input[type="url"],      margin-top: 16px;
+
+      cursor: pointer;
+
+      font-size: 14px;    select {    }
+
+      font-weight: 600;
+
+      transition: all 0.2s ease;      width: 100%;    button {
+
+    }
+
+          padding: 10px;      padding: 10px 16px;
+
+    .btn-primary {
+
+      background: linear-gradient(135deg, #FFD100 0%, #FFC700 100%);      border: 1px solid #475569;      border: none;
+
+      color: #000A30;
+
+      box-shadow: 0 2px 8px rgba(255, 209, 0, 0.3);      border-radius: 6px;      border-radius: 6px;
+
+    }
+
+          font-family: inherit;      cursor: pointer;
+
+    .btn-primary:hover:not(:disabled) {
+
+      transform: translateY(-1px);      font-size: 13px;      font-size: 13px;
+
+      box-shadow: 0 4px 12px rgba(255, 209, 0, 0.4);
+
+    }      background: #0f172a;      font-weight: 500;
+
+    
+
+    .btn-primary:disabled {      color: #e2e8f0;      transition: all 0.2s;
+
+      background: #334155;
+
+      color: #64748b;    }    }
+
+      box-shadow: none;
+
+      cursor: not-allowed;        .btn-primary {
+
+      opacity: 0.6;
+
+    }    input:focus,      background: #0ea5e9;
+
+    
+
+    .btn-secondary {    select:focus {      color: white;
+
+      background: #334155;
+
+      border: 1px solid #475569;      outline: none;      flex: 1;
+
+      color: #e2e8f0;
+
+      margin-top: 8px;      border-color: #FFD100;    }
+
+    }
+
+          box-shadow: 0 0 0 3px rgba(255, 209, 0, 0.1);    .btn-primary:hover:not(:disabled) {
+
+    .btn-secondary:hover {
+
+      background: #475569;    }      background: #0284c7;
+
+    }
+
+            }
+
+    .status-message {
+
+      padding: 10px;    input::placeholder {    .btn-primary:disabled {
+
+      border-radius: 6px;
+
+      font-size: 12px;      color: #64748b;      background: #cbd5e1;
+
+      margin-top: 12px;
+
+      display: none;    }      cursor: not-allowed;
+
+    }
+
+            }
+
+    .status-message.success {
+
+      background: #064e3b;    .input-helper {    .btn-secondary {
+
+      border: 1px solid #047857;
+
+      color: #6ee7b7;      font-size: 11px;      background: #e2e8f0;
+
+      display: block;
+
+    }      color: #64748b;      color: #334155;
+
+    
+
+    .status-message.error {      margin-top: 6px;      flex: 1;
+
+      background: #7f1d1d;
+
+      border: 1px solid #b91c1c;      line-height: 1.4;    }
+
+      color: #fca5a5;
+
+      display: block;    }    .btn-secondary:hover {
+
+    }
+
+              background: #cbd5e1;
+
+    .divider {
+
+      height: 1px;    .input-helper a {    }
+
+      background: #334155;
+
+      margin: 16px 0;      color: #60a5fa;    .btn-danger {
+
+    }
+
+          text-decoration: none;      background: #ef4444;
+
+    .warning-box {
+
+      background: #422006;    }      color: white;
+
+      border: 1px solid #92400e;
+
+      border-radius: 6px;        }
+
+      padding: 12px;
+
+      margin-top: 12px;    .input-helper a:hover {    .btn-danger:hover {
+
+    }
+
+          text-decoration: underline;      background: #dc2626;
+
+    .warning-box .title {
+
+      font-size: 12px;    }    }
+
+      font-weight: 600;
+
+      color: #fbbf24;        .status {
+
+      margin-bottom: 6px;
+
+    }    .provider-selector {      padding: 12px;
+
+    
+
+    .warning-box .text {      display: grid;      border-radius: 6px;
+
+      font-size: 11px;
+
+      color: #fcd34d;      grid-template-columns: 1fr 1fr;      margin-bottom: 16px;
+
+      line-height: 1.4;
+
+    }      gap: 8px;      font-size: 13px;
+
+  </style>
+
+</head>      margin-bottom: 16px;    }
+
+<body>
+
+  <div class="header">    }    .status.idle {
+
+    <h1>⚙️ Settings</h1>
+
+    <a href="popup.html" class="back-button">          background: #f0f9ff;
+
+      ← Back
+
+    </a>    .provider-option {      border: 1px solid #0ea5e9;
+
+  </div>
+
+        padding: 12px;      color: #0369a1;
+
+  <!-- LLM Provider Section -->
+
+  <div class="section">      border: 2px solid #334155;    }
+
+    <div class="section-title">
+
+      🤖 AI Provider      border-radius: 6px;    .status.loading {
+
+    </div>
+
+    <div class="section-description">      cursor: pointer;      background: #fef3c7;
+
+      Choose where Max's intelligence comes from. Venice AI is cloud-based (free tier available), while Local runs on your machine for privacy.
+
+    </div>      text-align: center;      border: 1px solid #fbbf24;
+
+    
+
+    <div class="provider-selector">      transition: all 0.2s ease;      color: #92400e;
+
+      <div class="provider-option active" data-provider="venice">
+
+        <div class="icon">☁️</div>      background: #0f172a;    }
+
+        <div class="name">Venice AI</div>
+
+        <div class="desc">Cloud-based</div>    }    .status.success {
+
+      </div>
+
+      <div class="provider-option" data-provider="local">          background: #dcfce7;
+
+        <div class="icon">💻</div>
+
+        <div class="name">Local</div>    .provider-option:hover {      border: 1px solid #86efac;
+
+        <div class="desc">LM Studio</div>
+
+      </div>      border-color: #475569;      color: #166534;
+
+    </div>
+
+          background: #1e293b;    }
+
+    <!-- Venice AI Configuration -->
+
+    <div class="provider-config active" id="venice-config">    }    .status.error {
+
+      <div class="form-group">
+
+        <label for="veniceApiKey">Venice AI API Key</label>          background: #fee2e2;
+
+        <input 
+
+          type="password"     .provider-option.active {      border: 1px solid #fca5a5;
+
+          id="veniceApiKey" 
+
+          placeholder="venice_xxxxxxxxxxxxx"      border-color: #FFD100;      color: #991b1b;
+
+          autocomplete="off"
+
+        />      background: #1e293b;    }
+
+        <div class="input-helper">
+
+          Get your free API key from <a href="https://venice.ai/account" target="_blank">venice.ai/account</a>    }    .key-status {
+
+        </div>
+
+      </div>          display: flex;
+
+    </div>
+
+        .provider-option .icon {      align-items: center;
+
+    <!-- Local LM Studio Configuration -->
+
+    <div class="provider-config" id="local-config">      font-size: 24px;      gap: 8px;
+
+      <div class="form-group">
+
+        <label for="localUrl">LM Studio Server URL</label>      margin-bottom: 6px;      padding: 12px;
+
+        <input 
+
+          type="url"     }      background: #f1f5f9;
+
+          id="localUrl" 
+
+          placeholder="http://localhost:1234/v1"          border-radius: 6px;
+
+          value="http://localhost:1234/v1"
+
+        />    .provider-option .name {      font-size: 13px;
+
+        <div class="input-helper">
+
+          Make sure LM Studio is running with a model loaded. Default port is 1234.      font-size: 13px;      margin-bottom: 16px;
+
+        </div>
+
+      </div>      font-weight: 600;    }
+
+      
+
+      <div class="warning-box">      color: #e2e8f0;    .key-status.configured {
+
+        <div class="title">⚠️ Local Setup Required</div>
+
+        <div class="text">      margin-bottom: 4px;      background: #dcfce7;
+
+          Download <a href="https://lmstudio.ai" target="_blank" style="color: #fbbf24;">LM Studio</a>, 
+
+          load a model (Qwen recommended), and start the server before using local mode.    }      border: 1px solid #86efac;
+
+        </div>
+
+      </div>          color: #166534;
+
+    </div>
+
+        .provider-option .desc {    }
+
+    <div class="divider"></div>
+
+          font-size: 11px;    .key-status.not-configured {
+
+    <button class="btn-primary" id="saveProvider">Save Configuration</button>
+
+    <button class="btn-secondary" id="testConnection">Test Connection</button>      color: #94a3b8;      background: #fee2e2;
+
+    
+
+    <div class="status-message" id="statusMessage"></div>    }      border: 1px solid #fca5a5;
+
+  </div>
+
+            color: #991b1b;
+
+  <!-- Current Configuration Display -->
+
+  <div class="section">    .provider-config {    }
+
+    <div class="section-title">
+
+      📋 Current Status      display: none;    .status-indicator {
+
+    </div>
+
+    <div class="section-description" id="currentStatus">    }      display: inline-block;
+
+      Loading...
+
+    </div>          width: 8px;
+
+  </div>
+
+      .provider-config.active {      height: 8px;
+
+  <script src="llm-service.js"></script>
+
+  <script src="settings.js"></script>      display: block;      border-radius: 50%;
+
+</body>
+
+</html>    }      background: currentColor;
+
+
+        }
+
+    button {    .divider {
+
+      width: 100%;      height: 1px;
+
+      padding: 10px 16px;      background: #e2e8f0;
+
+      border: none;      margin: 20px 0;
+
+      border-radius: 6px;    }
+
+      cursor: pointer;    .info-box {
+
+      font-size: 14px;      background: #f0f9ff;
+
+      font-weight: 600;      border: 1px solid #0ea5e9;
+
+      transition: all 0.2s ease;      border-radius: 6px;
+
+    }      padding: 12px;
+
+          font-size: 12px;
+
+    .btn-primary {      color: #0369a1;
+
+      background: linear-gradient(135deg, #FFD100 0%, #FFC700 100%);      line-height: 1.5;
+
+      color: #000A30;    }
+
+      box-shadow: 0 2px 8px rgba(255, 209, 0, 0.3);    .info-box a {
+
+    }      color: #0284c7;
+
+          font-weight: 600;
+
+    .btn-primary:hover:not(:disabled) {      text-decoration: none;
+
+      transform: translateY(-1px);    }
+
+      box-shadow: 0 4px 12px rgba(255, 209, 0, 0.4);    .info-box a:hover {
+
+    }      text-decoration: underline;
+
+        }
+
+    .btn-primary:disabled {    .feature-list {
+
+      background: #334155;      list-style: none;
+
+      color: #64748b;      font-size: 13px;
+
+      box-shadow: none;      color: #64748b;
+
+      cursor: not-allowed;      margin-top: 12px;
+
+      opacity: 0.6;    }
+
+    }    .feature-list li {
+
+          padding: 6px 0;
+
+    .btn-secondary {      padding-left: 20px;
+
+      background: #334155;      position: relative;
+
+      border: 1px solid #475569;    }
+
+      color: #e2e8f0;    .feature-list li:before {
+
+      margin-top: 8px;      content: "✓";
+
+    }      position: absolute;
+
+          left: 0;
+
+    .btn-secondary:hover {      color: #16a34a;
+
+      background: #475569;      font-weight: bold;
+
+    }    }
+
+      </style>
+
+    .status-message {</head>
+
+      padding: 10px;<body>
+
+      border-radius: 6px;  <div class="container">
+
+      font-size: 12px;    <h1>🎯 PayAttn Settings</h1>
+
+      margin-top: 12px;    <p class="subtitle">Configure your PayAttn extension</p>
+
+      display: none;
+
+    }    <!-- Venice AI Section -->
+
+        <div class="section">
+
+    .status-message.success {      <div class="section-title">🤖 Venice AI Configuration</div>
+
+      background: #064e3b;      
+
+      border: 1px solid #047857;      <div class="section-description">
+
+      color: #6ee7b7;        Configure your Venice AI API key. This enables local LLM processing for ad matching and analysis. 
+
+      display: block;        <strong>Your key is stored securely in your browser and never sent to our servers.</strong>
+
+    }      </div>
+
+    
+
+    .status-message.error {      <!-- Key Status -->
+
+      background: #7f1d1d;      <div id="keyStatus" class="key-status not-configured">
+
+      border: 1px solid #b91c1c;        <span class="status-indicator"></span>
+
+      color: #fca5a5;        <span id="keyStatusText">API key not configured</span>
+
+      display: block;      </div>
+
+    }
+
+          <!-- Status Messages -->
+
+    .divider {      <div id="statusMessage" class="status idle" style="display: none;"></div>
+
+      height: 1px;
+
+      background: #334155;      <!-- Form -->
+
+      margin: 16px 0;      <div class="form-group">
+
+    }        <label for="apiKey">Venice AI API Key</label>
+
+            <input 
+
+    .warning-box {          type="password" 
+
+      background: #422006;          id="apiKey" 
+
+      border: 1px solid #92400e;          placeholder="sk_live_..."
+
+      border-radius: 6px;          class="masked"
+
+      padding: 12px;        />
+
+      margin-top: 12px;        <div class="input-helper">
+
+    }          Get your free API key from <a href="https://docs.venice.ai/overview/getting-started" target="_blank">Venice AI</a>
+
+            </div>
+
+    .warning-box .title {      </div>
+
+      font-size: 12px;
+
+      font-weight: 600;      <!-- Show/Hide Toggle -->
+
+      color: #fbbf24;      <div style="margin-top: 8px; margin-bottom: 16px;">
+
+      margin-bottom: 6px;        <button class="btn-secondary" id="showKeyBtn" style="width: auto; flex: none;">
+
+    }          <span id="showKeyToggle">👁️ Show</span>
+
+            </button>
+
+    .warning-box .text {      </div>
+
+      font-size: 11px;
+
+      color: #fcd34d;      <!-- Action Buttons -->
+
+      line-height: 1.4;      <div class="button-group">
+
+    }        <button class="btn-primary" id="saveKeyBtn">💾 Save API Key</button>
+
+  </style>        <button class="btn-secondary" id="testConnectionBtn">🧪 Test Connection</button>
+
+</head>        <button class="btn-danger" id="clearKeyBtn">🗑️ Clear Key</button>
+
+<body>      </div>
+
+  <div class="header">    </div>
+
+    <h1>⚙️ Settings</h1>
+
+    <a href="popup.html" class="back-button">    <!-- How It Works -->
+
+      ← Back    <div class="section">
+
+    </a>      <div class="section-title">🔒 How It Works</div>
+
+  </div>      <div class="section-description">Your privacy is our priority.</div>
+
+        
+
+  <!-- LLM Provider Section -->      <ul class="feature-list">
+
+  <div class="section">        <li>API key stored locally in your browser (never sent to PayAttn servers)</li>
+
+    <div class="section-title">        <li>User profile data stays on your device (never sent to PayAttn servers)</li>
+
+      🤖 AI Provider        <li>Only your profile and ad data sent to Venice AI for processing</li>
+
+    </div>        <li>Venice AI processes the request and returns matching results</li>
+
+    <div class="section-description">        <li>Results stored locally in your browser</li>
+
+      Choose where Max's intelligence comes from. Venice AI is cloud-based (free tier available), while Local runs on your machine for privacy.      </ul>
+
+    </div>
+
+          <div class="divider"></div>
+
+    <div class="provider-selector">
+
+      <div class="provider-option active" data-provider="venice">      <div style="font-size: 12px; color: #64748b; line-height: 1.6;">
+
+        <div class="icon">☁️</div>        <strong>Architecture:</strong><br/>
+
+        <div class="name">Venice AI</div>        Your Device (User Profile) → Extension (LLM Processing) → Venice AI (OpenAI Compatible)<br/>
+
+        <div class="desc">Cloud-based</div>        <br/>
+
+      </div>        <strong>PayAttn Servers:</strong> Never see your personal data, API keys, or profiles
+
+      <div class="provider-option" data-provider="local">      </div>
+
+        <div class="icon">💻</div>    </div>
+
+        <div class="name">Local</div>
+
+        <div class="desc">LM Studio</div>    <!-- FAQ Section -->
+
+      </div>    <div class="section">
+
+    </div>      <div class="section-title">❓ FAQ</div>
+
+    
+
+    <!-- Venice AI Configuration -->      <div style="margin-bottom: 16px;">
+
+    <div class="provider-config active" id="venice-config">        <strong style="font-size: 13px; display: block; margin-bottom: 6px;">Is my API key safe?</strong>
+
+      <div class="form-group">        <div style="font-size: 12px; color: #64748b; line-height: 1.5;">
+
+        <label for="veniceApiKey">Venice AI API Key</label>          Yes. Your API key is stored in Chrome's local storage and never transmitted to PayAttn servers. 
+
+        <input           Only the extension can access it.
+
+          type="password"         </div>
+
+          id="veniceApiKey"       </div>
+
+          placeholder="venice_xxxxxxxxxxxxx"
+
+          autocomplete="off"      <div style="margin-bottom: 16px;">
+
+        />        <strong style="font-size: 13px; display: block; margin-bottom: 6px;">What data goes to Venice AI?</strong>
+
+        <div class="input-helper">        <div style="font-size: 12px; color: #64748b; line-height: 1.5;">
+
+          Get your free API key from <a href="https://venice.ai/account" target="_blank">venice.ai/account</a>          Only the data you explicitly send for processing (profile info, ads to analyze). Nothing else is transmitted.
+
+        </div>        </div>
+
+      </div>      </div>
+
+    </div>
+
+          <div style="margin-bottom: 16px;">
+
+    <!-- Local LM Studio Configuration -->        <strong style="font-size: 13px; display: block; margin-bottom: 6px;">Can PayAttn access my data?</strong>
+
+    <div class="provider-config" id="local-config">        <div style="font-size: 12px; color: #64748b; line-height: 1.5;">
+
+      <div class="form-group">          No. All processing happens locally in your browser. PayAttn servers never see your profiles, API keys, or processed data.
+
+        <label for="localUrl">LM Studio Server URL</label>        </div>
+
+        <input       </div>
+
+          type="url" 
+
+          id="localUrl"       <div>
+
+          placeholder="http://localhost:1234/v1"        <strong style="font-size: 13px; display: block; margin-bottom: 6px;">What if I uninstall the extension?</strong>
+
+          value="http://localhost:1234/v1"        <div style="font-size: 12px; color: #64748b; line-height: 1.5;">
+
+        />          All data, including your API key, is automatically deleted. No traces remain.
+
+        <div class="input-helper">        </div>
+
+          Make sure LM Studio is running with a model loaded. Default port is 1234.      </div>
+
+        </div>    </div>
+
+      </div>
+
+          <!-- About Venice AI -->
+
+      <div class="warning-box">    <div class="section">
+
+        <div class="title">⚠️ Local Setup Required</div>      <div class="section-title">ℹ️ About Venice AI</div>
+
+        <div class="text">      <div style="font-size: 12px; color: #64748b; line-height: 1.6;">
+
+          Download <a href="https://lmstudio.ai" target="_blank" style="color: #fbbf24;">LM Studio</a>,         Venice AI is a privacy-respecting OpenAI-compatible LLM API. It runs uncensored models and doesn't log requests. 
+
+          load a model (Qwen recommended), and start the server before using local mode.        <a href="https://docs.venice.ai" target="_blank" style="color: #0ea5e9; text-decoration: none; font-weight: 500;">
+
+        </div>          Learn more →
+
+      </div>        </a>
+
+    </div>      </div>
+
+        </div>
+
+    <div class="divider"></div>  </div>
+
+    
+
+    <button class="btn-primary" id="saveProvider">Save Configuration</button>  <script src="venice-ai.js"></script>
+
+    <button class="btn-secondary" id="testConnection">Test Connection</button>  <script src="settings.js"></script>
+
+    </body>
+
+    <div class="status-message" id="statusMessage"></div></html>
+
+  </div>
+  
+  <!-- Current Configuration Display -->
+  <div class="section">
+    <div class="section-title">
+      📋 Current Status
+    </div>
+    <div class="section-description" id="currentStatus">
+      Loading...
+    </div>
+  </div>
+  
+  <script src="llm-service.js"></script>
+  <script>
+    // ========================================================================
+    // Provider Selection
+    // ========================================================================
+    
+    const providerOptions = document.querySelectorAll('.provider-option');
+    const providerConfigs = document.querySelectorAll('.provider-config');
+    let selectedProvider = 'venice';
+    
+    providerOptions.forEach(option => {
+      option.addEventListener('click', () => {
+        // Update selected provider
+        selectedProvider = option.dataset.provider;
+        
+        // Update UI
+        providerOptions.forEach(o => o.classList.remove('active'));
+        option.classList.add('active');
+        
+        providerConfigs.forEach(c => c.classList.remove('active'));
+        document.getElementById(`${selectedProvider}-config`).classList.add('active');
+      });
+    });
+    
+    // ========================================================================
+    // Load Current Configuration
+    // ========================================================================
+    
+    async function loadConfiguration() {
+      const config = await window.LLMService.getLLMConfig();
+      
+      // Set provider selection
+      selectedProvider = config.provider;
+      providerOptions.forEach(o => {
+        if (o.dataset.provider === selectedProvider) {
+          o.classList.add('active');
+        } else {
+          o.classList.remove('active');
+        }
+      });
+      
+      providerConfigs.forEach(c => {
+        if (c.id === `${selectedProvider}-config`) {
+          c.classList.add('active');
+        } else {
+          c.classList.remove('active');
+        }
+      });
+      
+      // Populate fields
+      if (config.veniceApiKey) {
+        document.getElementById('veniceApiKey').value = config.veniceApiKey;
+      }
+      if (config.localUrl) {
+        document.getElementById('localUrl').value = config.localUrl;
+      }
+      
+      // Update status
+      updateStatus(config);
+    }
+    
+    function updateStatus(config) {
+      const statusEl = document.getElementById('currentStatus');
+      
+      if (config.provider === 'venice') {
+        const hasKey = !!config.veniceApiKey;
+        statusEl.innerHTML = `
+          <div style="font-size: 13px; margin-bottom: 6px;">
+            <strong>Provider:</strong> Venice AI (Cloud)
+          </div>
+          <div style="font-size: 13px;">
+            <strong>Status:</strong> ${hasKey ? '✅ Configured' : '❌ Not configured'}
+          </div>
+        `;
+      } else if (config.provider === 'local') {
+        const hasUrl = !!config.localUrl;
+        statusEl.innerHTML = `
+          <div style="font-size: 13px; margin-bottom: 6px;">
+            <strong>Provider:</strong> Local LM Studio
+          </div>
+          <div style="font-size: 13px; margin-bottom: 6px;">
+            <strong>URL:</strong> ${config.localUrl || 'Not set'}
+          </div>
+          <div style="font-size: 13px;">
+            <strong>Status:</strong> ${hasUrl ? '⚠️ Configured (test connection)' : '❌ Not configured'}
+          </div>
+        `;
+      }
+    }
+    
+    // ========================================================================
+    // Save Configuration
+    // ========================================================================
+    
+    document.getElementById('saveProvider').addEventListener('click', async () => {
+      const statusMsg = document.getElementById('statusMessage');
+      const saveBtn = document.getElementById('saveProvider');
+      
+      try {
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Saving...';
+        
+        const config = {
+          provider: selectedProvider
+        };
+        
+        if (selectedProvider === 'venice') {
+          const apiKey = document.getElementById('veniceApiKey').value.trim();
+          if (!apiKey) {
+            throw new Error('Venice AI API key is required');
+          }
+          config.veniceApiKey = apiKey;
+        } else if (selectedProvider === 'local') {
+          const url = document.getElementById('localUrl').value.trim();
+          if (!url) {
+            throw new Error('LM Studio URL is required');
+          }
+          config.localUrl = url;
+        }
+        
+        await window.LLMService.setLLMConfig(config);
+        
+        statusMsg.className = 'status-message success';
+        statusMsg.textContent = '✅ Configuration saved successfully!';
+        
+        // Update status display
+        await loadConfiguration();
+        
+      } catch (error) {
+        statusMsg.className = 'status-message error';
+        statusMsg.textContent = `❌ ${error.message}`;
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Save Configuration';
+        
+        // Hide message after 3 seconds
+        setTimeout(() => {
+          statusMsg.style.display = 'none';
+        }, 3000);
+      }
+    });
+    
+    // ========================================================================
+    // Test Connection
+    // ========================================================================
+    
+    document.getElementById('testConnection').addEventListener('click', async () => {
+      const statusMsg = document.getElementById('statusMessage');
+      const testBtn = document.getElementById('testConnection');
+      
+      try {
+        testBtn.disabled = true;
+        testBtn.textContent = 'Testing...';
+        
+        statusMsg.className = 'status-message';
+        statusMsg.style.display = 'block';
+        statusMsg.textContent = '🔄 Testing connection...';
+        
+        // Simple test message
+        const response = await window.LLMService.callLLM(
+          [{ role: 'user', content: 'Say "OK" if you can hear me.' }],
+          'qwen3-next-80b',
+          0.7,
+          50
+        );
+        
+        if (response.success) {
+          statusMsg.className = 'status-message success';
+          statusMsg.textContent = `✅ Connection successful! Response: "${response.content.substring(0, 50)}..."`;
+        } else {
+          throw new Error(response.error || 'Connection failed');
+        }
+        
+      } catch (error) {
+        statusMsg.className = 'status-message error';
+        statusMsg.textContent = `❌ Connection failed: ${error.message}`;
+      } finally {
+        testBtn.disabled = false;
+        testBtn.textContent = 'Test Connection';
+      }
+    });
+    
+    // ========================================================================
+    // Initialize
+    // ========================================================================
+    
+    loadConfiguration();
+  </script>
+</body>
+</html>

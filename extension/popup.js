@@ -102,20 +102,11 @@ function showAuthState(walletAddress) {
   }
   
   // Set up event listeners
-  const runNowBtn = document.getElementById('runNow');
-  const refreshBtn = document.getElementById('refresh');
   const manageWalletBtn = document.getElementById('manageWallet');
   const manageProfileBtn = document.getElementById('manageProfile');
   const adDashboardBtn = document.getElementById('adDashboard');
   const adQueueBtn = document.getElementById('adQueue');
-  const openDashboardLink = document.getElementById('openDashboard');
   
-  if (runNowBtn) {
-    runNowBtn.addEventListener('click', handleRunNow);
-  }
-  if (refreshBtn) {
-    refreshBtn.addEventListener('click', loadStatus);
-  }
   if (manageWalletBtn) {
     manageWalletBtn.addEventListener('click', () => {
       chrome.tabs.create({ url: 'http://localhost:3000/wallet-auth' });
@@ -136,12 +127,6 @@ function showAuthState(walletAddress) {
       chrome.tabs.create({ url: chrome.runtime.getURL('ad-queue.html') });
     });
   }
-  if (openDashboardLink) {
-    openDashboardLink.addEventListener('click', (e) => {
-      e.preventDefault();
-      chrome.tabs.create({ url: 'http://localhost:3000/dashboard' });
-    });
-  }
 }
 
 /**
@@ -149,44 +134,87 @@ function showAuthState(walletAddress) {
  */
 async function loadStatus() {
   try {
-    const response = await chrome.runtime.sendMessage({ type: 'GET_STATUS' });
-    
-    // Update status
-    if (response.status) {
-      const lastRun = new Date(response.status.lastRunAt);
-      const nextRun = new Date(response.status.nextRunAt);
-      
-      document.getElementById('lastRun').textContent = lastRun.toLocaleString();
-      document.getElementById('nextRun').textContent = nextRun.toLocaleString();
-    } else {
-      document.getElementById('lastRun').textContent = 'Never';
-      document.getElementById('nextRun').textContent = 'Waiting...';
-    }
-    
-    // Update logs
+    // Load session summaries from chrome.storage
     const logsContainer = document.getElementById('logsContainer');
     logsContainer.innerHTML = '';
     
-    if (response.logs && response.logs.length > 0) {
-      // Show last 5 logs
-      const recentLogs = response.logs.slice(-5).reverse();
+    // Get Max sessions and next scheduled run from storage
+    const result = await chrome.storage.local.get(['payattn_max_sessions', 'payattn_next_scheduled_run']);
+    const sessions = result.payattn_max_sessions || [];
+    const nextScheduledRun = result.payattn_next_scheduled_run;
+    
+    if (sessions.length > 0) {
+      // Sort by timestamp desc (newest first)
+      const sortedSessions = sessions.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
       
-      recentLogs.forEach(log => {
+      // Update Last Run from newest session
+      const lastSession = sortedSessions[0];
+      const lastRun = new Date(lastSession.timestamp);
+      
+      document.getElementById('lastRun').textContent = lastRun.toLocaleString();
+      
+      // Update Next Run from scheduled time in storage (single source of truth)
+      if (nextScheduledRun) {
+        const nextRun = new Date(nextScheduledRun);
+        document.getElementById('nextRun').textContent = nextRun.toLocaleString();
+      } else {
+        document.getElementById('nextRun').textContent = 'Calculating...';
+      }
+      
+      // Show last 5 sessions in Recent Executions
+      const recentSessions = sortedSessions.slice(0, 5);
+      
+      recentSessions.forEach(session => {
         const div = document.createElement('div');
-        div.className = `log-entry ${log.success ? 'log-success' : 'log-error'}`;
+        const totalAds = session.ads.length;
+        const offeredAds = session.ads.filter(ad => ad.assessment.decision === 'MAKING OFFER').length;
+        const rejectedAds = session.ads.filter(ad => ad.assessment.decision === 'REJECT').length;
+        const triggerLabel = session.triggerType === 'manual' ? 'manual' : 'automated';
         
-        const time = new Date(log.timestamp).toLocaleString();
-        const icon = log.success ? '✅' : '❌';
+        // Determine if this is an empty session (no ads)
+        const isEmpty = totalAds === 0;
+        
+        // Set class based on whether session has ads
+        div.className = isEmpty ? 'log-entry' : 'log-entry log-success';
+        
+        const time = new Date(session.timestamp).toLocaleString();
+        
+        // Calculate ratio for gradient (muted colors) - only for non-empty sessions
+        if (!isEmpty) {
+          const offerPercent = (offeredAds / totalAds) * 100;
+          const gradientBg = `linear-gradient(to right, rgba(5, 150, 105, 0.15) 0%, rgba(5, 255, 105, 0.15) ${offerPercent}%, rgba(255, 38, 38, 0.15) ${offerPercent}%, rgba(155, 38, 38, 0.15) 100%)`;
+          div.style.background = gradientBg;
+        }
+        // Empty sessions use default neutral background from .log-entry class
+        
+        div.style.borderColor = '#334155';
+        
+        // Handle display text
+        const adsText = totalAds > 0 
+          ? `${totalAds} new ads • ${offeredAds} offers • ${rejectedAds} rejected`
+          : 'No new ads - check completed';
         
         div.innerHTML = `
-          <div><strong>${icon} ${time}</strong></div>
-          <div>${log.error || `Processed ${log.profilesProcessed} profile(s)`}</div>
+          <div><strong>✅ ${time}</strong> <span style="font-size: 10px; color: #86efac;">(${triggerLabel})</span></div>
+          <div style="font-size: 11px; margin-top: 4px; color: ${isEmpty ? '#94a3b8' : '#86efac'};">
+            ${adsText}
+          </div>
         `;
         
         logsContainer.appendChild(div);
       });
     } else {
-      logsContainer.innerHTML = '<div style="padding: 8px; color: #64748b;">No executions yet</div>';
+      document.getElementById('lastRun').textContent = 'Never';
+      
+      // Show next scheduled run even if no sessions yet
+      if (nextScheduledRun) {
+        const nextRun = new Date(nextScheduledRun);
+        document.getElementById('nextRun').textContent = nextRun.toLocaleString();
+      } else {
+        document.getElementById('nextRun').textContent = 'Waiting...';
+      }
+      
+      logsContainer.innerHTML = '<div style="padding: 8px; color: #64748b;">No sessions yet</div>';
     }
     
     // Load and display profile data
@@ -326,17 +354,6 @@ function renderProfileCard(profile) {
   // Financial
   if (profile.financial?.incomeRange) {
     parts.push(`💰 ${profile.financial.incomeRange}`);
-  }
-  
-  // Preferences
-  if (profile.preferences) {
-    const prefs = profile.preferences;
-    if (prefs.maxAdsPerHour) {
-      parts.push(`📊 Max ${prefs.maxAdsPerHour} ads/hour`);
-    }
-    if (prefs.painThreshold !== undefined) {
-      parts.push(`🎚️ Pain threshold: ${prefs.painThreshold}/10`);
-    }
   }
   
   if (parts.length === 0) {

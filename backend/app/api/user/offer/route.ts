@@ -111,7 +111,9 @@ export async function POST(request: NextRequest) {
         offer_id: offerId,
         user_id: userId,
         user_pubkey: user.wallet_pubkey,
-        ad_creative_id: ad_creative_id,
+        advertiser_id: adCreative.advertiser_id, // Required field from ad_creative
+        ad_id: adCreative.ad_creative_id, // Legacy text field for compatibility
+        ad_creative_id: ad_creative_id, // UUID reference to ad_creative table
         amount_lamports: amount_lamports,
         status: 'offer_made',
         zk_proofs: zk_proofs || {},

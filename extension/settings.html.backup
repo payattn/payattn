@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>PayAttn Settings</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      width: 600px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f8fafc;
+    }
+    .container {
+      padding: 24px;
+    }
+    h1 {
+      font-size: 24px;
+      margin-bottom: 8px;
+      color: #0f172a;
+    }
+    .subtitle {
+      font-size: 14px;
+      color: #64748b;
+      margin-bottom: 24px;
+    }
+    .section {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #0f172a;
+      margin-bottom: 12px;
+    }
+    .section-description {
+      font-size: 13px;
+      color: #64748b;
+      line-height: 1.5;
+      margin-bottom: 16px;
+    }
+    .form-group {
+      margin-bottom: 16px;
+    }
+    .form-group:last-child {
+      margin-bottom: 0;
+    }
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 6px;
+      color: #334155;
+    }
+    input[type="password"],
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 13px;
+    }
+    input[type="password"]:focus,
+    input[type="text"]:focus {
+      outline: none;
+      border-color: #0ea5e9;
+      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+    }
+    input[type="password"].masked {
+      font-family: serif;
+      letter-spacing: 0.3em;
+    }
+    .input-helper {
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 6px;
+    }
+    .input-helper a {
+      color: #0ea5e9;
+      text-decoration: none;
+    }
+    .input-helper a:hover {
+      text-decoration: underline;
+    }
+    .button-group {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    button {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: #0ea5e9;
+      color: white;
+      flex: 1;
+    }
+    .btn-primary:hover:not(:disabled) {
+      background: #0284c7;
+    }
+    .btn-primary:disabled {
+      background: #cbd5e1;
+      cursor: not-allowed;
+    }
+    .btn-secondary {
+      background: #e2e8f0;
+      color: #334155;
+      flex: 1;
+    }
+    .btn-secondary:hover {
+      background: #cbd5e1;
+    }
+    .btn-danger {
+      background: #ef4444;
+      color: white;
+    }
+    .btn-danger:hover {
+      background: #dc2626;
+    }
+    .status {
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 16px;
+      font-size: 13px;
+    }
+    .status.idle {
+      background: #f0f9ff;
+      border: 1px solid #0ea5e9;
+      color: #0369a1;
+    }
+    .status.loading {
+      background: #fef3c7;
+      border: 1px solid #fbbf24;
+      color: #92400e;
+    }
+    .status.success {
+      background: #dcfce7;
+      border: 1px solid #86efac;
+      color: #166534;
+    }
+    .status.error {
+      background: #fee2e2;
+      border: 1px solid #fca5a5;
+      color: #991b1b;
+    }
+    .key-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px;
+      background: #f1f5f9;
+      border-radius: 6px;
+      font-size: 13px;
+      margin-bottom: 16px;
+    }
+    .key-status.configured {
+      background: #dcfce7;
+      border: 1px solid #86efac;
+      color: #166534;
+    }
+    .key-status.not-configured {
+      background: #fee2e2;
+      border: 1px solid #fca5a5;
+      color: #991b1b;
+    }
+    .status-indicator {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+    .divider {
+      height: 1px;
+      background: #e2e8f0;
+      margin: 20px 0;
+    }
+    .info-box {
+      background: #f0f9ff;
+      border: 1px solid #0ea5e9;
+      border-radius: 6px;
+      padding: 12px;
+      font-size: 12px;
+      color: #0369a1;
+      line-height: 1.5;
+    }
+    .info-box a {
+      color: #0284c7;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .info-box a:hover {
+      text-decoration: underline;
+    }
+    .feature-list {
+      list-style: none;
+      font-size: 13px;
+      color: #64748b;
+      margin-top: 12px;
+    }
+    .feature-list li {
+      padding: 6px 0;
+      padding-left: 20px;
+      position: relative;
+    }
+    .feature-list li:before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: #16a34a;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎯 PayAttn Settings</h1>
+    <p class="subtitle">Configure your PayAttn extension</p>
+
+    <!-- Venice AI Section -->
+    <div class="section">
+      <div class="section-title">🤖 Venice AI Configuration</div>
+      
+      <div class="section-description">
+        Configure your Venice AI API key. This enables local LLM processing for ad matching and analysis. 
+        <strong>Your key is stored securely in your browser and never sent to our servers.</strong>
+      </div>
+
+      <!-- Key Status -->
+      <div id="keyStatus" class="key-status not-configured">
+        <span class="status-indicator"></span>
+        <span id="keyStatusText">API key not configured</span>
+      </div>
+
+      <!-- Status Messages -->
+      <div id="statusMessage" class="status idle" style="display: none;"></div>
+
+      <!-- Form -->
+      <div class="form-group">
+        <label for="apiKey">Venice AI API Key</label>
+        <input 
+          type="password" 
+          id="apiKey" 
+          placeholder="sk_live_..."
+          class="masked"
+        />
+        <div class="input-helper">
+          Get your free API key from <a href="https://docs.venice.ai/overview/getting-started" target="_blank">Venice AI</a>
+        </div>
+      </div>
+
+      <!-- Show/Hide Toggle -->
+      <div style="margin-top: 8px; margin-bottom: 16px;">
+        <button class="btn-secondary" id="showKeyBtn" style="width: auto; flex: none;">
+          <span id="showKeyToggle">👁️ Show</span>
+        </button>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="button-group">
+        <button class="btn-primary" id="saveKeyBtn">💾 Save API Key</button>
+        <button class="btn-secondary" id="testConnectionBtn">🧪 Test Connection</button>
+        <button class="btn-danger" id="clearKeyBtn">🗑️ Clear Key</button>
+      </div>
+    </div>
+
+    <!-- How It Works -->
+    <div class="section">
+      <div class="section-title">🔒 How It Works</div>
+      <div class="section-description">Your privacy is our priority.</div>
+      
+      <ul class="feature-list">
+        <li>API key stored locally in your browser (never sent to PayAttn servers)</li>
+        <li>User profile data stays on your device (never sent to PayAttn servers)</li>
+        <li>Only your profile and ad data sent to Venice AI for processing</li>
+        <li>Venice AI processes the request and returns matching results</li>
+        <li>Results stored locally in your browser</li>
+      </ul>
+
+      <div class="divider"></div>
+
+      <div style="font-size: 12px; color: #64748b; line-height: 1.6;">
+        <strong>Architecture:</strong><br/>
+        Your Device (User Profile) → Extension (LLM Processing) → Venice AI (OpenAI Compatible)<br/>
+        <br/>
+        <strong>PayAttn Servers:</strong> Never see your personal data, API keys, or profiles
+      </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="section">
+      <div class="section-title">❓ FAQ</div>
+
+      <div style="margin-bottom: 16px;">
+        <strong style="font-size: 13px; display: block; margin-bottom: 6px;">Is my API key safe?</strong>
+        <div style="font-size: 12px; color: #64748b; line-height: 1.5;">
+          Yes. Your API key is stored in Chrome's local storage and never transmitted to PayAttn servers. 
+          Only the extension can access it.
+        </div>
+      </div>
+
+      <div style="margin-bottom: 16px;">
+        <strong style="font-size: 13px; display: block; margin-bottom: 6px;">What data goes to Venice AI?</strong>
+        <div style="font-size: 12px; color: #64748b; line-height: 1.5;">
+          Only the data you explicitly send for processing (profile info, ads to analyze). Nothing else is transmitted.
+        </div>
+      </div>
+
+      <div style="margin-bottom: 16px;">
+        <strong style="font-size: 13px; display: block; margin-bottom: 6px;">Can PayAttn access my data?</strong>
+        <div style="font-size: 12px; color: #64748b; line-height: 1.5;">
+          No. All processing happens locally in your browser. PayAttn servers never see your profiles, API keys, or processed data.
+        </div>
+      </div>
+
+      <div>
+        <strong style="font-size: 13px; display: block; margin-bottom: 6px;">What if I uninstall the extension?</strong>
+        <div style="font-size: 12px; color: #64748b; line-height: 1.5;">
+          All data, including your API key, is automatically deleted. No traces remain.
+        </div>
+      </div>
+    </div>
+
+    <!-- About Venice AI -->
+    <div class="section">
+      <div class="section-title">ℹ️ About Venice AI</div>
+      <div style="font-size: 12px; color: #64748b; line-height: 1.6;">
+        Venice AI is a privacy-respecting OpenAI-compatible LLM API. It runs uncensored models and doesn't log requests. 
+        <a href="https://docs.venice.ai" target="_blank" style="color: #0ea5e9; text-decoration: none; font-weight: 500;">
+          Learn more →
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script src="venice-ai.js"></script>
+  <script src="settings.js"></script>
+</body>
+</html>

@@ -524,19 +524,27 @@ function getVeniceTools() {
   return VENICE_TOOLS;
 }
 
-// Export for use in extension
+// Export for use in extension (both browser context and service worker)
+const VeniceAI = {
+  callVeniceAI,
+  sendMessage,
+  processAd,
+  analyzeAdMatch,
+  generatePreferencesFromProfile,
+  setVeniceAPIKey,
+  getVeniceAPIKey,
+  hasVeniceAPIKey,
+  clearVeniceAPIKey,
+  getVeniceTools,
+  processToolCall,
+};
+
+// Export to window in browser context
 if (typeof window !== 'undefined') {
-  window.VeniceAI = {
-    callVeniceAI,
-    sendMessage,
-    processAd,
-    analyzeAdMatch,
-    generatePreferencesFromProfile,
-    setVeniceAPIKey,
-    getVeniceAPIKey,
-    hasVeniceAPIKey,
-    clearVeniceAPIKey,
-    getVeniceTools,
-    processToolCall,
-  };
+  window.VeniceAI = VeniceAI;
+}
+
+// Export to self in service worker context
+if (typeof self !== 'undefined') {
+  self.VeniceAI = VeniceAI;
 }

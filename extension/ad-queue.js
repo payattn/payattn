@@ -1,6 +1,8 @@
 /**
  * Ad Queue Assessment Script
  * Real Max-based assessment of ad campaigns using Venice AI
+ * 
+ * Note: Core assessment logic is in lib/max-assessor.js (shared with background.js)
  */
 
 let walletName = 'User'; // Default, will be fetched
@@ -8,166 +10,6 @@ let currentSessionIndex = 0; // Track which session we're viewing
 let allSessions = []; // Store all sessions
 let currentFilter = 'all'; // Track current filter
 let userProfile = null; // Loaded user profile for Max
-
-// Max's system prompt (from prompt_max_tools.md)
-const MAX_SYSTEM_PROMPT = `# Max: Attention Broker Agent
-
-## Role and Objective
-You are an attention broker managing YOUR attention - your most valuable asset: your eyeballs. 
-Advertisers pay YOU to view their ads. Your job is to:
-
-1. Assess whether an ad is worth showing to you
-2. Price ads based on advertiser willingness to pay AND your interruption cost
-3. Make decisions that maximize value extraction for you
-
-## Your Profile
-
-The following is your live profile data (loaded from secure encrypted storage):
-
-\`\`\`json
-{{USER_PROFILE}}
-\`\`\`
-
-Use this data to make pricing decisions. When mentioning requirements, reference the actual values from YOUR profile.
-
-## The Pricing Dynamic
-You're answering TWO questions:
-
-**Question 1: Advertiser Value**
-"How much will this advertiser pay for YOUR eyeballs?"
-- High value: You match targeting perfectly + strong advertiser + core demo
-- Low value: You don't match + weak advertiser + off-target
-
-**Question 2: Interruption Cost**
-"How much do you need to tolerate this?"
-- Low cost: Highly relevant ad (cars/football/crypto) - not an interruption
-- High cost: Irrelevant ad - pure interruption, you deserve premium
-
-**Optimal extraction** = both numbers high (perfect match + moderate relevance)
-
-## Decision Framework
-
-### REJECT if ANY of these:
-- You're NOT in target AND ad irrelevant (no value to advertiser, no value to you)
-- Fraud/scam detected (domain mismatch, suspicious brand)
-- Target score ≤3 AND relevance score ≤3
-
-### OFFER with appropriate price:
-
-**LOWER price ($0.01-0.02):**
-- High relevance (8-10) to your interests + good target match
-- You get value from seeing this = low interruption cost
-- Price near or slightly below advertiser's avg_paid_30d
-
-**MODERATE price ($0.02-0.04):**
-- Good target match (7-10) + moderate relevance (4-7)  
-- Sweet spot: advertiser values your eyeballs, you tolerate interruption
-- Price around advertiser's avg_paid_30d
-
-**PREMIUM price ($0.04-0.08):**
-- Perfect target match (9-10) + low relevance (3-6)
-- Advertiser desperately wants your eyeballs, you need significant compensation
-- Price above advertiser's avg_paid_30d
-
-**MINIMAL price (<$0.01):**
-- Weak target match (4-6) even with some relevance
-- Test if they'll take off-target impressions cheap
-
-## For Each Ad: Your Process
-
-1. **ANALYZE** (internal thinking):
-   - Do you match their targeting? (age, location, income, interests, etc.)
-   - Is the ad relevant to your interests?
-   - Is the advertiser legitimate? (check domain vs name)
-   - What would advertiser pay for this?
-   - How much interruption cost for you?
-
-2. **DECIDE**: REJECT or OFFER
-
-3. **IF OFFERING** (CRITICAL - READ THIS CAREFULLY):
-   
-   **YOU MUST CALL THE makeOffer TOOL - THIS IS NOT OPTIONAL**
-   
-   If you write "DECISION: OFFER" in your response, you MUST also call the \`makeOffer\` tool.
-   Writing "DECISION: OFFER" without calling the tool will result in automatic rejection.
-   
-   To make an offer, you MUST:
-   - Call the \`makeOffer\` tool with these parameters:
-     - \`campaignId\`: Campaign ID from the data
-     - \`price\`: Your calculated price in USD (e.g., 0.0280 for $0.0280)
-     - \`matchedRequirements\`: Array of ONLY the requirements that match and can be proven
-       - requirement: age/location/income/interest/gender/etc
-       - advertiserCriteria: The specific values/set the advertiser wants (e.g., ["UK", "US", "CA"] for location)
-       - (NO userValue - that stays private and is never sent)
-     - \`reasoning\`: "" (empty string - no narrative here)
-   
-   - Then write 2-3 sentences explaining why this is a good deal for you
-
-**IMPORTANT:** Only include requirements in matchedRequirements where:
-- Your profile value matches/falls within advertiser's criteria
-- AND we can generate a zero-knowledge proof of that match
-- If you don't match or can't prove it, don't include it
-
-**CRITICAL RULE:** 
-- "DECISION: OFFER" = You MUST call the makeOffer tool
-- "DECISION: REJECT" = Do NOT call any tool
-- If you want to reject an ad, just write your reasoning and say "DECISION: REJECT"
-
-4. **OUTPUT STRUCTURE**:
-   \`\`\`
-   [Your brief analysis - 2-3 sentences addressing you directly]
-   
-   SUMMARY:
-   • [Brief friendly reason 1]
-   • [Brief friendly reason 2]
-   • [Brief friendly reason 3]
-   
-   DECISION: OFFER [or REJECT]
-   \`\`\`
-   
-   **CRITICAL:** Write your response in this EXACT order:
-   1. Brief analysis (2-3 sentences)
-   2. "SUMMARY:" header followed by 2-4 bullet points (friendly, conversational)
-   3. "DECISION: OFFER" or "DECISION: REJECT" (this triggers the tool call if OFFER)
-   
-   **SUMMARY BULLETS - Write like a friend talking to a friend:**
-   - ❌ "Perfect age match (43 in 25-50 range)" 
-   - ✅ "You're the perfect age for this"
-   
-   - ❌ "Not in approved countries"
-   - ✅ "You're not in the right place for this one"
-   
-   - ❌ "Income below target range"
-   - ✅ "They're looking for someone who earns more"
-   
-   - ❌ "No interest match for luxury watches"
-   - ✅ "Watches really aren't your thing"
-   
-   Keep it casual, friendly, and varied. Don't be formulaic - mix up your phrasing. You might say:
-   - "Crypto is literally your jam"
-   - "They want someone in the US but you're in France"
-   - "The price makes sense for both of you"
-   - "This brand actually matches your vibe"
-   - "You're exactly who they're hunting for"
-   
-   Be natural and conversational - imagine explaining to a friend over coffee.
-
-**CRITICAL FORMATTING:**
-- Always address the user as "you/your" (NEVER "boss" or "your boss")
-- SUMMARY must come BEFORE DECISION (this is critical for tool calling to work)
-- Write summary bullets like a friend talking to a friend - casual and direct
-- Keep each bullet point to one short phrase (5-10 words max)
-- Use natural language: "you're the perfect age" not "age match confirmed"
-
-## Important Notes
-
-- Always address the user as "you" and "your attention" (NEVER "boss" or "the boss")
-- Pricing must reflect what advertiser will pay, adjusted for your tolerance
-- Maximum value when both advertiser willingness AND interruption cost are high
-- Tool calls should contain ONLY structured data, NO narrative
-- Your personality/reasoning goes in the text response, not the tool parameters
-- Keep tool data clean and parseable for backend processing
-- Always include a SUMMARY section with 2-4 brief bullet points after the decision`;
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', initializeAssessment);
@@ -264,17 +106,54 @@ async function loadUserProfile() {
 }
 
 /**
- * Build system prompt with live profile data
+ * Fetch ads from backend API
  */
-function buildSystemPromptWithProfile() {
-  if (!userProfile) {
-    console.warn('[Max] No user profile loaded, using base prompt without profile data');
-    return MAX_SYSTEM_PROMPT.replace('{{USER_PROFILE}}', '{ "error": "No profile data available" }');
+async function fetchAdsFromBackend() {
+  try {
+    // Get wallet address for authentication
+    const result = await chrome.storage.local.get(['payattn_walletAddress', 'payattn_last_ad_sync']);
+    const walletAddress = result.payattn_walletAddress;
+    
+    if (!walletAddress) {
+      console.warn('[Ad Queue] No wallet address found');
+      return [];
+    }
+    
+    // Use last sync time or epoch if first time
+    const lastChecked = result.payattn_last_ad_sync || new Date(0).toISOString();
+    console.log(`[Ad Queue] Fetching ads since: ${lastChecked}`);
+    
+    // Fetch from backend API
+    const API_BASE = 'http://localhost:3000'; // TODO: Make configurable
+    const response = await fetch(`${API_BASE}/api/user/adstream`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-user-id': walletAddress
+      },
+      body: JSON.stringify({
+        last_checked: lastChecked
+      })
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch ads: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    console.log(`[Ad Queue] Received ${data.count} ads from backend`);
+    
+    // Update last sync timestamp
+    await chrome.storage.local.set({
+      payattn_last_ad_sync: new Date().toISOString()
+    });
+    
+    return data.ads || [];
+    
+  } catch (error) {
+    console.error('[Ad Queue] Error fetching ads:', error);
+    throw error; // Let caller handle error display
   }
-  
-  // Format profile data as JSON string for injection
-  const profileJson = JSON.stringify(userProfile, null, 2);
-  return MAX_SYSTEM_PROMPT.replace('{{USER_PROFILE}}', profileJson);
 }
 
 function setupPaginationControls() {
@@ -324,9 +203,13 @@ function handleNextSession() {
 async function loadSessions() {
   /**
    * Load all sessions from chrome storage
+   * Filter out empty sessions (automated checks with 0 ads) for ad-queue display
    */
   const result = await chrome.storage.local.get('payattn_max_sessions');
-  allSessions = result.payattn_max_sessions || [];
+  const allStoredSessions = result.payattn_max_sessions || [];
+  
+  // Filter to only sessions with ads (exclude empty automated checks)
+  allSessions = allStoredSessions.filter(session => session.ads.length > 0);
   
   // Sort by timestamp desc (newest first)
   allSessions.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
@@ -334,7 +217,7 @@ async function loadSessions() {
   // Always show the latest session first
   currentSessionIndex = 0;
   
-  console.log(`[Ad Queue] Loaded ${allSessions.length} sessions from storage`);
+  console.log(`[Ad Queue] Loaded ${allSessions.length} sessions with ads (${allStoredSessions.length} total sessions in storage)`);
 }
 
 /**
@@ -349,29 +232,30 @@ async function handleFetchAndAssess() {
   // Show status banner when fetch is clicked
   statusBanner.classList.add('visible');
   
-  // Check if Venice API key is configured
-  const hasApiKey = await window.VeniceAI.hasVeniceAPIKey();
-  if (!hasApiKey) {
+  // Check if LLM provider is configured
+  const hasConfigured = await window.LLMService.hasLLMConfigured();
+  if (!hasConfigured) {
     statusBanner.className = 'status-banner visible';
     statusBanner.style.background = '#dc2626';
     statusBanner.style.borderColor = '#ef4444';
     statusBanner.innerHTML = `
-      <p class="status-text">⚠️ Venice AI API Key Required</p>
-      <p class="status-subtext">Configure your API key in extension settings to use Max</p>
+      <p class="status-text">⚠️ LLM Provider Not Configured</p>
+      <p class="status-subtext">Configure your AI provider in extension settings to use Max</p>
     `;
     
     contentDiv.innerHTML = `
       <div class="error" style="text-align: center; padding: 40px 20px;">
         <div style="font-size: 48px; margin-bottom: 16px;">🔑</div>
-        <div style="font-size: 18px; font-weight: 600; margin-bottom: 12px;">Venice AI API Key Not Configured</div>
+        <div style="font-size: 18px; font-weight: 600; margin-bottom: 12px;">AI Provider Not Configured</div>
         <div style="font-size: 14px; margin-bottom: 24px;">
-          Max needs a Venice AI API key to evaluate ads. It's free and takes 30 seconds to set up.
+          Max needs an AI provider to evaluate ads. Choose Venice AI or local LM Studio.
         </div>
         <a href="settings.html" style="display: inline-block; padding: 12px 24px; background: #6366f1; color: white; text-decoration: none; border-radius: 6px; font-weight: 600; transition: all 0.2s;">
           ⚙️ Open Settings
         </a>
         <div style="margin-top: 24px; font-size: 12px; color: #cbd5e1;">
-          Get your free API key from <a href="https://docs.venice.ai/overview/getting-started" target="_blank" style="color: #60a5fa; text-decoration: none;">Venice AI</a>
+          Venice AI: <a href="https://docs.venice.ai/overview/getting-started" target="_blank" style="color: #60a5fa; text-decoration: none;">Get free API key</a> | 
+          Local: <a href="https://lmstudio.ai" target="_blank" style="color: #60a5fa; text-decoration: none;">Download LM Studio</a>
         </div>
       </div>
     `;
@@ -387,6 +271,7 @@ async function handleFetchAndAssess() {
     const newSession = {
       id: generateSessionId(),
       timestamp: new Date().toISOString(),
+      triggerType: 'manual', // User clicked button
       ads: [],
     };
     
@@ -397,11 +282,43 @@ async function handleFetchAndAssess() {
     `;
     statusBanner.className = 'status-banner processing';
     
-    // Get dummy ads (TODO: replace with real API call)
-    const campaigns = window.generateDummyAds();
+    // Fetch ads from backend API
+    let campaigns;
+    try {
+      campaigns = await fetchAdsFromBackend();
+    } catch (fetchError) {
+      console.error('[Ad Queue] Failed to fetch ads:', fetchError);
+      statusBanner.className = 'status-banner visible';
+      statusBanner.style.background = '#dc2626';
+      statusBanner.style.borderColor = '#ef4444';
+      statusBanner.innerHTML = `
+        <p class="status-text">❌ Failed to fetch ads</p>
+        <p class="status-subtext">${fetchError.message}</p>
+      `;
+      contentDiv.innerHTML = `
+        <div class="error" style="text-align: center; padding: 40px 20px;">
+          <div style="font-size: 48px; margin-bottom: 16px;">⚠️</div>
+          <div style="font-size: 18px; font-weight: 600; margin-bottom: 12px;">Backend Connection Error</div>
+          <div style="font-size: 14px; margin-bottom: 24px;">
+            ${fetchError.message}
+          </div>
+          <div style="font-size: 12px; color: #64686e;">
+            Make sure the backend server is running at http://localhost:3000
+          </div>
+        </div>
+      `;
+      fetchBtn.disabled = false;
+      fetchBtn.textContent = '🤖 Fetch & Assess New Ads';
+      return;
+    }
     
     if (campaigns.length === 0) {
-      contentDiv.innerHTML = '<div class="error">No ad campaigns available</div>';
+      contentDiv.innerHTML = '<div class="info">No new ad campaigns available at this time</div>';
+      statusBanner.innerHTML = `
+        <p class="status-text">✅ All caught up!</p>
+        <p class="status-subtext">No new ads to assess right now</p>
+      `;
+      statusBanner.className = 'status-banner success';
       fetchBtn.disabled = false;
       fetchBtn.textContent = '🤖 Fetch & Assess New Ads';
       return;
@@ -521,7 +438,7 @@ function createPendingAdElement(campaign, index) {
     
     <div class="ad-body">
       <div class="thinking-text" style="color: #64748b;">
-        ⏳ <strong>Waiting for Max...</strong><br>
+        ⏳ <strong>Max is considering the opportunity...</strong><br>
         Ad queued for assessment
       </div>
     </div>
@@ -536,7 +453,7 @@ function createPendingAdElement(campaign, index) {
     </div>
     
     <div class="decision queued">
-      ⏳ QUEUED
+      ⏳ Max is looking at the ad...
     </div>
   `;
   
@@ -747,17 +664,101 @@ function hashToFieldElement(str) {
 }
 
 /**
+ * Submit offer with ZK proofs to backend
+ * @param {Object} campaign - Campaign object with id
+ * @param {number} price - Offer price in USD
+ * @param {Object} zkProofs - Object with proof packages keyed by requirement type
+ * @returns {Promise<Object>} Backend response with offer_id
+ */
+async function submitOfferToBackend(campaign, price, zkProofs) {
+  try {
+    console.log('[Offer Submission] Submitting offer to backend...');
+    console.log(`[Offer Submission] Campaign: ${campaign.id}, Price: $${price.toFixed(4)}`);
+    
+    // Get user credentials from storage
+    // User ID is the wallet address (wallet-based authentication)
+    const result = await chrome.storage.local.get(['payattn_walletAddress']);
+    const walletAddress = result.payattn_walletAddress;
+    const userId = walletAddress; // User ID = wallet address
+    
+    if (!walletAddress) {
+      throw new Error('User not authenticated - no wallet address found');
+    }
+    
+    // Convert price from USD to lamports
+    // TODO: Fetch real-time SOL price from oracle (Pyth, Chainlink, etc.)
+    const solPrice = 160; // USD per SOL (hardcoded for demo)
+    const lamports = Math.floor((price / solPrice) * 1e9);
+    
+    console.log(`[Offer Submission] Amount: ${lamports} lamports (${(lamports / 1e9).toFixed(6)} SOL)`);
+    
+    // Format ZK proofs for backend
+    // Backend expects: { age: {...}, interests: {...}, location: {...}, income: {...} }
+    const formattedProofs = {};
+    if (zkProofs && Object.keys(zkProofs).length > 0) {
+      Object.entries(zkProofs).forEach(([key, proofPackage]) => {
+        formattedProofs[key] = {
+          proof: proofPackage.proof,
+          publicSignals: proofPackage.publicSignals,
+          circuitName: proofPackage.circuitName
+        };
+      });
+      console.log(`[Offer Submission] Including ${Object.keys(formattedProofs).length} ZK proofs`);
+    } else {
+      console.warn('[Offer Submission] No ZK proofs to submit (this is unusual)');
+    }
+    
+    // Prepare request body
+    // Note: Backend expects 'id' field (UUID primary key), not 'ad_creative_id' (text field)
+    // For demo/hackathon: dummy-ads use text IDs, real ads from DB use UUIDs
+    // We'll use campaign.id which should be the UUID in production
+    const requestBody = {
+      ad_creative_id: campaign.id, // This should be the UUID 'id' field from ad_creative table
+      amount_lamports: lamports,
+      zk_proofs: formattedProofs
+    };
+    
+    // Submit to backend
+    const response = await fetch('http://localhost:3000/api/user/offer', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-user-id': userId
+      },
+      body: JSON.stringify(requestBody)
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+      throw new Error(`Backend returned ${response.status}: ${errorData.error || 'Unknown error'}`);
+    }
+    
+    const data = await response.json();
+    
+    console.log(`✅ [Offer Submission] Success! Offer ID: ${data.offer_id}`);
+    console.log(`[Offer Submission] Status: ${data.status}`);
+    console.log(`[Offer Submission] Next: Peggy will evaluate and potentially fund escrow`);
+    
+    return data;
+    
+  } catch (error) {
+    console.error('❌ [Offer Submission] Failed:', error.message);
+    throw error;
+  }
+}
+
+/**
  * Generate ZK-SNARK proofs for matched requirements
  * @param {Object} offer - The offer object with matchedRequirements
  * @param {Object} campaign - The campaign being assessed
- * @returns {Promise<Array>} Array of proof packages
+ * @returns {Promise<Object>} Object with proof packages keyed by requirement type
  */
 async function generateProofsForOffer(offer, campaign) {
   const proofs = [];
   
   if (!offer.matchedRequirements || offer.matchedRequirements.length === 0) {
     console.log('[ZK-Proof] No matched requirements to prove');
-    return proofs;
+    return {};
   }
   
   // Get user profile for private inputs
@@ -766,7 +767,7 @@ async function generateProofsForOffer(offer, campaign) {
   
   if (!walletAddress) {
     console.warn('[ZK-Proof] No wallet address found - user not authenticated');
-    return proofs;
+    return {};
   }
   
   // Load encrypted profile
@@ -775,7 +776,7 @@ async function generateProofsForOffer(offer, campaign) {
   
   if (!encryptedProfile) {
     console.warn('[ZK-Proof] No profile data available - cannot generate proofs');
-    return proofs;
+    return {};
   }
   
   // Decrypt profile
@@ -784,7 +785,7 @@ async function generateProofsForOffer(offer, campaign) {
   
   if (!keyHash || !authToken) {
     console.warn('[ZK-Proof] Missing keyHash or authToken - cannot decrypt profile');
-    return proofs;
+    return {};
   }
   
   try {
@@ -944,143 +945,49 @@ async function generateProofsForOffer(offer, campaign) {
     }
   } catch (decryptError) {
     console.error('[ZK-Proof] Failed to decrypt profile:', decryptError.message);
-    return proofs;
+    return {};
+  }
+  
+  // Convert array of proofs to keyed object format for backend
+  // Backend expects: { age: {...}, location: {...}, income: {...}, interest: {...} }
+  const proofsObject = {};
+  for (const proofItem of proofs) {
+    const key = proofItem.requirement; // 'age', 'location', 'income', 'interest'
+    proofsObject[key] = {
+      proof: proofItem.proof.proof,
+      publicSignals: proofItem.proof.publicSignals,
+      circuitName: proofItem.proof.circuitName
+    };
   }
   
   // Output generated proofs if any
-  if (proofs.length > 0) {
-    console.log(`\n🔐 [ZK-SNARK] Campaign: ${campaign.id} - Generated ${proofs.length} proof(s):`);
-    proofs.forEach((p, i) => {
-      console.log(`  ${i + 1}. ${p.requirement} (${p.type}):`, {
-        proof: p.proof?.proof,
-        publicSignals: p.publicSignals
-      });
+  if (Object.keys(proofsObject).length > 0) {
+    console.log(`\n🔐 [ZK-SNARK] Campaign: ${campaign.id} - Generated ${Object.keys(proofsObject).length} proof(s):`);
+    Object.entries(proofsObject).forEach(([type, proofPackage]) => {
+      console.log(`   - ${type}: ${proofPackage.circuitName} (${proofPackage.publicSignals.length} public signals)`);
     });
     console.log('');
   }
   
-  return proofs;
+  return proofsObject;
 }
 
 async function assessCampaign(campaign) {
   /**
-   * Real Max assessment using Venice AI
-   * Max evaluates ads against user profile and makes offers with tool calls
+   * Wrapper function that uses the modular Max assessor
+   * This function is kept for backward compatibility with ad-queue.html
    */
   
-  try {
-    console.log('[Max] Assessing campaign:', campaign.id);
-    
-    // Build system prompt with user profile
-    const systemPrompt = buildSystemPromptWithProfile();
-    
-    // Format campaign data for Max
-    const campaignData = {
-      campaignId: campaign.id,
-      advertiser: campaign.advertiser || {},
-      content: {
-        headline: campaign.headline,
-        body: campaign.body,
-        cta: campaign.cta,
-      },
-      targeting: campaign.targeting || {},
-      metrics: {
-        avgPaid30d: campaign.advertiser?.avgPaid30d || 0,
-        qualityRating: campaign.advertiser?.qualityRating || 5,
-        accountAge: campaign.advertiser?.accountAge || 0,
-      }
-    };
-    
-    // User message with campaign data
-    const userMessage = `Here is the ad campaign to analyze:\n\n${JSON.stringify(campaignData, null, 2)}`;
-    
-    // Get Venice AI tool definitions
-    const tools = window.VeniceAI.getVeniceTools();
-    
-    // Call Venice AI with Max's system prompt
-    const response = await window.VeniceAI.callVeniceAI(
-      [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userMessage }
-      ],
-      'qwen3-next-80b', // Model
-      0.7, // Temperature
-      1024, // Max tokens
-      tools // Function calling enabled
-    );
-    
-    if (!response.success) {
-      console.error('[Max] Venice AI error:', response.error);
-      // Fallback to reject
-      return {
-        decision: 'REJECT',
-        reason: `Max says: Couldn't evaluate (${response.error})`,
-        offer: null,
-        narrative: `Error: ${response.error}`,
-        thinkingSteps: [`Venice AI error: ${response.error}`],
-      };
-    }
-    
-    // Process response
-    let decision = 'REJECT';
-    let reason = '';
-    let offer = null;
-    let narrative = response.content || '';
-    let toolCallResults = [];
-    
-    // Handle tool calls (makeOffer)
-    if (response.toolCalls && response.toolCalls.length > 0) {
-      console.log('[Max] Tool calls detected:', response.toolCalls.length);
-      
-      decision = 'MAKING OFFER';
-      
-      for (const toolCall of response.toolCalls) {
-        try {
-          const result = window.VeniceAI.processToolCall(toolCall.function.name, toolCall.function.arguments);
-          
-          if (result.success && result.offer) {
-            toolCallResults.push(result.offer);
-            offer = result.offer.price;
-            reason = `Max says: Making offer at $${offer.toFixed(4)}`;
-            
-            // GENERATE ZK-SNARK PROOFS for matched requirements
-            const generatedProofs = await generateProofsForOffer(result.offer, campaign);
-            
-            // Store proofs in the result
-            result.offer.proofs = generatedProofs;
-          }
-        } catch (error) {
-          console.error('[Max] Error processing tool call:', error);
-        }
-      }
-    } else {
-      // No tool call = rejection
-      decision = 'REJECT';
-      reason = narrative || 'Max says: Not interested in this one.';
-    }
-    
-    // Extract thinking steps from narrative (split by newlines)
-    const thinkingSteps = narrative.split('\n').filter(line => line.trim().length > 0);
-    
-    return {
-      decision,
-      reason,
-      offer,
-      narrative,
-      thinkingSteps,
-      toolCallResults, // Store structured offer data
-    };
-    
-  } catch (error) {
-    console.error('[Max] Assessment error:', error);
-    return {
-      decision: 'REJECT',
-      reason: `Max says: Error during assessment`,
-      offer: null,
-      narrative: `Exception: ${error.message}`,
-      thinkingSteps: [`Exception: ${error.message}`],
-    };
-  }
+  // Use the modular MaxAssessor to assess this single ad
+  // userProfile is already loaded globally, so use it
+  const assessment = await window.MaxAssessor.assessSingleAd(campaign, userProfile, {
+    veniceModel: 'qwen3-next-80b',
+    temperature: 0.7,
+    autoSubmit: true,
+    LLMService: window.LLMService  // Pass LLMService instance
+  });
+  
+  return assessment;
 }
 
 function evaluateTargeting(targeting) {
@@ -1249,7 +1156,7 @@ function createAdElement(campaign, assessment) {
     
     <div class="decision ${statusClass}" style="margin-top: 12px;">
       <div style="font-weight: 700; font-size: 14px;">
-        ${isRejected ? '❌ REJECTED' : isAccepted ? '✅ MAKING OFFER' : '⏳ QUEUED'}
+        ${isRejected ? '❌ REJECTED' : isAccepted ? '✅ MAKING OFFER' : '🤔 Max is thinking about this one...'}
       </div>
       ${isAccepted ? summaryHTML : ''}
       ${offerDetailsHTML}
@@ -1315,8 +1222,6 @@ function addSummary(total, offered, rejected, container) {
   const summaryDiv = document.createElement('div');
   summaryDiv.className = 'complete-summary';
   
-  const queued = total - offered - rejected;
-  
   summaryDiv.innerHTML = `
     <p class="summary-title">Session Summary</p>
     <div class="summary-stats">
@@ -1331,10 +1236,6 @@ function addSummary(total, offered, rejected, container) {
       <div class="summary-stat" data-filter="rejected" style="cursor: pointer;">
         <div class="stat-number" style="color: #fca5a5;">${rejected}</div>
         <div class="stat-label">Rejected</div>
-      </div>
-      <div class="summary-stat" data-filter="queued" style="cursor: pointer;">
-        <div class="stat-number" style="color: #cbd5e1;">${queued}</div>
-        <div class="stat-label">Queued</div>
       </div>
     </div>
   `;
