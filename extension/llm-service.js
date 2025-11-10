@@ -331,29 +331,37 @@ const MAX_TOOLS = [
       parameters: {
         type: 'object',
         properties: {
+          campaignId: {
+            type: 'string',
+            description: 'Campaign ID from the ad data',
+          },
           price: {
             type: 'number',
-            description: 'Price in dollars (e.g., 0.02 for $0.02). Should be between 0.005 and 0.10',
-          },
-          reasoning: {
-            type: 'string',
-            description: 'Brief explanation of your pricing decision (2-3 sentences)',
+            description: 'Price in USD (e.g., 0.0280 for $0.0280). Should be between 0.005 and 0.10',
           },
           matchedRequirements: {
             type: 'array',
-            description: 'List of requirement IDs from your profile that match this ad',
-            items: { type: 'string' },
+            description: 'Array of ONLY the requirements that match and can be proven with ZK-SNARKs',
+            items: {
+              type: 'object',
+              properties: {
+                requirement: {
+                  type: 'string',
+                  description: 'Type of requirement: age/location/income/interest/gender',
+                },
+                advertiserCriteria: {
+                  description: 'The specific values/set the advertiser wants (e.g., ["UK", "US", "CA"] for location, or [25, 50] for age range)',
+                },
+              },
+              required: ['requirement', 'advertiserCriteria'],
+            },
           },
-          targetScore: {
-            type: 'number',
-            description: 'How well you match their targeting (0-10)',
-          },
-          relevanceScore: {
-            type: 'number',
-            description: 'How relevant/interesting is this ad to you personally (0-10)',
+          reasoning: {
+            type: 'string',
+            description: 'Empty string (narrative goes in your text response, not here)',
           },
         },
-        required: ['price', 'reasoning', 'targetScore', 'relevanceScore'],
+        required: ['campaignId', 'price', 'matchedRequirements', 'reasoning'],
       },
     },
   },
@@ -379,6 +387,13 @@ function processToolCall(toolName, argsJson) {
 
     if (toolName === 'makeOffer') {
       // Validate offer
+      if (!args.campaignId) {
+        return {
+          success: false,
+          error: 'Missing campaignId',
+        };
+      }
+
       if (!args.price || args.price < 0.005 || args.price > 0.10) {
         return {
           success: false,
@@ -386,21 +401,20 @@ function processToolCall(toolName, argsJson) {
         };
       }
 
-      if (!args.reasoning || args.reasoning.length < 10) {
+      if (!Array.isArray(args.matchedRequirements)) {
         return {
           success: false,
-          error: 'Reasoning too short',
+          error: 'matchedRequirements must be an array',
         };
       }
 
       return {
         success: true,
         offer: {
+          campaignId: args.campaignId,
           price: args.price,
-          reasoning: args.reasoning,
           matchedRequirements: args.matchedRequirements || [],
-          targetScore: args.targetScore || 5,
-          relevanceScore: args.relevanceScore || 5,
+          reasoning: args.reasoning || '',
         },
       };
     }

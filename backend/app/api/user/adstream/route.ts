@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
       );
       
       return {
-        // Keep all original fields
+        // Keep all original fields including the UUID 'id' field
         ...ad,
         
         // Add advertiser object expected by UI
@@ -96,11 +96,13 @@ export async function POST(request: NextRequest) {
         },
         
         // Add campaign fields expected by UI
-        campaign_id: ad.campaign_id,
-        id: ad.campaign_id, // Alias for campaign_id
-        name: ad.headline,
-        metadata: {
-          category: ad.targeting?.interests?.[0]?.category || 'general'
+        // Note: Keep 'id' as the UUID for offer submission, use campaign object for campaign_id
+        campaign: {
+          id: ad.campaign_id,
+          name: ad.headline,
+          metadata: {
+            category: ad.targeting?.interests?.[0]?.category || 'general'
+          }
         },
         
         // Keep targeting as-is (already in correct format)

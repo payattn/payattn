@@ -426,7 +426,7 @@ function createPendingAdElement(campaign, index) {
   adDiv.className = 'ad-assessment pending';
   adDiv.style.opacity = '0.5';
   
-  const adName = `${advertiser.name} - ${campaign.metadata?.category}` || campaign.name;
+  const adName = `${advertiser.name} - ${campaign.campaign?.metadata?.category || campaign.metadata?.category}` || campaign.campaign?.name || campaign.name;
   
   adDiv.innerHTML = `
     <div class="ad-header">
@@ -673,7 +673,7 @@ function hashToFieldElement(str) {
 async function submitOfferToBackend(campaign, price, zkProofs) {
   try {
     console.log('[Offer Submission] Submitting offer to backend...');
-    console.log(`[Offer Submission] Campaign: ${campaign.id}, Price: $${price.toFixed(4)}`);
+    console.log(`[Offer Submission] Campaign: ${campaign.campaign?.id || campaign.campaign_id}, Price: $${price.toFixed(4)}`);
     
     // Get user credentials from storage
     // User ID is the wallet address (wallet-based authentication)
@@ -709,11 +709,9 @@ async function submitOfferToBackend(campaign, price, zkProofs) {
     }
     
     // Prepare request body
-    // Note: Backend expects 'id' field (UUID primary key), not 'ad_creative_id' (text field)
-    // For demo/hackathon: dummy-ads use text IDs, real ads from DB use UUIDs
-    // We'll use campaign.id which should be the UUID in production
+    // Use the UUID 'id' field from ad_creative table (not campaign_id)
     const requestBody = {
-      ad_creative_id: campaign.id, // This should be the UUID 'id' field from ad_creative table
+      ad_creative_id: campaign.id, // UUID 'id' field from ad_creative table
       amount_lamports: lamports,
       zk_proofs: formattedProofs
     };
@@ -962,7 +960,7 @@ async function generateProofsForOffer(offer, campaign) {
   
   // Output generated proofs if any
   if (Object.keys(proofsObject).length > 0) {
-    console.log(`\n🔐 [ZK-SNARK] Campaign: ${campaign.id} - Generated ${Object.keys(proofsObject).length} proof(s):`);
+    console.log(`\n🔐 [ZK-SNARK] Campaign: ${campaign.campaign?.id || campaign.campaign_id} - Generated ${Object.keys(proofsObject).length} proof(s):`);
     Object.entries(proofsObject).forEach(([type, proofPackage]) => {
       console.log(`   - ${type}: ${proofPackage.circuitName} (${proofPackage.publicSignals.length} public signals)`);
     });
@@ -1063,7 +1061,7 @@ function createAdElement(campaign, assessment) {
   const adDiv = document.createElement('div');
   adDiv.className = `ad-assessment ${statusClass}`;
   
-  const adName = `${advertiser.name} - ${campaign.metadata?.category}` || campaign.name;
+  const adName = `${advertiser.name} - ${campaign.campaign?.metadata?.category || campaign.metadata?.category}` || campaign.campaign?.name || campaign.name;
   
   // Extract main assessment text (before SUMMARY)
   let mainAssessment = '';
