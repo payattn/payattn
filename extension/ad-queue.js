@@ -648,6 +648,15 @@ function renderAds(assessedAds) {
   const offeredCount = assessedAds.filter(a => a.assessment.decision === 'MAKING OFFER').length;
   const rejectedCount = assessedAds.filter(a => a.assessment.decision === 'REJECT').length;
   addSummary(assessedAds.length, offeredCount, rejectedCount, adsContainer);
+  
+  // Add event listeners for "View Details" buttons using event delegation
+  adsContainer.addEventListener('click', (e) => {
+    if (e.target.classList.contains('zk-proof-details-btn')) {
+      const proofData = e.target.getAttribute('data-proof-details');
+      const proofs = JSON.parse(decodeURIComponent(proofData));
+      alert('ZK-Proof details:\n\n' + JSON.stringify(proofs, null, 2));
+    }
+  });
 }
 
 /**
@@ -1116,15 +1125,16 @@ function createAdElement(campaign, assessment) {
     `;
   }
   
-  // Format summary bullets
+  // Format summary bullets - ONLY SHOW FOR ACCEPTED ADS
   let summaryHTML = '';
-  if (summaryBullets.length > 0) {
+  if (isAccepted && summaryBullets.length > 0) {
     summaryHTML = `
       <div style="margin-top: 8px; font-size: 12px; color: #cbd5e1;">
         ${summaryBullets.map(bullet => `<div style="margin: 4px 0;">• ${bullet}</div>`).join('')}
       </div>
     `;
   }
+  // For REJECTED ads, don't show the summary at all
   
   adDiv.innerHTML = `
     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
@@ -1190,10 +1200,6 @@ function createAdElement(campaign, assessment) {
               : 'Generating...'
             }
           </div>
-          <button onclick="alert('ZK-Proof details:\\n\\n' + JSON.stringify(${JSON.stringify(assessment.toolCallResults || [])}, null, 2))" 
-                  style="padding: 6px 12px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; color: #cbd5e1; cursor: pointer; font-size: 11px; white-space: nowrap;">
-            View Details
-          </button>
         </div>
       </div>
     ` : ''}

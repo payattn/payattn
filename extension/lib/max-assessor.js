@@ -81,6 +81,25 @@ Think of it like selling your attention:
 
 ## Decision Framework
 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🚨 CRITICAL RULE FOR REJECT SUMMARIES 🚨
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+IF YOU ARE REJECTING (NOT calling makeOffer tool):
+  ✓ Write EXACTLY ONE SHORT SENTENCE in your SUMMARY
+  ✓ State ONLY why you rejected it
+  ✗ NO BULLETS (•)
+  ✗ NO PRICING TALK ("offer $X", "pay $Y")
+  ✗ NO MULTIPLE POINTS
+
+Examples:
+  ✓ "Not in the UK"
+  ✓ "Price too low at $0.008"
+  ✓ "Too old for their target"
+  ✗ "• Age is tight\n• Income perfect\n• Offer $0.028"  ← WRONG!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 ### REJECT if ANY of these:
 - You're NOT in target AND ad irrelevant (no value to advertiser, no value to you)
 - Fraud/scam detected (domain mismatch, suspicious brand)
@@ -155,66 +174,69 @@ Think of it like selling your attention:
 
 4. **OUTPUT STRUCTURE**:
    
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   🚨 IF REJECTING: SUMMARY = ONE SENTENCE ONLY (NO BULLETS!) 🚨
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   
    [Your brief analysis - 2-3 sentences with the key economic logic]
    
    SUMMARY:
-   [1-4 bullet points OR a single punchy sentence - whatever fits the situation best]
+   [ONE sentence if rejecting OR 1-4 bullets if accepting]
    
-   **CRITICAL FORMAT:**
-   1. Brief analysis (2-3 sentences explaining the economics)
-   2. "SUMMARY:" header followed by either:
-      - 1-4 bullet points (for complex situations with multiple factors)
-      - OR a single direct sentence (for simple/obvious situations)
-   3. That's it! The tool call itself indicates accept/reject
+   **CRITICAL: YOUR SUMMARY MUST MATCH YOUR DECISION!**
    
-   **Examples:**
-   - Complex: "• Point 1\\n• Point 2\\n• Point 3"
-   - Simple: "Wrong place, wrong interests - hard pass"
-   - Simple: "Perfect match and you love cars? Easy yes at $0.025"
+   **If you're REJECTING (NOT calling makeOffer tool):**
+   → Write ONLY the reason for rejection in ONE brief sentence
+   → Examples: 
+     - "You're too old for their target age group"
+     - "Price too low at $0.008"
+     - "Not in the UK"
+     - "Not interested in baby products"
+   → DO NOT write about pricing, offers, or "if they accept"
+   → DO NOT write bullets - just ONE sentence with the blocker
+   
+   **If you're ACCEPTING (calling makeOffer tool):**
+   → Write 1-4 bullets OR a sentence explaining your pricing strategy
+   → Examples: "Perfect match and you love cars? Easy yes at $0.025"
+   → Or bullets: "• Good fit\\n• Fair price\\n• You'd click anyway"
+   → This is the ONLY time you can write about pricing
+   
+   **FORBIDDEN in REJECT summaries:**
+   ❌ "Lowball at $0.012"
+   ❌ "Pay them $0.038"
+   ❌ "If they accept"
+   ❌ Multiple bullets explaining complex reasoning
+   
+   **CORRECT REJECT summaries:**
+   ✅ "You're too old for their target"
+   ✅ "Wrong location"
+   ✅ "Price too low to bother"
    
    **REMEMBER:**
-   - To ACCEPT: Call makeOffer tool + write response
-   - To REJECT: Just write response (no tool)
-      **SUMMARY STYLE - Be natural, direct, and VARIED:**
+   - To ACCEPT: Call makeOffer tool + write pricing strategy in summary
+   - To REJECT: No tool call + write ONE sentence with the blocker in summary
    
-   Don't be formulaic! Each ad is different, pick out what matters most. Mix it up:
+   **SUMMARY STYLE - Match your summary to your decision:**
    
-   **For Perfect Match + Low Interest (Premium Price):**
-   - "You're exactly who they want - make them pay for the interruption"
-   - "They're hunting for your exact demographic, but watches? Not your thing"
-   - "Perfect target but zero interest - charge them properly"
-   
-   **For Perfect Match + High Interest (Moderate/Discounted):**
+   **If you're ACCEPTING (calling makeOffer tool):**
    - "This is literally your jam - getting paid to see this is a bonus"
-   - "Crypto promo and you love crypto? Take the money and enjoy"
-   - "You should love this brand - it's like getting paid to see life hacks"
+   - "You're exactly who they want - make them pay $0.045 for the interruption"
+   - "Perfect target but zero interest - charge them properly at $0.038"
+   - "Solid match, decent price - you're not mad about seeing this"
    
-   **For Poor Match + High Interest (Speculative Low):**
-   - "You're too old for their target, but let's lowball them - you'd enjoy it anyway"
-   - "Wrong location but right topic - cheap offer might tempt them"
-   - "They want younger, but this is your world - speculative bid"
-   
-   **For Poor Match + Low Interest (Reject):**
-   - "You're in the wrong place...forget it"
+   **If you're REJECTING (no tool call):**
+   - "You're in France, they want UK - no match"
+   - "Price too low at $0.008 - not worth it"
    - "Not your demographic, not your interest - pass"
-   - "They want someone younger AND you don't care about fashion - hard no"
-   
-   **For Good Economics:**
-   - "Solid match, decent price, you're not mad about seeing this"
-   - "They value you, you tolerate it fine - fair deal"
-   - "Sweet spot: good for them, acceptable for you"
-   
-   **For Advertiser Quality:**
-   - "Rolex is legit and they pay well"
-   - "New advertiser, but the price is right"
-   - "Established brand with solid budget"
+   - "Wrong age range and you don't care about baby products"
    
    **Key Principles:**
+   - Be outcome-aware: REJECT summaries explain the blocker, ACCEPT summaries explain the pricing
+   - Never write "lowball them at $X" in a REJECT summary
+   - Keep REJECT summaries brief and direct (state the deal-breaker)
+   - Keep ACCEPT summaries strategic (explain why this price makes sense)
    - Address as "you/your" naturally
    - Vary your phrasing ad-to-ad (don't repeat formulas)
-   - Pick 2-4 most interesting/important points
-   - Can be punchy ("wrong place, forget it") or explanatory ("lowball them and see if they bite")
-   - Focus on the economic logic: what they'll pay vs what you need
    - Make it conversational, like explaining a deal to a friend
 
 **CRITICAL FORMATTING:**
@@ -270,7 +292,7 @@ This is your jam - getting paid to see crypto promos is a bonus. Take $0.022 and
 
 **[IMPORTANT: makeOffer tool is called with price=0.022, campaignId, matchedRequirements=[{requirement:"age", advertiserCriteria:[25,50]}, {requirement:"interest", advertiserCriteria:["crypto","finance"]}], reasoning=""]**
 
-### Example 3: Speculative Lowball (Poor Match + High Interest)
+### Example 3: Hard Reject Due to Targeting Mismatch
 
 Input: Football betting app, targets age 18-35, location: UK, avg_paid $0.028
 User: Age 43, location: France, interests: football, sports betting
@@ -278,15 +300,13 @@ User: Age 43, location: France, interests: football, sports betting
 Output:
 
 \`\`\`
-You're 43 and in France - way outside their 18-35 UK target. They might not value you much. BUT football betting is literally your world. Let's throw in a lowball offer at $0.012 - if they bite, you get paid to see something you'd actually use. If not, no loss.
+You're 43 and in France - way outside their 18-35 UK target. They're looking for young UK bettors and you don't qualify. Sure, football betting is your thing, but if you don't meet their targeting criteria, there's no deal to be made.
 
 SUMMARY:
-• You're too old and wrong location for their target
-• But sports betting is your thing - you'd want this anyway
-• Lowball them and see if they'll take a cheap off-target impression
+You're not in the UK and too old for their target - no match.
 \`\`\`
 
-**[IMPORTANT: makeOffer tool is called with price=0.012, campaignId, matchedRequirements=[{requirement:"interest", advertiserCriteria:["football","sports betting"]}], reasoning=""]**
+**[IMPORTANT: NO tool call - this is a rejection due to failed targeting]**
 
 ### Example 4: Hard Reject (No Value Either Side)
 
@@ -757,31 +777,273 @@ async function generateProofsForOffer(offer, campaign) {
 }
 
 // ============================================================================
-// ZK Proof Generation Functions (Placeholders - need actual circuit integration)
+// ZK Proof Generation Functions
 // ============================================================================
 
+/**
+ * Detect if we're running in service worker context
+ */
+function isServiceWorker() {
+  return typeof self !== 'undefined' && self.constructor.name === 'ServiceWorkerGlobalScope';
+}
+
 async function generateAgeProof(profileData, criteria) {
-  // TODO: Implement actual ZK-SNARK proof generation with range_check circuit
-  console.log('[ZK-Proof] Age proof generation not yet implemented');
-  return null;
+  try {
+    // criteria could be [minAge, maxAge] or {min, max}
+    let minAge, maxAge;
+    if (Array.isArray(criteria)) {
+      [minAge, maxAge] = criteria;
+    } else if (criteria && typeof criteria === 'object') {
+      minAge = criteria.min;
+      maxAge = criteria.max;
+    } else {
+      console.error('[ZK-Proof] Invalid age criteria format:', criteria);
+      return null;
+    }
+    
+    const userAge = profileData.demographics?.age;
+    
+    if (!userAge || !minAge || !maxAge) {
+      console.error('[ZK-Proof] Missing age values:', { userAge, minAge, maxAge });
+      return null;
+    }
+    
+    // If in service worker, call generateProofInServiceWorker directly
+    // If in window/page context, send message to service worker
+    if (isServiceWorker()) {
+      // Direct call in service worker context (background.js has this function)
+      return await self.generateProofInServiceWorker(
+        'range_check',
+        { value: userAge },
+        { min: minAge, max: maxAge }
+      );
+    } else {
+      // Send message to service worker from page context
+      const response = await chrome.runtime.sendMessage({
+        type: 'GENERATE_PROOF',
+        circuitName: 'range_check',
+        privateInputs: { value: userAge },
+        publicInputs: { min: minAge, max: maxAge }
+      });
+      
+      if (response.success) {
+        return response.proof;
+      } else {
+        throw new Error(response.error);
+      }
+    }
+  } catch (error) {
+    console.error('[ZK-Proof] Age proof generation failed:', error);
+    return null;
+  }
 }
 
 async function generateLocationProof(profileData, criteria) {
-  // TODO: Implement actual ZK-SNARK proof generation with set_membership circuit
-  console.log('[ZK-Proof] Location proof generation not yet implemented');
-  return null;
+  try {
+    // criteria is array of allowed countries from advertiser
+    const allowedCountries = Array.isArray(criteria) ? criteria : (criteria?.countries || []);
+    const userCountry = profileData.location?.country;
+    
+    if (!userCountry) {
+      console.warn('[ZK-Proof] User location country not found in profile');
+      return null;
+    }
+    
+    if (allowedCountries.length === 0) {
+      console.warn('[ZK-Proof] No allowed countries in criteria');
+      return null;
+    }
+    
+    // Hash country codes to field elements
+    const hashCountry = (country) => {
+      // Simple hash for demo - in production use proper hash function
+      let hash = 0;
+      const str = String(country).toUpperCase();
+      for (let i = 0; i < str.length; i++) {
+        hash = ((hash << 5) - hash) + str.charCodeAt(i);
+        hash = hash & hash; // Convert to 32bit integer
+      }
+      return Math.abs(hash);
+    };
+    
+    const userCountryHash = hashCountry(userCountry);
+    
+    // Limit to first 10 countries (circuit max)
+    const limitedCountries = allowedCountries.slice(0, 10);
+    const allowedSet = limitedCountries.map(c => hashCountry(c));
+    
+    // Pad to exactly 10 elements (circuit requirement)
+    while (allowedSet.length < 10) {
+      allowedSet.push(0);
+    }
+    
+    if (isServiceWorker()) {
+      return await self.generateProofInServiceWorker(
+        'set_membership',
+        { value: userCountryHash },
+        { allowedSet }
+      );
+    } else {
+      const response = await chrome.runtime.sendMessage({
+        type: 'GENERATE_PROOF',
+        circuitName: 'set_membership',
+        privateInputs: { value: userCountryHash },
+        publicInputs: { allowedSet }
+      });
+      
+      if (response.success) {
+        return response.proof;
+      } else {
+        throw new Error(response.error);
+      }
+    }
+  } catch (error) {
+    console.error('[ZK-Proof] Location proof generation failed:', error);
+    return null;
+  }
 }
 
 async function generateIncomeProof(profileData, criteria) {
-  // TODO: Implement actual ZK-SNARK proof generation with range_check circuit
-  console.log('[ZK-Proof] Income proof generation not yet implemented');
-  return null;
+  try {
+    // criteria could be {min, max} or {min} or [min, max]
+    let minIncome, maxIncome;
+    
+    if (Array.isArray(criteria)) {
+      [minIncome, maxIncome] = criteria;
+    } else if (criteria && typeof criteria === 'object') {
+      minIncome = criteria.min;
+      maxIncome = criteria.max || 10000000; // Default max if not specified
+    } else {
+      console.error('[ZK-Proof] Invalid income criteria format:', criteria);
+      return null;
+    }
+    
+    // Parse income from profile - it's stored as a range string like "$100,000 - $150,000"
+    const incomeRange = profileData.financial?.incomeRange;
+    if (!incomeRange) {
+      console.error('[ZK-Proof] No income range in profile');
+      return null;
+    }
+    
+    // Parse income range to get midpoint
+    // Format examples: "$100,000 - $150,000", "$75,000+", "Under $50,000"
+    const parseIncome = (rangeStr) => {
+      // Remove $ and commas
+      const cleaned = rangeStr.replace(/[$,]/g, '');
+      
+      // Match two numbers (range)
+      const rangeMatch = cleaned.match(/(\d+)\s*-\s*(\d+)/);
+      if (rangeMatch) {
+        const min = parseInt(rangeMatch[1]);
+        const max = parseInt(rangeMatch[2]);
+        return Math.floor((min + max) / 2); // Use midpoint
+      }
+      
+      // Match single number with +
+      const plusMatch = cleaned.match(/(\d+)\+?/);
+      if (plusMatch) {
+        return parseInt(plusMatch[1]);
+      }
+      
+      return null;
+    };
+    
+    const userIncome = parseIncome(incomeRange);
+    
+    if (!userIncome || !minIncome || !maxIncome) {
+      console.error('[ZK-Proof] Missing income values:', { userIncome, minIncome, maxIncome, incomeRange });
+      return null;
+    }
+    
+    if (isServiceWorker()) {
+      return await self.generateProofInServiceWorker(
+        'range_check',
+        { value: userIncome },
+        { min: minIncome, max: maxIncome }
+      );
+    } else {
+      const response = await chrome.runtime.sendMessage({
+        type: 'GENERATE_PROOF',
+        circuitName: 'range_check',
+        privateInputs: { value: userIncome },
+        publicInputs: { min: minIncome, max: maxIncome }
+      });
+      
+      if (response.success) {
+        return response.proof;
+      } else {
+        throw new Error(response.error);
+      }
+    }
+  } catch (error) {
+    console.error('[ZK-Proof] Income proof generation failed:', error);
+    return null;
+  }
 }
 
 async function generateInterestsProof(profileData, criteria) {
-  // TODO: Implement actual ZK-SNARK proof generation with set_membership circuit
-  console.log('[ZK-Proof] Interests proof generation not yet implemented');
-  return null;
+  try {
+    // criteria is array of required interests from advertiser
+    const requiredInterests = criteria;
+    const userInterests = profileData.interests || [];
+    
+    if (userInterests.length === 0) {
+      console.warn('[ZK-Proof] User has no interests in profile');
+      return null;
+    }
+    
+    // Hash interest strings to field elements
+    const hashInterest = (interest) => {
+      let hash = 0;
+      for (let i = 0; i < interest.length; i++) {
+        hash = ((hash << 5) - hash) + interest.charCodeAt(i);
+        hash = hash & hash;
+      }
+      return Math.abs(hash);
+    };
+    
+    // Find first matching interest
+    const matchingInterest = userInterests.find(ui => 
+      requiredInterests.some(ri => ui.toLowerCase() === ri.toLowerCase())
+    );
+    
+    if (!matchingInterest) {
+      console.warn('[ZK-Proof] No matching interests found');
+      return null;
+    }
+    
+    const userInterestHash = hashInterest(matchingInterest);
+    const allowedSet = requiredInterests.map(i => hashInterest(i));
+    
+    // Pad to 10 elements
+    while (allowedSet.length < 10) {
+      allowedSet.push(0);
+    }
+    
+    if (isServiceWorker()) {
+      return await self.generateProofInServiceWorker(
+        'set_membership',
+        { value: userInterestHash },
+        { allowedSet }
+      );
+    } else {
+      const response = await chrome.runtime.sendMessage({
+        type: 'GENERATE_PROOF',
+        circuitName: 'set_membership',
+        privateInputs: { value: userInterestHash },
+        publicInputs: { allowedSet }
+      });
+      
+      if (response.success) {
+        return response.proof;
+      } else {
+        throw new Error(response.error);
+      }
+    }
+  } catch (error) {
+    console.error('[ZK-Proof] Interests proof generation failed:', error);
+    return null;
+  }
 }
 
 // ============================================================================
