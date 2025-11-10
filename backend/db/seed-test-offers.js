@@ -7,21 +7,37 @@
  * Uses advertiser wallet: AE6uwbubDn9WyXrpzvqU58jfirvqZAxWCZCfDDwW5MMb
  */
 
-import { createClient } from '@supabase/supabase-js';
-import dotenv from 'dotenv';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+const { createClient } = require('@supabase/supabase-js');
+const { readFileSync } = require('fs');
+const { join } = require('path');
 
-// Load environment variables
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-dotenv.config({ path: join(__dirname, '../.env.local') });
+// Load environment variables from .env.local
+const envPath = join(__dirname, '../.env.local');
+try {
+  const envFile = readFileSync(envPath, 'utf8');
+  envFile.split('\n').forEach(line => {
+    const trimmed = line.trim();
+    if (trimmed && !trimmed.startsWith('#')) {
+      const [key, ...valueParts] = trimmed.split('=');
+      if (key && valueParts.length > 0) {
+        process.env[key.trim()] = valueParts.join('=').trim();
+      }
+    }
+  });
+} catch (error) {
+  console.error('Warning: Could not load .env.local:', error.message);
+}
 
+// Read from environment variables (should be set by Next.js or manually)
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+console.log('[Seed] Checking environment variables...');
+console.log(`  NEXT_PUBLIC_SUPABASE_URL: ${supabaseUrl ? '✓' : '✗'}`);
+console.log(`  Supabase Key: ${supabaseKey ? '✓' : '✗'}\n`);
 
 if (!supabaseUrl || !supabaseKey) {
-  console.error('❌ Missing Supabase credentials in .env.local');
+  console.error('❌ Missing Supabase credentials in environment variables');
   process.exit(1);
 }
 
