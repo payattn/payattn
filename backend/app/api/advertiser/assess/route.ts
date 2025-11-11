@@ -187,6 +187,15 @@ export async function POST(request: NextRequest) {
         results.push(result);
         console.log('─────────────────────────────────────────\n');
         
+        // Update offer status in database based on decision
+        try {
+          const newStatus = evaluation.decision === 'accept' ? 'accepted' : 'rejected';
+          await db.updateOfferStatus(offer.offer_id, newStatus);
+          console.log(`   📝 Updated offer status to: ${newStatus}`);
+        } catch (statusError) {
+          console.error(`   ⚠️  Failed to update offer status:`, statusError);
+        }
+        
       } catch (error) {
         console.error(`   ❌ Failed to process offer:`, error);
         results.push({

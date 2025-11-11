@@ -17,7 +17,7 @@ interface ProofValidation {
 
 interface FundingResult {
   success: boolean;
-  txSignature?: string;
+  signature?: string;
   escrowPda?: string;
   error?: string;
 }
@@ -61,6 +61,8 @@ export default function OfferQueuePage() {
   const [sessions, setSessions] = useState<AssessmentSession[]>([]);
   const [currentSessionIndex, setCurrentSessionIndex] = useState(0);
   const [filter, setFilter] = useState<FilterType>('all');
+  const [pendingOffers, setPendingOffers] = useState<any[]>([]);
+  const [assessingIndex, setAssessingIndex] = useState(-1);
   
   // Hardcoded advertiser wallet for hackathon (TODO: get from auth)
   // This should match the wallet in seed-test-offers.js
@@ -106,22 +108,79 @@ export default function OfferQueuePage() {
   
   async function handleAssess() {
     setLoading(true);
-    setStatus('🤖 Peggy is assessing offers...');
+    setStatus('📥 Fetching pending offers...');
+    setPendingOffers([]);
+    setCurrentSession(null);
     
     try {
-      const response = await fetch('/api/advertiser/assess', {
-        method: 'POST',
+      // First, fetch the pending offers to display them
+      const fetchResponse = await fetch('/api/advertiser/offers/pending', {
         headers: {
           'x-advertiser-id': advertiserId
         }
       });
       
-      if (!response.ok) {
-        throw new Error(`Assessment failed: ${response.statusText}`);
+      if (!fetchResponse.ok) {
+        throw new Error(`Failed to fetch offers: ${fetchResponse.statusText}`);
       }
       
-      const session = await response.json();
+      const { offers } = await fetchResponse.json();
+      
+      if (offers.length === 0) {
+        setStatus('✅ No pending offers to assess');
+        setLoading(false);
+        return;
+      }
+      
+      // Display offers as "pending"
+      setPendingOffers(offers);
+      setStatus(`🤖 Peggy is assessing ${offers.length} offer(s)...`);
+      
+      // Assess them one by one
+      const results: AssessmentResult[] = [];
+      
+      for (let i = 0; i < offers.length; i++) {
+        setAssessingIndex(i);
+        setStatus(`🤖 Peggy is assessing offer ${i + 1} of ${offers.length}...`);
+        
+        // Assess single offer
+        const assessResponse = await fetch('/api/advertiser/assess/single', {
+          method: 'POST',
+          headers: {
+            'x-advertiser-id': advertiserId,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ offerId: offers[i].offer_id })
+        });
+        
+        if (assessResponse.ok) {
+          const result = await assessResponse.json();
+          results.push(result);
+        }
+        
+        // Small delay for visual effect
+        await new Promise(resolve => setTimeout(resolve, 300));
+      }
+      
+      // Create session from results
+      const session: AssessmentSession = {
+        sessionId: `session_${Date.now()}`,
+        advertiserId,
+        timestamp: Date.now(),
+        dateString: new Date().toISOString(),
+        stats: {
+          totalOffers: results.length,
+          accepted: results.filter(r => r.decision === 'accept').length,
+          rejected: results.filter(r => r.decision === 'reject').length,
+          funded: results.filter(r => r.funded?.success).length,
+          errors: results.filter(r => r.funded?.error).length
+        },
+        results
+      };
+      
       setCurrentSession(session);
+      setPendingOffers([]);
+      setAssessingIndex(-1);
       setStatus(`✅ Assessment complete! ${session.stats.accepted} accepted, ${session.stats.rejected} rejected`);
       
       // Reload sessions
@@ -130,6 +189,8 @@ export default function OfferQueuePage() {
     } catch (error) {
       console.error('Assessment failed:', error);
       setStatus(`❌ Assessment failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      setPendingOffers([]);
+      setAssessingIndex(-1);
     } finally {
       setLoading(false);
     }
@@ -186,6 +247,56 @@ export default function OfferQueuePage() {
         {status && (
           <div className="mb-6 p-4 bg-slate-700 border border-slate-600 rounded-lg">
             <p className="text-center text-sm font-medium">{status}</p>
+          </div>
+        )}
+        
+        {/* Pending Offers (during assessment) */}
+        {pendingOffers.length > 0 && (
+          <div className="space-y-4 mb-6">
+            {pendingOffers.map((offer, index) => {
+              const isAssessing = index === assessingIndex;
+              const isComplete = index < assessingIndex;
+              
+              return (
+                <div
+                  key={offer.offer_id}
+                  className={`p-5 rounded-lg border-2 transition-all ${
+                    isAssessing 
+                      ? 'bg-amber-900/20 border-amber-500 shadow-lg' 
+                      : isComplete
+                      ? 'bg-slate-800 border-slate-600 opacity-50'
+                      : 'bg-slate-800 border-slate-700'
+                  }`}
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <div>
+                      <div className="text-xs text-slate-400 mb-1">Offer {index + 1} of {pendingOffers.length}</div>
+                      <h3 className="text-lg font-bold text-slate-100">
+                        {offer.ad_creative?.headline || 'No headline'}
+                      </h3>
+                    </div>
+                    <div className={`px-3 py-1 rounded-full text-sm font-bold ${
+                      isAssessing 
+                        ? 'bg-amber-600 text-white animate-pulse' 
+                        : isComplete
+                        ? 'bg-slate-600 text-slate-300'
+                        : 'bg-slate-700 text-slate-400'
+                    }`}>
+                      {isAssessing ? '🤖 ASSESSING' : isComplete ? '✓ DONE' : '⏳ PENDING'}
+                    </div>
+                  </div>
+                  
+                  <div className="text-sm text-slate-300">
+                    <div className="font-mono text-xs text-slate-400 mb-1">
+                      {offer.user_pubkey.slice(0, 8)}...{offer.user_pubkey.slice(-6)}
+                    </div>
+                    <div className="text-slate-400">
+                      Offered: {(offer.amount_lamports / 1e9).toFixed(4)} SOL
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
         
@@ -344,13 +455,13 @@ function OfferCard({ result }: { result: AssessmentResult }) {
           {result.funded.success ? (
             <div className="space-y-1 text-xs">
               <div className="text-green-400">✅ Funded successfully!</div>
-              {result.funded.txSignature && (
+              {result.funded.signature && (
                 <>
                   <div className="text-slate-400">
-                    TX: <span className="font-mono text-slate-300">{result.funded.txSignature.slice(0, 16)}...</span>
+                    TX: <span className="font-mono text-slate-300">{result.funded.signature.slice(0, 16)}...</span>
                   </div>
                   <a
-                    href={`https://explorer.solana.com/tx/${result.funded.txSignature}?cluster=devnet`}
+                    href={`https://explorer.solana.com/tx/${result.funded.signature}?cluster=devnet`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-blue-400 hover:text-blue-300 underline"

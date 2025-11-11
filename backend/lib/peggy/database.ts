@@ -170,4 +170,18 @@ export class DatabaseClient {
     
     return data as AdCreative;
   }
+  
+  /**
+   * Update offer status
+   */
+  async updateOfferStatus(offerId: string, status: string): Promise<void> {
+    const { error } = await this.supabase
+      .from('offers')
+      .update({ status })
+      .eq('offer_id', offerId);
+    
+    if (error) {
+      throw new Error(`Failed to update offer status: ${error.message}`);
+    }
+  }
 }

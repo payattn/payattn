@@ -18,6 +18,7 @@ export interface ZKProof {
   circuit: string;
   proof: any;
   publicSignals: string[];
+  proofType?: string; // What's being proven (age, location, interest, etc.)
 }
 
 /**
@@ -52,11 +53,13 @@ export async function validateOfferProofs(
       proofsArray = zkProofs.proofs;
     } else {
       // Convert object properties to array
-      // Each proof object should have a circuitName field - use that!
+      // Key (age, location, etc.) tells us WHAT is being proven
+      // circuitName (range_check, set_membership) tells us HOW it's proven
       proofsArray = Object.entries(zkProofs).map(([key, value]: [string, any]) => ({
         circuit: value.circuitName || value.circuit || key,
         proof: value.proof || value,
-        publicSignals: value.publicSignals || []
+        publicSignals: value.publicSignals || [],
+        proofType: key // Store what's being proven (age, location, etc.)
       }));
     }
   }
@@ -87,13 +90,13 @@ export async function validateOfferProofs(
       results.push(result);
       
       if (result.valid) {
-        validProofs.push(getProofDisplayName(zkProof.circuit));
+        validProofs.push(getProofDisplayName(zkProof));
       } else {
-        invalidProofs.push(getProofDisplayName(zkProof.circuit));
+        invalidProofs.push(getProofDisplayName(zkProof));
       }
     } catch (error) {
       console.error(`Failed to verify proof ${zkProof.circuit}:`, error);
-      invalidProofs.push(getProofDisplayName(zkProof.circuit));
+      invalidProofs.push(getProofDisplayName(zkProof));
       results.push({
         valid: false,
         circuitName: zkProof.circuit,
@@ -126,17 +129,46 @@ export async function validateOfferProofs(
 }
 
 /**
- * Get human-readable name for circuit
+ * Get human-readable name for what's being proven
+ * Uses proofType (what) over circuit name (how)
+ * 
+ * Examples:
+ * - proofType='age', circuit='range_check' → 'Age (range proof)'
+ * - proofType='location', circuit='set_membership' → 'Location (set membership)'
  */
-function getProofDisplayName(circuit: string): string {
-  const displayNames: Record<string, string> = {
+function getProofDisplayName(zkProof: ZKProof): string {
+  // If we know what's being proven, use that
+  if (zkProof.proofType) {
+    const proofTypeNames: Record<string, string> = {
+      'age': 'Age',
+      'age_range': 'Age',
+      'location': 'Location',
+      'interest': 'Interest',
+      'interests': 'Interests',
+      'geo': 'Geography',
+      'income': 'Income',
+      'time': 'Timestamp'
+    };
+    
+    const displayName = proofTypeNames[zkProof.proofType.toLowerCase()] || zkProof.proofType;
+    
+    // Add circuit type for clarity in logs
+    const circuitTypeNames: Record<string, string> = {
+      'range_check': 'range proof',
+      'set_membership': 'set membership'
+    };
+    
+    const circuitType = circuitTypeNames[zkProof.circuit.toLowerCase()];
+    return circuitType ? `${displayName} (${circuitType})` : displayName;
+  }
+  
+  // Fallback to circuit name if proofType not available
+  const fallbackNames: Record<string, string> = {
+    'range_check': 'Range Proof',
+    'set_membership': 'Set Membership',
     'age_range': 'Age',
-    'age': 'Age',
-    'location': 'Location',
-    'interest': 'Interest',
-    'geo': 'Geography',
-    'time': 'Timestamp'
+    'location': 'Location'
   };
   
-  return displayNames[circuit.toLowerCase()] || circuit;
+  return fallbackNames[zkProof.circuit.toLowerCase()] || zkProof.circuit;
 }
