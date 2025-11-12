@@ -1,26 +1,28 @@
 # PayAttn
 
-**Privacy-First Attention Verification Platform**
+**Privacy-First Ad Marketplace**
 
 Pay Attention allows users to prove demographic attributes (age, preferences, etc.) to advertisers **without revealing the actual data**, using Zero-Knowledge Succinct Non-Interactive Arguments of Knowledge (ZK-SNARKs).
 
+### What the marketing guy would say:
+PayAttn is a privacy-first ad marketplace where autonomous agents negotiate prices using ZK proofs so users get paid for their attention without giving up their data.
+
 ---
 
-## � Key Technical Achievements
+## Key Technical Achievements
 
 - **Real ZK-SNARKs:** Groth16 proofs with Circom circuits (not a mock/simulation)
 - **10-50ms Verification:** Rapidsnark C++ verifier (426KB binary, production-ready)
 - **Privacy-Preserving Architecture:** User data never leaves browser, cryptographically guaranteed
 - **Multi-Chain Integration:** Solana smart contracts for trustless escrow settlement
-- **Autonomous AI Agent:** Venice AI-powered offer evaluation system (Peggy)
+- **2 Autonomous AI Agents:** LLM (Local or Venice)-powered offer evaluation system (Max & Peggy)
 - **x402 Protocol:** Novel "Payment Required" HTTP status for blockchain payment coordination
 - **Complete End-to-End Flow:** Chrome extension → ZK proof → Backend verification → Solana escrow → Settlement
 
 ---
 
-##  Quick Links
+## Quick Links
 
-- **[🏆 Hackathon Demo Guide](/HACKATHON_DEMO.md)** - Quick 3-minute demo flow for judges
 - **[📚 Documentation](/docs)** - Complete system documentation
 - **[🏗️ Architecture](/docs/ARCHITECTURE.md)** - System overview and components
 - **[🔐 ZK Proof Flow](/docs/ZK_PROOF_FLOW.md)** - How proofs work
@@ -30,7 +32,7 @@ Pay Attention allows users to prove demographic attributes (age, preferences, et
 
 ---
 
-## 🚀 Quick Start (Hackathon Judges)
+## 🚀 Quick Start
 
 ### One-Command Setup
 ```bash

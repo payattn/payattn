@@ -493,10 +493,11 @@ CDN (extension distribution)
 - [ ] Batch verification support
 
 ### Medium-term
-- [ ] More circuits (location, preferences)
+- [ ] More circuits for more sophisticated preferences
 - [ ] Docker deployment
 - [ ] Monitoring and alerting
 - [ ] Performance optimization
+- [ ] Additional 'connectors' for ad placement (in-world, multimodal etc)
 
 ### Long-term
 - [ ] PLONK support (universal setup)

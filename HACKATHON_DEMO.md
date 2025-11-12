@@ -111,70 +111,6 @@ All transactions verified on Solana Devnet
 
 ---
 
-## 🚀 Live Demo Flow
-
-### Prerequisites (For Judges)
-1. Clone repository: `git clone https://github.com/payattn/payattn.git`
-2. Run setup: `./setup.sh` (installs all dependencies)
-3. Configure `.env` files (Supabase, Solana keys)
-4. Start backend: `cd backend && npm run dev`
-5. Load Chrome extension from `extension/` folder
-
-### Demo Steps (3 Minutes)
-
-#### **Step 1: User Setup (30 seconds)**
-1. Open extension popup
-2. Enter age: 35, interests: ["golf", "sports"]
-3. Click "Save Profile"
-   - ✅ Data stored in browser IndexedDB
-   - ✅ **Never sent to server**
-
-#### **Step 2: Generate Proof (30 seconds)**
-1. Click "Generate Age Proof"
-2. Watch proof generation: ~2 seconds
-3. View proof object:
-   ```json
-   {
-     "pi_a": [...],  // Elliptic curve points
-     "pi_b": [...],
-     "pi_c": [...],
-     "publicSignals": [1]  // "Age is 25-50" (not 35!)
-   }
-   ```
-
-#### **Step 3: Backend Verification (15 seconds)**
-1. Extension auto-submits proof to backend
-2. Backend logs show:
-   ```
-   ✅ Proof verification: VALID
-   ⏱️  Verification time: 47ms
-   🔐 Circuit: age_range
-   ```
-3. Open Solana Explorer to show escrow account
-
-#### **Step 4: AI Agent Evaluation (45 seconds)**
-1. Show Peggy agent terminal:
-   ```
-   📋 Found 1 pending offer
-   💭 Peggy thinking...
-   ✅ Decision: ACCEPT
-      Reasoning: Excellent match (5/5 criteria)
-      Price: $0.025 vs $0.030 max
-      User reputation: 92%
-   💰 Funding escrow...
-   ✅ Transaction confirmed!
-   ```
-2. Show Solana transaction on explorer
-
-#### **Step 5: User Gets Ad (30 seconds)**
-1. Show extension popup: "Ad Queue (1 available)"
-2. User clicks "View Ad"
-3. Ad displayed with proof badge
-4. Backend settles escrow (3 separate transactions for privacy)
-5. User balance updated
-
----
-
 ## 🔥 Key Technical Highlights
 
 ### 1. **Real ZK-SNARKs (Not a Mock)**
@@ -221,8 +157,6 @@ All transactions verified on Solana Devnet
 
 ## 🎬 Video Demo
 
-**[Link to video demo will be here]**
-
 Demonstrates:
 1. User profile setup (browser extension)
 2. ZK proof generation and verification
@@ -260,28 +194,28 @@ npm run dev
 
 ---
 
-## 🏆 Why This Wins
+## Highlights
 
-### Innovation (10/10)
-- ✅ Real ZK-SNARKs (most hackathon projects fake this)
+### Innovation
+- ✅ Real ZK-SNARKs
 - ✅ Novel x402 protocol for blockchain coordination
 - ✅ AI agent autonomously evaluating and funding offers
 - ✅ Multi-chain architecture (browser → backend → Solana)
 
-### Technical Depth (9/10)
+### Technical Dept
 - ✅ Working Circom circuits with trusted setup
 - ✅ C++ verifier integration (Rapidsnark)
 - ✅ Solana smart contract with PDA-based escrow
 - ✅ Chrome Manifest V3 extension with service workers
 - ✅ TypeScript backend with Next.js 16
 
-### Completeness (8/10)
+### Completeness
 - ✅ Full end-to-end flow working
 - ✅ Extension + Backend + Blockchain + AI agent
 - ✅ Extensive documentation (168+ markdown files)
 - ✅ Production-ready code quality
 
-### Real-World Impact (9/10)
+### Real-World Impact
 - ✅ Solves actual GDPR/privacy problems
 - ✅ Enables new advertising models
 - ✅ Privacy-first by design (not bolted on)
@@ -313,7 +247,7 @@ A: No, it's cryptographically impossible. The proof only reveals "age is in rang
 A: Low transaction fees (~$0.00025), fast finality (~400ms), and excellent support for escrow patterns via PDAs.
 
 **Q: What about the trusted setup?**  
-A: We used Powers of Tau ceremony artifacts. For production, we'd run a custom multi-party computation ceremony.
+A: I used Powers of Tau ceremony artifacts. For production, I'd run a custom multi-party computation ceremony.
 
 **Q: How do you prevent Sybil attacks?**  
 A: User reputation scores based on historical behavior, verified on-chain. Low-rep users require higher proof thresholds.
