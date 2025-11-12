@@ -116,24 +116,24 @@ export default function AdvertiserLayout({ children }: AdvertiserLayoutProps) {
   // Show wallet connection screen
   if (!connected && !connecting) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4">
-        <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
+      <div className="min-h-screen flex items-center justify-center px-4" style={{ background: '#000A30' }}>
+        <div className="max-w-md w-full rounded-2xl shadow-xl p-8" style={{ background: '#1a1f3a', borderColor: '#334155' }}>
           <div className="text-center">
-            <div className="mx-auto w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mb-6">
-              <svg className="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-              </svg>
-            </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-3">
+            <img 
+              src="/payattn_logo_bar01_700x140_trans.png" 
+              alt="PayAttn" 
+              className="mx-auto h-12 w-auto mb-6"
+            />
+            <h1 className="text-3xl font-bold mb-3" style={{ color: '#FFD100' }}>
               Advertiser Dashboard
             </h1>
-            <p className="text-gray-600 mb-8">
+            <p className="mb-8" style={{ color: '#94a3b8' }}>
               Connect your Solana wallet to access your advertiser account and manage campaigns
             </p>
             <div className="flex justify-center">
-              <WalletMultiButton className="!bg-blue-600 hover:!bg-blue-700" />
+              <WalletMultiButton style={{ background: '#FFD100', color: '#000A30' }} />
             </div>
-            <p className="text-sm text-gray-500 mt-6">
+            <p className="text-sm mt-6" style={{ color: '#94a3b8' }}>
               💡 Your wallet address is your advertiser ID
             </p>
           </div>
@@ -145,10 +145,10 @@ export default function AdvertiserLayout({ children }: AdvertiserLayoutProps) {
   // Show loading state
   if (connecting || loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#000A30' }}>
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
-          <p className="text-gray-600">Loading advertiser profile...</p>
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 mb-4" style={{ borderColor: '#FFD100' }}></div>
+          <p style={{ color: '#94a3b8' }}>Loading advertiser profile...</p>
         </div>
       </div>
     );
@@ -157,28 +157,28 @@ export default function AdvertiserLayout({ children }: AdvertiserLayoutProps) {
   // Show onboarding form
   if (showOnboarding) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4">
-        <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
+      <div className="min-h-screen flex items-center justify-center px-4" style={{ background: '#000A30' }}>
+        <div className="max-w-md w-full rounded-2xl shadow-xl p-8" style={{ background: '#1a1f3a' }}>
           <div className="text-center mb-8">
-            <div className="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-4">
-              <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            <img 
+              src="/payattn_logo_bar01_700x140_trans.png" 
+              alt="PayAttn" 
+              className="mx-auto h-12 w-auto mb-6"
+            />
+            <h2 className="text-2xl font-bold mb-2" style={{ color: '#FFD100' }}>
               Welcome to PayAttn!
             </h2>
-            <p className="text-gray-600 mb-1">
+            <p className="mb-1" style={{ color: '#94a3b8' }}>
               Create your advertiser profile to get started
             </p>
-            <p className="text-xs text-gray-500 font-mono bg-gray-100 px-3 py-2 rounded mt-3 break-all">
+            <p className="text-xs font-mono px-3 py-2 rounded mt-3 break-all" style={{ color: '#94a3b8', background: '#0f172a' }}>
               {publicKey?.toBase58()}
             </p>
           </div>
 
           <form onSubmit={handleCreateProfile} className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium mb-2" style={{ color: '#e2e8f0' }}>
                 Advertiser Name *
               </label>
               <input
@@ -187,23 +187,25 @@ export default function AdvertiserLayout({ children }: AdvertiserLayoutProps) {
                 onChange={(e) => setAdvertiserName(e.target.value)}
                 placeholder="e.g., Acme Corp Marketing"
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 border rounded-lg focus:ring-2"
+                style={{ background: '#0f172a', borderColor: '#334155', color: '#e2e8f0' }}
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs mt-1" style={{ color: '#94a3b8' }}>
                 This name will appear on your dashboard
               </p>
             </div>
 
             {error && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-sm text-red-600">{error}</p>
+              <div className="p-3 border rounded-lg" style={{ background: '#7f1d1d', borderColor: '#991b1b' }}>
+                <p className="text-sm" style={{ color: '#fca5a5' }}>{error}</p>
               </div>
             )}
 
             <button
               type="submit"
               disabled={creatingProfile || !advertiserName.trim()}
-              className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="w-full py-3 px-4 rounded-lg font-semibold hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              style={{ background: '#FFD100', color: '#000A30' }}
             >
               {creatingProfile ? 'Creating Profile...' : 'Create Profile'}
             </button>
@@ -216,21 +218,22 @@ export default function AdvertiserLayout({ children }: AdvertiserLayoutProps) {
   // Show error state
   if (error && !advertiserData) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-        <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
+      <div className="min-h-screen flex items-center justify-center px-4" style={{ background: '#000A30' }}>
+        <div className="max-w-md w-full rounded-lg shadow-lg p-8" style={{ background: '#1a1f3a' }}>
           <div className="text-center">
-            <div className="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
-              <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-4" style={{ background: '#7f1d1d' }}>
+              <svg className="w-8 h-8" fill="none" stroke="#fca5a5" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </div>
-            <h2 className="text-xl font-bold text-gray-900 mb-2">
+            <h2 className="text-xl font-bold mb-2" style={{ color: '#FFD100' }}>
               Error Loading Profile
             </h2>
-            <p className="text-gray-600 mb-6">{error}</p>
+            <p className="mb-6" style={{ color: '#94a3b8' }}>{error}</p>
             <button
               onClick={fetchAdvertiserProfile}
-              className="bg-blue-600 text-white py-2 px-6 rounded-lg font-semibold hover:bg-blue-700"
+              className="py-2 px-6 rounded-lg font-semibold hover:opacity-90"
+              style={{ background: '#FFD100', color: '#000A30' }}
             >
               Try Again
             </button>
@@ -244,21 +247,23 @@ export default function AdvertiserLayout({ children }: AdvertiserLayoutProps) {
   if (!advertiserData) return null;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{ background: '#000A30' }}>
       {/* Header with wallet */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="border-b" style={{ background: '#1a1f3a', borderColor: '#334155' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center space-x-4">
-              <h1 className="text-2xl font-bold text-gray-900">
-                PayAttn Advertiser
-              </h1>
-              <span className="text-sm text-gray-500">|</span>
-              <span className="text-lg font-semibold text-blue-600">
+              <img 
+                src="/payattn_logo_bar01_700x140_trans.png" 
+                alt="PayAttn" 
+                className="h-8 w-auto"
+              />
+              <span className="text-sm" style={{ color: '#94a3b8' }}>|</span>
+              <span className="text-lg font-semibold" style={{ color: '#FFD100' }}>
                 {advertiserData.name}
               </span>
             </div>
-            <WalletMultiButton className="!bg-blue-600 hover:!bg-blue-700" />
+            <WalletMultiButton style={{ background: '#FFD100', color: '#000A30' }} />
           </div>
         </div>
       </div>

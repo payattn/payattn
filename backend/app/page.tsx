@@ -11,31 +11,33 @@ export default function Home() {
   const { isAuthenticated, isAuthenticating, error, authenticate, session } = useAuth();
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-zinc-50 to-zinc-100 dark:from-zinc-900 dark:to-black p-4">
+    <div className="flex min-h-screen items-center justify-center p-4" style={{ background: '#000A30' }}>
       <main className="w-full max-w-2xl space-y-8">
         {/* Header */}
-        <div className="text-center space-y-2">
-          <h1 className="text-4xl font-bold tracking-tight">
-            PayAttn Agent Dashboard
-          </h1>
-          <p className="text-muted-foreground">
+        <div className="text-center space-y-4">
+          <img 
+            src="/payattn_logo_bar01_700x140_trans.png" 
+            alt="PayAttn" 
+            className="mx-auto h-16 w-auto"
+          />
+          <p className="text-gray-300">
             Connect your Solana wallet to get started
           </p>
         </div>
 
         {/* Wallet Connection Card */}
-        <Card>
+        <Card style={{ background: '#1a1f3a', borderColor: '#334155' }}>
           <CardHeader>
-            <CardTitle>Wallet Connection</CardTitle>
-            <CardDescription>
+            <CardTitle style={{ color: '#FFD100' }}>Wallet Connection</CardTitle>
+            <CardDescription style={{ color: '#94a3b8' }}>
               Connect your Phantom or Solflare wallet
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <p className="text-sm font-medium">Status</p>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm font-medium" style={{ color: '#e2e8f0' }}>Status</p>
+                <p className="text-sm" style={{ color: '#94a3b8' }}>
                   {connected ? 'Connected' : 'Not connected'}
                 </p>
               </div>
@@ -43,9 +45,9 @@ export default function Home() {
             </div>
 
             {connected && publicKey && (
-              <div className="space-y-1 pt-4 border-t">
-                <p className="text-sm font-medium">Wallet Address</p>
-                <p className="text-xs font-mono bg-muted p-2 rounded break-all">
+              <div className="space-y-1 pt-4 border-t" style={{ borderColor: '#334155' }}>
+                <p className="text-sm font-medium" style={{ color: '#e2e8f0' }}>Wallet Address</p>
+                <p className="text-xs font-mono p-2 rounded break-all" style={{ background: '#0f172a', color: '#94a3b8' }}>
                   {publicKey.toBase58()}
                 </p>
               </div>
@@ -55,18 +57,18 @@ export default function Home() {
 
         {/* Authentication Card */}
         {connected && (
-          <Card>
+          <Card style={{ background: '#1a1f3a', borderColor: '#334155' }}>
             <CardHeader>
-              <CardTitle>Authentication</CardTitle>
-              <CardDescription>
+              <CardTitle style={{ color: '#FFD100' }}>Authentication</CardTitle>
+              <CardDescription style={{ color: '#94a3b8' }}>
                 Sign a message to authenticate with PayAttn
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <p className="text-sm font-medium">Auth Status</p>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm font-medium" style={{ color: '#e2e8f0' }}>Auth Status</p>
+                  <p className="text-sm" style={{ color: '#94a3b8' }}>
                     {isAuthenticated ? 'Authenticated' : 'Not authenticated'}
                   </p>
                 </div>
@@ -74,6 +76,8 @@ export default function Home() {
                   <Button
                     onClick={authenticate}
                     disabled={isAuthenticating || !connected}
+                    style={{ background: '#FFD100', color: '#000A30' }}
+                    className="hover:opacity-90"
                   >
                     {isAuthenticating ? 'Authenticating...' : 'Sign Message'}
                   </Button>
@@ -81,20 +85,20 @@ export default function Home() {
               </div>
 
               {error && (
-                <div className="bg-destructive/10 text-destructive text-sm p-3 rounded">
+                <div className="text-sm p-3 rounded" style={{ background: '#7f1d1d', color: '#fca5a5', border: '1px solid #991b1b' }}>
                   {error}
                 </div>
               )}
 
               {isAuthenticated && session && (
-                <div className="space-y-3 pt-4 border-t">
+                <div className="space-y-3 pt-4 border-t" style={{ borderColor: '#334155' }}>
                   <div className="space-y-1">
-                    <p className="text-sm font-medium">Session Expires</p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-sm font-medium" style={{ color: '#e2e8f0' }}>Session Expires</p>
+                    <p className="text-xs" style={{ color: '#94a3b8' }}>
                       {new Date(session.expiresAt).toLocaleString()}
                     </p>
                   </div>
-                  <div className="bg-green-500/10 text-green-700 dark:text-green-400 text-sm p-3 rounded">
+                  <div className="text-sm p-3 rounded" style={{ background: '#064e3b', color: '#6ee7b7', border: '1px solid #065f46' }}>
                     ✓ Successfully authenticated with wallet signature
                   </div>
                 </div>
@@ -104,21 +108,21 @@ export default function Home() {
         )}
 
         {/* Info Card */}
-        <Card>
+        <Card style={{ background: '#1a1f3a', borderColor: '#334155' }}>
           <CardHeader>
-            <CardTitle>How it works</CardTitle>
+            <CardTitle style={{ color: '#FFD100' }}>How it works</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2 text-sm text-muted-foreground">
+          <CardContent className="space-y-2 text-sm" style={{ color: '#94a3b8' }}>
             <p>
-              <strong className="text-foreground">1. Connect Wallet:</strong> Click
+              <strong style={{ color: '#e2e8f0' }}>1. Connect Wallet:</strong> Click
               the button to connect your Phantom or Solflare wallet.
             </p>
             <p>
-              <strong className="text-foreground">2. Sign Message:</strong> Authenticate
+              <strong style={{ color: '#e2e8f0' }}>2. Sign Message:</strong> Authenticate
               by signing a challenge message with your wallet.
             </p>
             <p>
-              <strong className="text-foreground">3. Verified Session:</strong> Your
+              <strong style={{ color: '#e2e8f0' }}>3. Verified Session:</strong> Your
               signature proves wallet ownership without exposing your private key.
             </p>
             <p className="pt-2 text-xs">

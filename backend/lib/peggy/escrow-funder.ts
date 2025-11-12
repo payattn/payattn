@@ -130,6 +130,51 @@ export class EscrowFunder {
       
       console.log(`   ✅ PDA verified (bump: ${bump})`);
       
+      // Check if escrow already exists
+      console.log(`   🔍 Checking if escrow already exists...`);
+      try {
+        const existingEscrow = await (this.program.account as any).escrow.fetch(new PublicKey(escrowPda));
+        
+        // Escrow already exists - verify it matches our parameters
+        console.log(`   ℹ️  Escrow already exists!`);
+        console.log(`   Existing escrow details:`);
+        console.log(`      Offer ID: ${existingEscrow.offerId}`);
+        console.log(`      Amount: ${existingEscrow.amount.toString()} lamports`);
+        console.log(`      User: ${existingEscrow.user.toBase58()}`);
+        console.log(`      Advertiser: ${existingEscrow.advertiser.toBase58()}`);
+        console.log(`      Platform: ${existingEscrow.platform.toBase58()}`);
+        
+        // Verify the existing escrow matches our parameters
+        if (existingEscrow.offerId !== offerId) {
+          throw new Error(`Escrow exists but offer ID mismatch: ${existingEscrow.offerId} vs ${offerId}`);
+        }
+        
+        if (existingEscrow.amount.toString() !== paymentAmount.toString()) {
+          throw new Error(`Escrow exists but amount mismatch: ${existingEscrow.amount.toString()} vs ${paymentAmount}`);
+        }
+        
+        if (existingEscrow.user.toBase58() !== userPubkey) {
+          throw new Error(`Escrow exists but user mismatch: ${existingEscrow.user.toBase58()} vs ${userPubkey}`);
+        }
+        
+        console.log(`   ✅ Escrow already funded with correct parameters - no action needed`);
+        return {
+          success: true,
+          txSignature: undefined, // No new transaction
+          escrowPda: escrowPda
+        };
+        
+      } catch (fetchError: any) {
+        // If account doesn't exist, we'll create it (expected path for new escrows)
+        if (fetchError.message?.includes('Account does not exist') || 
+            fetchError.toString().includes('Account does not exist')) {
+          console.log(`   ✅ Escrow does not exist yet - proceeding with creation`);
+        } else {
+          // Re-throw if it's a different error
+          throw fetchError;
+        }
+      }
+      
       // Check balance
       const balance = await this.connection.getBalance(this.advertiserKeypair.publicKey);
       const requiredBalance = paymentAmount + 10000000; // Payment + 0.01 SOL for fees

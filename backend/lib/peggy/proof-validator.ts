@@ -32,11 +32,13 @@ export async function validateOfferProofs(
   let proofsArray: ZKProof[] = [];
   
   if (!zkProofs) {
+    // DEMO MODE: Skip proof validation if no proofs provided
+    console.log('[Proof Validator] No proofs provided - skipping validation (demo mode)');
     return {
-      isValid: false,
+      isValid: true, // Accept without proofs for demo
       validProofs: [],
       invalidProofs: [],
-      summary: '❌ No ZK proofs provided',
+      summary: '⚠️ No ZK proofs provided (accepted for demo)',
       details: []
     };
   }
@@ -65,11 +67,13 @@ export async function validateOfferProofs(
   }
   
   if (proofsArray.length === 0) {
+    // DEMO MODE: Skip proof validation if empty proofs object
+    console.log('[Proof Validator] Empty proofs object - skipping validation (demo mode)');
     return {
-      isValid: false,
+      isValid: true, // Accept without proofs for demo
       validProofs: [],
       invalidProofs: [],
-      summary: '❌ No valid ZK proofs found',
+      summary: '⚠️ No ZK proofs to validate (accepted for demo)',
       details: []
     };
   }

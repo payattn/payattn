@@ -3,6 +3,7 @@ import { DatabaseClient } from '@/lib/peggy/database';
 import { validateOfferProofs } from '@/lib/peggy/proof-validator';
 import { LLMEvaluator } from '@/lib/peggy/llm-evaluator';
 import { EscrowFunder } from '@/lib/peggy/escrow-funder';
+import { derivePDA } from '@/lib/solana-escrow';
 
 /**
  * POST /api/advertiser/assess/single
@@ -87,26 +88,64 @@ export async function POST(request: NextRequest) {
     // If accepted, fund the escrow
     if (evaluation.decision === 'accept') {
       try {
+        // Derive the correct escrow PDA from the offer ID
+        const [escrowPda, bump] = await derivePDA(offer.offer_id);
+        console.log(`   Derived escrow PDA: ${escrowPda.toBase58()} (bump: ${bump})`);
+        
+        // Validate platform pubkey
+        const platformPubkey = process.env.SOLANA_PLATFORM_PUBKEY;
+        if (!platformPubkey) {
+          throw new Error('SOLANA_PLATFORM_PUBKEY not configured in environment');
+        }
+        
+        // ====== X402 PAYMENT REQUEST ======
+        console.log('\n🔷 X402 Payment Request:');
+        console.log('   Protocol: x402 (Solana escrow-based payment)');
+        console.log(`   Offer ID: ${offer.offer_id}`);
+        console.log(`   Amount: ${offer.amount_lamports} lamports (${(offer.amount_lamports / 1e9).toFixed(6)} SOL)`);
+        console.log(`   Escrow PDA: ${escrowPda.toBase58()}`);
+        console.log(`   User Pubkey: ${offer.user_pubkey}`);
+        console.log(`   Platform Pubkey: ${platformPubkey}`);
+        console.log(`   Program ID: ${process.env.SOLANA_PROGRAM_ID || '6ZEekbTJZ6D6KrfSGDY2ByoWENWfe8RzhvpBS4KtPdZr'}`);
+        console.log('==================================\n');
+        
         const escrowFunder = new EscrowFunder();
         const fundResult = await escrowFunder.fundEscrow({
           offerId: offer.offer_id,
-          escrowPda: offer.user_pubkey, // FIXME: Should be actual escrow PDA
+          escrowPda: escrowPda.toBase58(),
           paymentAmount: offer.amount_lamports,
           userPubkey: offer.user_pubkey,
-          platformPubkey: process.env.PLATFORM_PUBKEY || 'PLATFORM_PUBKEY_NOT_SET',
+          platformPubkey: platformPubkey,
           programId: process.env.SOLANA_PROGRAM_ID || '6ZEekbTJZ6D6KrfSGDY2ByoWENWfe8RzhvpBS4KtPdZr'
         });
         
+        // ====== X402 PAYMENT SUCCESSFUL ======
+        if (fundResult.success) {
+          console.log('\n✅ X402 Payment Successful!');
+          console.log('   Protocol: x402 (Solana escrow)');
+          console.log(`   Offer ID: ${offer.offer_id}`);
+          console.log(`   Escrow PDA: ${fundResult.escrowPda}`);
+          if (fundResult.txSignature) {
+            console.log(`   Transaction Signature: ${fundResult.txSignature}`);
+            console.log(`   Explorer: https://explorer.solana.com/tx/${fundResult.txSignature}?cluster=devnet`);
+          } else {
+            console.log(`   Status: Escrow already funded (idempotent - no new transaction)`);
+          }
+          console.log('==================================\n');
+        }
+        
         result.funded = {
-          success: true,
+          success: fundResult.success,
           escrowPda: fundResult.escrowPda,
-          signature: fundResult.txSignature
+          signature: fundResult.txSignature,
+          error: fundResult.error
         };
         
-        console.log('✅ Escrow funded successfully');
-        console.log('Transaction:', fundResult.txSignature);
+        if (!fundResult.success) {
+          console.error('❌ X402 Payment Failed:', fundResult.error);
+        }
       } catch (error) {
-        console.error('❌ Escrow funding failed:', error);
+        console.error('❌ X402 Payment Exception:', error);
         result.funded = {
           success: false,
           error: error instanceof Error ? error.message : 'Unknown error'

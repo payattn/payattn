@@ -171,7 +171,17 @@ export async function settleWithPrivacy(
           txSignature: result.txSignature,
           amount,
         });
-        console.log(`✅ [Settlement] ${type} settlement succeeded: ${result.txSignature}`);
+        // Demo-friendly logging
+        const amountSOL = (amount / 1e9).toFixed(6);
+        if (type === 'user') {
+          console.log(`✅ 💰 USER HAS BEEN PAID: ${amountSOL} SOL (${amount} lamports)`);
+        } else if (type === 'publisher') {
+          console.log(`✅ 💰 PUBLISHER HAS BEEN PAID: ${amountSOL} SOL (${amount} lamports)`);
+        } else if (type === 'platform') {
+          console.log(`✅ 💰 PLATFORM HAS BEEN PAID: ${amountSOL} SOL (${amount} lamports)`);
+        }
+        console.log(`   Transaction: ${result.txSignature}`);
+        console.log(`   Explorer: https://explorer.solana.com/tx/${result.txSignature}?cluster=devnet`);
       } else {
         throw new Error(result.error || 'Transaction failed');
       }
@@ -205,7 +215,11 @@ export async function settleWithPrivacy(
       })
       .eq('offer_id', offerId);
     
-    console.log(`✅ [Settlement] All 3 transactions succeeded for ${offerId}`);
+    console.log(`\n🎉 ✅ ALL PAYMENTS COMPLETE FOR ${offerId}`);
+    console.log(`   ✓ User paid (70%)`);
+    console.log(`   ✓ Publisher paid (25%)`);
+    console.log(`   ✓ Platform paid (5%)`);
+    console.log(`   Total distributed: ${amount} lamports (${(amount / 1e9).toFixed(6)} SOL)\n`);
   } else {
     // Mark as not settling (cron job will retry)
     await supabase

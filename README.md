@@ -22,7 +22,7 @@ Pay Attention allows users to prove demographic attributes (age, preferences, et
 ### Prerequisites
 - Node.js 18+
 - Chrome (for extension development)
-- macOS/Linux (for Rapidsnark compilation)
+- macOS/Linux (for Rapidsnark compilation ...I used a docker container on MacOS)
 
 ### 1. Clone Repository
 ```bash

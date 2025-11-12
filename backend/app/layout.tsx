@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'PayAttn Agent Dashboard',
+  title: 'PayAttn',
   description: 'Solana wallet authentication for PayAttn',
 };
 

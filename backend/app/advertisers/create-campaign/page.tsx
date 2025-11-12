@@ -115,22 +115,22 @@ function CreateCampaignForm({ advertiser_id }: { advertiser_id: string }) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen py-8" style={{ background: '#000A30' }}>
       <div className="max-w-7xl mx-auto px-4">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Create Ad Campaign</h1>
-          <p className="mt-2 text-gray-600">
+          <h1 className="text-3xl font-bold" style={{ color: '#FFD100' }}>Create Ad Campaign</h1>
+          <p className="mt-2" style={{ color: '#94a3b8' }}>
             Create a new ad that will be evaluated by Max and shown to matching users
           </p>
         </div>
 
         {success ? (
-          <div className="bg-green-50 border border-green-200 rounded-lg p-6 mb-6">
-            <h2 className="text-xl font-semibold text-green-900 mb-2">✅ Ad Created Successfully!</h2>
-            <p className="text-green-800 mb-4">
-              Ad ID: <code className="bg-green-100 px-2 py-1 rounded">{createdAdId}</code>
+          <div className="border rounded-lg p-6 mb-6" style={{ background: '#064e3b', borderColor: '#065f46' }}>
+            <h2 className="text-xl font-semibold mb-2" style={{ color: '#6ee7b7' }}>✅ Ad Created Successfully!</h2>
+            <p className="mb-4" style={{ color: '#a7f3d0' }}>
+              Ad ID: <code className="px-2 py-1 rounded" style={{ background: '#047857' }}>{createdAdId}</code>
             </p>
-            <div className="space-y-2 text-sm text-green-700">
+            <div className="space-y-2 text-sm" style={{ color: '#a7f3d0' }}>
               <p>🔄 <strong>Next steps:</strong></p>
               <ul className="list-disc list-inside ml-4 space-y-1">
                 <li>Extension will sync this ad via /api/user/adstream</li>
@@ -145,7 +145,8 @@ function CreateCampaignForm({ advertiser_id }: { advertiser_id: string }) {
                 setSuccess(false);
                 setCreatedAdId('');
               }}
-              className="mt-4 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+              className="mt-4 px-4 py-2 rounded hover:opacity-90"
+              style={{ background: '#FFD100', color: '#000A30' }}
             >
               Create Another Ad
             </button>
@@ -154,20 +155,21 @@ function CreateCampaignForm({ advertiser_id }: { advertiser_id: string }) {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Form */}
             <div className="lg:col-span-2">
-              <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow p-6 space-y-6">
+              <form onSubmit={handleSubmit} className="rounded-lg shadow p-6 space-y-6" style={{ background: '#1a1f3a', borderColor: '#334155' }}>
                 {/* Campaign Info */}
                 <div>
-                  <h2 className="text-xl font-semibold mb-4">Campaign Details</h2>
+                  <h2 className="text-xl font-semibold mb-4" style={{ color: '#FFD100' }}>Campaign Details</h2>
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium mb-1" style={{ color: '#e2e8f0' }}>
                         Campaign Name (optional)
                       </label>
                       <input
                         type="text"
                         value={campaignName}
                         onChange={(e) => setCampaignName(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border rounded-md focus:ring-2"
+                        style={{ background: '#0f172a', borderColor: '#334155', color: '#e2e8f0' }}
                         placeholder="Q4 Luxury Campaign"
                       />
                     </div>
@@ -176,10 +178,10 @@ function CreateCampaignForm({ advertiser_id }: { advertiser_id: string }) {
 
                 {/* Ad Creative */}
                 <div>
-                  <h2 className="text-xl font-semibold mb-4">Ad Creative</h2>
+                  <h2 className="text-xl font-semibold mb-4" style={{ color: '#FFD100' }}>Ad Creative</h2>
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium mb-1" style={{ color: '#e2e8f0' }}>
                         Headline *
                       </label>
                       <input
@@ -188,14 +190,15 @@ function CreateCampaignForm({ advertiser_id }: { advertiser_id: string }) {
                         onChange={(e) => setHeadline(e.target.value)}
                         maxLength={100}
                         required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border rounded-md focus:ring-2"
+                        style={{ background: '#0f172a', borderColor: '#334155', color: '#e2e8f0' }}
                         placeholder="Get 20% off luxury watches"
                       />
-                      <p className="text-xs text-gray-500 mt-1">{headline.length}/100 characters</p>
+                      <p className="text-xs mt-1" style={{ color: '#94a3b8' }}>{headline.length}/100 characters</p>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium mb-1" style={{ color: '#e2e8f0' }}>
                         Body Text *
                       </label>
                       <textarea
@@ -203,14 +206,15 @@ function CreateCampaignForm({ advertiser_id }: { advertiser_id: string }) {
                         onChange={(e) => setBody(e.target.value)}
                         required
                         rows={3}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border rounded-md focus:ring-2"
+                        style={{ background: '#0f172a', borderColor: '#334155', color: '#e2e8f0' }}
                         placeholder="Swiss craftsmanship meets digital age. Exclusive offer for crypto enthusiasts."
                       />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium mb-1" style={{ color: '#e2e8f0' }}>
                           Call-to-Action *
                         </label>
                         <input
@@ -218,13 +222,14 @@ function CreateCampaignForm({ advertiser_id }: { advertiser_id: string }) {
                           value={cta}
                           onChange={(e) => setCta(e.target.value)}
                           required
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                          className="w-full px-3 py-2 border rounded-md focus:ring-2"
+                          style={{ background: '#0f172a', borderColor: '#334155', color: '#e2e8f0' }}
                           placeholder="Shop Now"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium mb-1" style={{ color: '#e2e8f0' }}>
                           Destination URL *
                         </label>
                         <input
@@ -232,7 +237,8 @@ function CreateCampaignForm({ advertiser_id }: { advertiser_id: string }) {
                           value={destinationUrl}
                           onChange={(e) => setDestinationUrl(e.target.value)}
                           required
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                          className="w-full px-3 py-2 border rounded-md focus:ring-2"
+                          style={{ background: '#0f172a', borderColor: '#334155', color: '#e2e8f0' }}
                           placeholder="https://example.com/campaign"
                         />
                       </div>
@@ -242,11 +248,11 @@ function CreateCampaignForm({ advertiser_id }: { advertiser_id: string }) {
 
                 {/* Targeting */}
                 <div>
-                  <h2 className="text-xl font-semibold mb-4">Targeting Criteria</h2>
+                  <h2 className="text-xl font-semibold mb-4" style={{ color: '#FFD100' }}>Targeting Criteria</h2>
                   
                   {/* Age Range */}
                   <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium mb-2" style={{ color: '#e2e8f0' }}>
                       Age Range: {ageMin} - {ageMax}
                     </label>
                     <div className="flex gap-4">
@@ -271,7 +277,7 @@ function CreateCampaignForm({ advertiser_id }: { advertiser_id: string }) {
 
                   {/* Interests */}
                   <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium mb-2" style={{ color: '#e2e8f0' }}>
                       Interests (select up to 8)
                     </label>
                     <div className="flex flex-wrap gap-2">
@@ -282,28 +288,33 @@ function CreateCampaignForm({ advertiser_id }: { advertiser_id: string }) {
                           onClick={() => toggleInterest(interest)}
                           className={`px-3 py-1 rounded-full text-sm ${
                             selectedInterests.includes(interest)
-                              ? 'bg-blue-600 text-white'
-                              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                              ? 'text-black'
+                              : 'hover:opacity-80'
                           }`}
+                          style={{
+                            background: selectedInterests.includes(interest) ? '#FFD100' : '#334155',
+                            color: selectedInterests.includes(interest) ? '#000A30' : '#e2e8f0'
+                          }}
                         >
                           {interest}
                         </button>
                       ))}
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs mt-1" style={{ color: '#94a3b8' }}>
                       {selectedInterests.length}/8 selected
                     </p>
                   </div>
 
                   {/* Income */}
                   <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium mb-2" style={{ color: '#e2e8f0' }}>
                       Minimum Income
                     </label>
                     <select
                       value={minIncome}
                       onChange={(e) => setMinIncome(parseInt(e.target.value))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border rounded-md focus:ring-2"
+                      style={{ background: '#0f172a', borderColor: '#334155', color: '#e2e8f0' }}
                     >
                       {INCOME_OPTIONS.map(opt => (
                         <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -313,7 +324,7 @@ function CreateCampaignForm({ advertiser_id }: { advertiser_id: string }) {
 
                   {/* Countries */}
                   <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium mb-2" style={{ color: '#e2e8f0' }}>
                       Target Countries
                     </label>
                     <div className="flex flex-wrap gap-2">
@@ -324,22 +335,26 @@ function CreateCampaignForm({ advertiser_id }: { advertiser_id: string }) {
                           onClick={() => toggleCountry(country)}
                           className={`px-3 py-1 rounded text-sm font-mono ${
                             selectedCountries.includes(country)
-                              ? 'bg-blue-600 text-white'
-                              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                              ? ''
+                              : 'hover:opacity-80'
                           }`}
+                          style={{
+                            background: selectedCountries.includes(country) ? '#FFD100' : '#334155',
+                            color: selectedCountries.includes(country) ? '#000A30' : '#e2e8f0'
+                          }}
                         >
                           {country}
                         </button>
                       ))}
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs mt-1" style={{ color: '#94a3b8' }}>
                       {selectedCountries.length} countries selected
                     </p>
                   </div>
                 </div>
 
                 {error && (
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-800">
+                  <div className="border rounded-lg p-4" style={{ background: '#7f1d1d', borderColor: '#991b1b', color: '#fca5a5' }}>
                     ❌ {error}
                   </div>
                 )}
@@ -347,7 +362,8 @@ function CreateCampaignForm({ advertiser_id }: { advertiser_id: string }) {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                  className="w-full py-3 rounded-lg font-semibold hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{ background: '#FFD100', color: '#000A30' }}
                 >
                   {loading ? 'Creating Ad...' : 'Create Ad Campaign'}
                 </button>
@@ -356,37 +372,37 @@ function CreateCampaignForm({ advertiser_id }: { advertiser_id: string }) {
 
             {/* Preview */}
             <div className="lg:col-span-1">
-              <div className="bg-white rounded-lg shadow p-6 sticky top-8">
-                <h2 className="text-xl font-semibold mb-4">Preview</h2>
-                <div className="border border-gray-300 rounded-lg p-4 bg-gray-50">
+              <div className="rounded-lg shadow p-6 sticky top-8" style={{ background: '#1a1f3a', borderColor: '#334155' }}>
+                <h2 className="text-xl font-semibold mb-4" style={{ color: '#FFD100' }}>Preview</h2>
+                <div className="border rounded-lg p-4" style={{ borderColor: '#334155', background: '#0f172a' }}>
                   <div className="space-y-3">
-                    <h3 className="font-semibold text-lg text-gray-900">
+                    <h3 className="font-semibold text-lg" style={{ color: '#e2e8f0' }}>
                       {headline || 'Your headline here'}
                     </h3>
-                    <p className="text-sm text-gray-700">
+                    <p className="text-sm" style={{ color: '#94a3b8' }}>
                       {body || 'Your ad body text will appear here...'}
                     </p>
-                    <button className="w-full py-2 bg-blue-600 text-white rounded font-medium hover:bg-blue-700">
+                    <button className="w-full py-2 rounded font-medium hover:opacity-90" style={{ background: '#FFD100', color: '#000A30' }}>
                       {cta || 'Call to Action'}
                     </button>
                   </div>
                 </div>
 
-                <div className="mt-6 space-y-3 text-sm">
+                <div className="mt-6 space-y-3 text-sm" style={{ color: '#94a3b8' }}>
                   <div>
-                    <span className="font-medium">Age:</span> {ageMin}-{ageMax}
+                    <span className="font-medium" style={{ color: '#e2e8f0' }}>Age:</span> {ageMin}-{ageMax}
                   </div>
                   <div>
-                    <span className="font-medium">Interests:</span>{' '}
+                    <span className="font-medium" style={{ color: '#e2e8f0' }}>Interests:</span>{' '}
                     {selectedInterests.length > 0 ? selectedInterests.join(', ') : 'None selected'}
                   </div>
                   <div>
-                    <span className="font-medium">Min Income:</span> {
+                    <span className="font-medium" style={{ color: '#e2e8f0' }}>Min Income:</span> {
                       INCOME_OPTIONS.find(o => o.value === minIncome)?.label
                     }
                   </div>
                   <div>
-                    <span className="font-medium">Countries:</span> {selectedCountries.join(', ')}
+                    <span className="font-medium" style={{ color: '#e2e8f0' }}>Countries:</span> {selectedCountries.join(', ')}
                   </div>
                 </div>
               </div>

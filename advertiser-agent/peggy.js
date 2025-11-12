@@ -186,7 +186,7 @@ class PeggyAgent {
         location: ['uk', 'us', 'au']
       },
       budgetRemaining: 1000, // USD
-      maxCpm: 0.030, // $0.03 max per impression
+      maxCpm: 1.000, // $1.00 max per impression (high for demo/testing)
       goal: 'Drive awareness for new golf club line among affluent golfers'
     };
   }
