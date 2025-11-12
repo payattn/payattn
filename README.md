@@ -1,8 +1,9 @@
 # PayAttn
+![PayAttn](docs/payattn_logo_bar01_700x140_trans.png)
 
-**Autonomous Agents Negotiate Ad Prices**
+**Autonomous Agents Negotiate Ad Prices and Settle Payments using Solana & x402**
 
-PayAttn lets two AI agents negotiate ad prices on your behalf. Max (your agent) and Peggy (advertiser's agent) automatically agree on fair payment for your attention, then settle transactions via Solana escrow. No tracking, no data harvesting, no surveillance.
+PayAttn uses two personalised AI agents to negotiate ad prices on behalf of individual users. Max (the user's agent) and Peggy (advertiser's agent) automatically agree on fair payment for your attention, then settle transactions using x402 payments and Solana escrow. Private, trustless, efficient. No tracking, no data harvesting, no surveillance.
 
 ## The Problem
 
@@ -12,13 +13,13 @@ Online advertising is broken. The current model doesn't work for users or publis
 
 ## How It Actually Works
 
-**Two autonomous agents negotiate in real-time:**
+**Two autonomous agents negotiate 24/7**
 
-1. **Advertiser's agent (Peggy)** evaluates offers from users and decides: accept or reject
-2. **User's agent (Max)** generates privacy-preserving proofs of user attributes (age, interests)
+1. **User's agent (Max)** Max is the gatekeeper to the user's attention. If he thinks an ad will add value to their user, he sets the price the advertiser must pay. He justifies the price by sending encrypted proof of the user's value to the advertiser. This is sent to the advertiser as an "offer"
+2. **Advertiser's agent (Peggy)** evaluates offers from users and decides to accept or reject each one
 3. **Agents negotiate automatically** - no human intervention required
-4. **Solana smart contracts settle payments** - trustless escrow transfers SOL when both parties agree
-5. **Zero surveillance** - user data never leaves the browser, enforced by ZK-SNARK cryptography
+4. **Solana smart contracts settle payments instantly** - trustless escrow transfers SOL as soon as the ad has been viewed
+5. **Zero surveillance** - user data never leaves the browser, enforced by ZK-SNARK cryptography. No surveillance by publishers, advertiser or network.
 
 **The novel part:** Autonomous price negotiation between agents, backed by cryptographic privacy guarantees and automatic blockchain settlement.
 
@@ -27,7 +28,7 @@ Online advertising is broken. The current model doesn't work for users or publis
 ## Key Technical Achievements
 
 - **Autonomous Agent Negotiation:** Two LLM-powered agents (Max & Peggy) negotiate prices automatically
-- **x402 Protocol:** Novel HTTP status code for blockchain payment coordination during negotiation
+- **x402 Protocol:** HTTP status code for "payment required" is used to transfer advertiser funds into escrow
 - **Real ZK-SNARKs:** Groth16 proofs with Circom circuits enable privacy-preserving negotiation
 - **10-50ms Verification:** Rapidsnark C++ verifier validates proofs in real-time
 - **Solana Smart Contracts:** Trustless escrow automatically settles agreed prices
@@ -65,7 +66,7 @@ cp backend/.env.example backend/.env.local
 
 # 2. Advertiser agent configuration (optional)
 cp advertiser-agent/.env.example advertiser-agent/.env
-# Edit advertiser-agent/.env with your Venice AI key
+# Edit advertiser-agent/.env with your Venice AI key if you don't want to run Max using a local LLM
 ```
 
 ### Start the System
