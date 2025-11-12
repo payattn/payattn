@@ -1,7 +1,7 @@
 /**
  * Simple x402 Flow Test
  * 
- * Tests: Accept offer → Fund escrow → Verify payment
+ * Tests: Accept offer  Fund escrow  Verify payment
  * 
  * Run: node solana/payattn_escrow/test-x402-simple.js
  */
@@ -11,7 +11,7 @@ const BACKEND_URL = 'http://localhost:3000';
 // Test offer ID from database
 const offerId = 'offer_41f8f17d3b6bebd6';
 
-console.log('🧪 Testing x402 Payment Required Flow\n');
+console.log('[OK][OK] Testing x402 Payment Required Flow\n');
 console.log('='.repeat(60));
 console.log('Backend URL:', BACKEND_URL);
 console.log('Offer ID:', offerId);
@@ -68,7 +68,7 @@ async function testX402Flow() {
     console.log('='.repeat(60));
     
   } catch (error) {
-    console.error('\n❌ Test Failed:', error.message);
+    console.error('\n[OK][OK][OK] Test Failed:', error.message);
     if (error.cause) {
       console.error('Cause:', error.cause);
     }

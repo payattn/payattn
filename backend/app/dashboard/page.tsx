@@ -15,7 +15,7 @@ export default function DashboardPage() {
       <header className="border-b bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold">🎯 PayAttn Dashboard</h1>
+            <h1 className="text-2xl font-bold"> PayAttn Dashboard</h1>
           </div>
           <WalletButton />
         </div>
@@ -41,14 +41,14 @@ export default function DashboardPage() {
             {/* Wallet Info Card */}
             <Card>
               <CardHeader>
-                <CardTitle>👛 Wallet Overview</CardTitle>
+                <CardTitle> Wallet Overview</CardTitle>
                 <CardDescription>Your connected wallet and session status</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium">Status</span>
                   <span className={`text-sm ${isAuthenticated ? 'text-green-600' : 'text-yellow-600'}`}>
-                    {isAuthenticated ? '✅ Authenticated' : '⚠️ Not authenticated'}
+                    {isAuthenticated ? ' Authenticated' : ' Not authenticated'}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
@@ -116,7 +116,7 @@ export default function DashboardPage() {
             {/* Recent Activity */}
             <Card>
               <CardHeader>
-                <CardTitle>📊 Recent Activity</CardTitle>
+                <CardTitle> Recent Activity</CardTitle>
                 <CardDescription>Your recent ad interactions</CardDescription>
               </CardHeader>
               <CardContent>
@@ -132,7 +132,7 @@ export default function DashboardPage() {
             {/* Advertiser Breakdown */}
             <Card>
               <CardHeader>
-                <CardTitle>🏢 Top Advertisers</CardTitle>
+                <CardTitle> Top Advertisers</CardTitle>
                 <CardDescription>Ads by advertiser</CardDescription>
               </CardHeader>
               <CardContent>

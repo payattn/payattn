@@ -63,7 +63,7 @@ async function fundEscrow() {
       })
       .rpc();
 
-    console.log('✅ Escrow created!');
+    console.log('[OK][OK][OK] Escrow created!');
     console.log('Transaction:', tx);
     console.log('Explorer:', `https://explorer.solana.com/tx/${tx}?cluster=devnet`);
     console.log('\nWaiting for confirmation...\n');
@@ -73,7 +73,7 @@ async function fundEscrow() {
 
     // Fetch and verify escrow
     const escrowAccount = await program.account.escrow.fetch(escrowPda);
-    console.log('✅ Escrow verified on-chain!');
+    console.log('[OK][OK][OK] Escrow verified on-chain!');
     console.log('\nEscrow details:');
     console.log('  Offer ID:', escrowAccount.offerId);
     console.log('  Amount:', escrowAccount.amount.toString(), 'lamports');
@@ -85,7 +85,7 @@ async function fundEscrow() {
     console.log('  Platform:', escrowAccount.platform.toBase58());
 
     console.log('\n========================================');
-    console.log('✅ SUCCESS - NEW ESCROW CREATED');
+    console.log('[OK][OK][OK] SUCCESS - NEW ESCROW CREATED');
     console.log('========================================');
     console.log(`\nOffer ID: ${OFFER_ID}`);
     console.log(`Escrow PDA: ${escrowPda.toBase58()}`);
@@ -96,7 +96,7 @@ async function fundEscrow() {
     console.log(`  -d '{"offerId": "${OFFER_ID}", "publisherId": "pub_001", "duration": 2000}'`);
 
   } catch (error) {
-    console.error('\n❌ Error:', error.message);
+    console.error('\n[OK][OK][OK] Error:', error.message);
     if (error.logs) {
       console.error('\nProgram logs:');
       error.logs.forEach(log => console.error('  ', log));

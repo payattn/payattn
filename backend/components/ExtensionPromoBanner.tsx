@@ -36,7 +36,7 @@ export function ExtensionPromoBanner() {
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-2xl">🚀</span>
+              <span className="text-2xl"></span>
               <h3 className="text-lg font-bold text-gray-900">
                 Get the Full Experience - Install the Extension
               </h3>
@@ -48,7 +48,7 @@ export function ExtensionPromoBanner() {
             
             <div className="space-y-2 mb-4">
               <div className="flex items-start gap-2">
-                <span className="text-green-600 font-bold">✓</span>
+                <span className="text-green-600 font-bold"></span>
                 <div>
                   <p className="text-sm font-semibold text-gray-900">Runs automatically every 30 minutes</p>
                   <p className="text-xs text-gray-600">Never run out of ads - the agent works in the background</p>
@@ -56,7 +56,7 @@ export function ExtensionPromoBanner() {
               </div>
               
               <div className="flex items-start gap-2">
-                <span className="text-green-600 font-bold">✓</span>
+                <span className="text-green-600 font-bold"></span>
                 <div>
                   <p className="text-sm font-semibold text-gray-900">100% local processing</p>
                   <p className="text-xs text-gray-600">Your data NEVER leaves your machine - unlike server-based systems</p>
@@ -64,7 +64,7 @@ export function ExtensionPromoBanner() {
               </div>
               
               <div className="flex items-start gap-2">
-                <span className="text-green-600 font-bold">✓</span>
+                <span className="text-green-600 font-bold"></span>
                 <div>
                   <p className="text-sm font-semibold text-gray-900">Zero-knowledge privacy</p>
                   <p className="text-xs text-gray-600">Only ZK proofs are sent - advertisers never see your real data</p>
@@ -79,7 +79,7 @@ export function ExtensionPromoBanner() {
                 rel="noopener noreferrer"
               >
                 <Button className="bg-blue-600 hover:bg-blue-700">
-                  📥 Install Extension (2 mins)
+                   Install Extension (2 mins)
                 </Button>
               </a>
               <Button variant="ghost" onClick={handleDismiss} className="text-gray-600">
@@ -98,7 +98,7 @@ export function ExtensionPromoBanner() {
             onClick={handleDismiss}
             className="text-gray-400 hover:text-gray-600 ml-4"
           >
-            ✕
+            
           </button>
         </div>
       </CardContent>

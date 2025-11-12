@@ -1,15 +1,15 @@
 # Rapidsnark End-to-End Test Guide
 
-**Status:** ✅ Backend ready, ✅ Rapidsnark compiled, ⏳ Awaiting test
+**Status:**  Backend ready,  Rapidsnark compiled,  Awaiting test
 
 ## Quick Summary
 
 We've successfully:
-1. ✅ Compiled Rapidsnark C++ verifier for macOS arm64
-2. ✅ Updated backend to use Rapidsnark CLI instead of Cloudflare Workers
-3. ✅ Copied verification keys (JSON format)
-4. ✅ Fixed all TypeScript errors
-5. ✅ Verified Next.js dev server is running (PID 71726)
+1.  Compiled Rapidsnark C++ verifier for macOS arm64
+2.  Updated backend to use Rapidsnark CLI instead of Cloudflare Workers
+3.  Copied verification keys (JSON format)
+4.  Fixed all TypeScript errors
+5.  Verified Next.js dev server is running (PID 71726)
 
 **Now we need to test the full flow with a real proof from the extension.**
 
@@ -92,25 +92,25 @@ curl -X POST http://localhost:3000/api/verify-proof \
 
 [Verifier] Verification completed in 47ms
 [Verifier] Total time: 52ms
-[Verifier] Result: VALID ✅
+[Verifier] Result: VALID 
 ```
 
 **Expected timing:**
-- ⚡ **10-50ms:** Excellent (typical)
-- ⚠️ **50-200ms:** Acceptable (may include file I/O overhead)
+-  **10-50ms:** Excellent (typical)
+-  **50-200ms:** Acceptable (may include file I/O overhead)
 - **>500ms:** Problem (investigate)
 
 ---
 
 ## Success Criteria
 
-✅ **PASS if:**
+ **PASS if:**
 - Verification completes in <200ms
 - Logs show "Valid proof"
 - API returns `{ "valid": true }`
 - No errors in console
 
-❌ **FAIL if:**
+ **FAIL if:**
 - Timeout (>5 seconds)
 - "Invalid proof" for valid proof
 - Error: "Verification key not found"
@@ -251,16 +251,16 @@ Result: Invalid proof
 
 ## Next Steps After Successful Test
 
-1. ✅ Confirm verification works with all 3 circuits:
+1.  Confirm verification works with all 3 circuits:
    - `age_range`
    - `range_check`
    - `set_membership`
 
-2. ✅ Test with invalid proofs (should return `valid: false`)
+2.  Test with invalid proofs (should return `valid: false`)
 
-3. ✅ Document CF Worker as abandoned approach (already done)
+3.  Document CF Worker as abandoned approach (already done)
 
-4. ✅ Clean up CF Worker files:
+4.  Clean up CF Worker files:
    ```bash
    # Option 1: Delete entirely
    rm -rf cf-worker/
@@ -269,9 +269,9 @@ Result: Invalid proof
    # Leave as-is with updated README.md
    ```
 
-5. ✅ Update main project README with architecture
+5.  Update main project README with architecture
 
-6. ✅ Test batch verification (if using `/api/verify-proof` with `proofs` array)
+6.  Test batch verification (if using `/api/verify-proof` with `proofs` array)
 
 ---
 
@@ -318,5 +318,5 @@ const isValid = stdout.includes('Valid proof');
 4. Check logs for "Valid proof" and timing
 5. Report results!
 
-**Expected outcome:** ✅ Verification in <100ms with "Valid proof" output
+**Expected outcome:**  Verification in <100ms with "Valid proof" output
 

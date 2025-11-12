@@ -117,7 +117,7 @@ export default function AdvertisersPage() {
               <div className="mb-6 flex justify-between items-center">
                 <div>
                   <h1 className="text-3xl font-bold text-gray-900">
-                    🔒 Dashboard
+                     Dashboard
                   </h1>
                   <p className="text-gray-600 mt-2">
                     Manage campaigns and verify zero-knowledge proofs
@@ -207,7 +207,7 @@ export default function AdvertisersPage() {
                   }}
                   className="mt-2 text-xs text-blue-600 hover:text-blue-800"
                 >
-                  🔍 Hash a string
+                   Hash a string
                 </button>
               </div>
             )}
@@ -233,13 +233,13 @@ export default function AdvertisersPage() {
             disabled={verifying || !proofJson}
             className="w-full bg-blue-600 text-white py-3 px-4 rounded-md font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {verifying ? '⏳ Verifying... (First verification may take 1-3 min)' : '✓ Verify Proof'}
+            {verifying ? ' Verifying... (First verification may take 1-3 min)' : ' Verify Proof'}
           </button>
 
           {verifying && (
             <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
               <p className="text-sm text-yellow-800">
-                ⏳ <strong>Note:</strong> The first proof verification takes 1-3 minutes while the server initializes cryptographic libraries. Subsequent verifications will be much faster (under 1 second).
+                 <strong>Note:</strong> The first proof verification takes 1-3 minutes while the server initializes cryptographic libraries. Subsequent verifications will be much faster (under 1 second).
               </p>
             </div>
           )}
@@ -247,7 +247,7 @@ export default function AdvertisersPage() {
           {/* Error Display */}
           {error && (
             <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-md">
-              <h3 className="text-sm font-medium text-red-900 mb-2">❌ Verification Failed</h3>
+              <h3 className="text-sm font-medium text-red-900 mb-2"> Verification Failed</h3>
               <p className="text-sm text-red-700">{error}</p>
             </div>
           )}
@@ -255,7 +255,7 @@ export default function AdvertisersPage() {
           {/* Success Display */}
           {result && result.valid && (
             <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-md">
-              <h3 className="text-sm font-medium text-green-900 mb-2">✅ Proof Verified!</h3>
+              <h3 className="text-sm font-medium text-green-900 mb-2"> Proof Verified!</h3>
               <p className="text-sm text-green-700 mb-3">{result.message}</p>
               
               <div className="text-xs text-gray-600 space-y-1">
@@ -271,7 +271,7 @@ export default function AdvertisersPage() {
 
           {/* Instructions */}
           <div className="mt-8 p-4 bg-gray-50 border border-gray-200 rounded-md">
-            <h3 className="text-sm font-medium text-gray-900 mb-2">📋 Testing Instructions</h3>
+            <h3 className="text-sm font-medium text-gray-900 mb-2"> Testing Instructions</h3>
             <ol className="text-sm text-gray-600 space-y-2 list-decimal list-inside">
               <li>Open the extension page: <code className="bg-gray-200 px-1 rounded">chrome-extension://[id]/age-proof-test.html</code></li>
               <li>Open browser console (F12)</li>

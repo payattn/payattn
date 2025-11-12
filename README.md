@@ -1,34 +1,49 @@
 # PayAttn
 
-**Privacy-First Ad Marketplace**
-PayAttn is a privacy-first ad marketplace where autonomous agents negotiate prices using ZK proofs so users get paid for their attention without giving up their data or being tracked.
+**Autonomous Agents Negotiate Ad Prices**
 
-### If there was a marketing guy, this is what he'd say:
-Online advertising is broken. The current model doesn't work for users or publishers. Of course it works for ad networks that have built empires on a business model of mass surveillance and harvesting your data. I've built PayAttn (Pay Attention) to solve that problem and shift power so that you can take back control of your data...while still giving advertisers and publishers a fair deal.
+PayAttn lets two AI agents negotiate ad prices on your behalf. Max (your agent) and Peggy (advertiser's agent) automatically agree on fair payment for your attention, then settle transactions via Solana escrow. No tracking, no data harvesting, no surveillance.
 
+## The Problem
+
+Online advertising is broken. The current model doesn't work for users or publishers. It is optimised for ad networks that have built empires on surveillance and data harvesting. PayAttn shifts power back to users while still giving advertisers and publishers a fair deal.
+
+---
+
+## How It Actually Works
+
+**Two autonomous agents negotiate in real-time:**
+
+1. **Advertiser's agent (Peggy)** evaluates offers from users and decides: accept or reject
+2. **User's agent (Max)** generates privacy-preserving proofs of user attributes (age, interests)
+3. **Agents negotiate automatically** - no human intervention required
+4. **Solana smart contracts settle payments** - trustless escrow transfers SOL when both parties agree
+5. **Zero surveillance** - user data never leaves the browser, enforced by ZK-SNARK cryptography
+
+**The novel part:** Autonomous price negotiation between agents, backed by cryptographic privacy guarantees and automatic blockchain settlement.
 
 ---
 
 ## Key Technical Achievements
 
-- **Real ZK-SNARKs:** Groth16 proofs with Circom circuits (not a mock/simulation)
-- **10-50ms Verification:** Rapidsnark C++ verifier (426KB binary, production-ready)
+- **Autonomous Agent Negotiation:** Two LLM-powered agents (Max & Peggy) negotiate prices automatically
+- **x402 Protocol:** Novel HTTP status code for blockchain payment coordination during negotiation
+- **Real ZK-SNARKs:** Groth16 proofs with Circom circuits enable privacy-preserving negotiation
+- **10-50ms Verification:** Rapidsnark C++ verifier validates proofs in real-time
+- **Solana Smart Contracts:** Trustless escrow automatically settles agreed prices
 - **Privacy-Preserving Architecture:** User data never leaves browser, cryptographically guaranteed
-- **Multi-Chain Integration:** Solana smart contracts for trustless escrow settlement
-- **2 Autonomous AI Agents:** LLM (Local or Venice)-powered offer evaluation system (Max & Peggy)
-- **x402 Protocol:** Novel "Payment Required" HTTP status for blockchain payment coordination
-- **Complete End-to-End Flow:** Chrome extension → ZK proof → Backend verification → Solana escrow → Settlement
+- **Complete End-to-End Flow:** Chrome extension  Agent negotiation  ZK proof  Solana settlement
 
 ---
 
 ## Quick Links
 
-- **[📚 Documentation](/docs)** - Complete system documentation
-- **[🏗️ Architecture](/docs/ARCHITECTURE.md)** - System overview and components
-- **[🔐 ZK Proof Flow](/docs/ZK_PROOF_FLOW.md)** - How proofs work
-- **[🚀 Backend Verification](/docs/BACKEND_VERIFICATION.md)** - Rapidsnark setup
-- **[📡 API Reference](/docs/API.md)** - API endpoints
-- **[🧪 Testing Guide](/docs/TESTING.md)** - Testing procedures
+- **[Documentation](/docs)** - Complete system documentation
+- **[Architecture](/docs/ARCHITECTURE.md)** - System overview and components
+- **[ZK Proof Flow](/docs/ZK_PROOF_FLOW.md)** - How proofs work
+- **[Backend Verification](/docs/BACKEND_VERIFICATION.md)** - Rapidsnark setup
+- **[API Reference](/docs/API.md)** - API endpoints
+- **[Testing Guide](/docs/TESTING.md)** - Testing procedures
 
 ---
 
@@ -66,7 +81,7 @@ npm start
 ```
 
 ### Load Chrome Extension
-1. Open Chrome → `chrome://extensions/`
+1. Open Chrome  `chrome://extensions/`
 2. Enable "Developer mode"
 3. Click "Load unpacked"
 4. Select `extension/` directory
@@ -108,7 +123,7 @@ npm run dev
 ```
 
 ### 5. Load Chrome Extension
-1. Open Chrome → `chrome://extensions/`
+1. Open Chrome  `chrome://extensions/`
 2. Enable "Developer mode"
 3. Click "Load unpacked"
 4. Select `extension/` directory (at root level, NOT in backend)
@@ -119,121 +134,135 @@ npm run dev
 
 ```
 payattn/
-├── docs/                          # 📚 Comprehensive documentation
-│   ├── README.md                  # Documentation index
-│   ├── ARCHITECTURE.md            # System architecture
-│   ├── ZK_PROOF_FLOW.md          # ZK-SNARK proof lifecycle
-│   ├── BACKEND_VERIFICATION.md    # Rapidsnark setup & usage
-│   ├── API.md                     # API reference
-│   └── TESTING.md                 # Testing guide
-│
-├── backend/                       # 🎨 Next.js backend + dashboard
-│   ├── app/                       # Next.js 16 App Router
-│   │   ├── api/                   # API routes
-│   │   │   ├── verify-proof/     # POST /api/verify-proof
-│   │   │   └── k/                 # GET/PUT /api/k/{hash}
-│   │   ├── advertisers/           # Advertiser dashboard
-│   │   └── dashboard/             # User dashboard
-│   ├── lib/                       # Utilities
-│   │   └── zk/                    # ZK verification logic
-│   │       ├── verifier.ts        # Rapidsnark integration
-│   │       └── circuits-registry.ts
-│
-├── extension/                     # 🔐 Chrome Extension (Max agent)
-│   ├── manifest.json              # Manifest V3
-│   ├── background.js              # Service worker
-│   ├── content.js                 # Content script
-│   ├── popup.html/js              # Extension popup
-│   ├── crypto-utils.js            # ZK proof generation
-│   ├── node_modules/              # Extension dependencies (separate)
-│   └── circuits/                  # Circom circuits
-│       ├── range_check.circom
-│       ├── age_range.circom
-│       └── set_membership.circom
-│
-├── advertiser-agent/              # 🤖 Autonomous AI agent (Peggy)
-│   ├── peggy.js                   # Main agent orchestrator
-│   └── lib/                       # Agent utilities
-│       ├── llm.js                 # Venice AI integration
-│       ├── api.js                 # x402 protocol client
-│       └── escrow.js              # Solana escrow funding
-│
-├── solana/                        # 🔗 Solana smart contracts
-│   └── payattn_escrow/           # Trustless escrow program
-│       ├── programs/              # Anchor program
-│       ├── tests/                 # Integration tests
-│       └── schema.sql             # Database schema
-│
-└── rapidsnark-server/             # ⚡ C++ verification server
-    ├── rapidsnark/                # Compiled Rapidsnark binary
-    │   └── package_macos_arm64/
-    │       └── bin/verifier       # CLI verifier (426KB)
-    ├── keys/                      # Verification keys (JSON)
-    │   ├── range_check_verification_key.json
-    │   ├── age_range_verification_key.json
-    │   └── set_membership_verification_key.json
-    └── README.md                  # Rapidsnark setup guide
+ docs/                          # Documentation
+    README.md                  # Documentation index
+    ARCHITECTURE.md            # System architecture
+    ZK_PROOF_FLOW.md          # ZK-SNARK proof lifecycle
+    BACKEND_VERIFICATION.md    # Rapidsnark setup & usage
+    API.md                     # API reference
+    TESTING.md                 # Testing guide
+
+ backend/                       # Next.js backend + dashboard
+    app/                       # Next.js 16 App Router
+       api/                   # API routes
+          verify-proof/     # POST /api/verify-proof
+          k/                 # GET/PUT /api/k/{hash}
+       advertisers/           # Advertiser dashboard
+       dashboard/             # User dashboard
+    lib/                       # Utilities
+       zk/                    # ZK verification logic
+           verifier.ts        # Rapidsnark integration
+           circuits-registry.ts
+
+ extension/                     # Chrome Extension (Max agent)
+    manifest.json              # Manifest V3
+    background.js              # Service worker
+    content.js                 # Content script
+    popup.html/js              # Extension popup
+    crypto-utils.js            # ZK proof generation
+    node_modules/              # Extension dependencies (separate)
+    circuits/                  # Circom circuits
+        range_check.circom
+        age_range.circom
+        set_membership.circom
+
+ advertiser-agent/              # Autonomous AI agent (Peggy)
+    peggy.js                   # Main agent orchestrator
+    lib/                       # Agent utilities
+        llm.js                 # Venice AI integration
+        api.js                 # x402 protocol client
+        escrow.js              # Solana escrow funding
+
+ solana/                        # Solana smart contracts
+    payattn_escrow/           # Trustless escrow program
+        programs/              # Anchor program
+        tests/                 # Integration tests
+        schema.sql             # Database schema
+
+ rapidsnark-server/             # C++ verification server
+     rapidsnark/                # Compiled Rapidsnark binary
+        package_macos_arm64/
+            bin/verifier       # CLI verifier (426KB)
+     keys/                      # Verification keys (JSON)
+        range_check_verification_key.json
+        age_range_verification_key.json
+        set_membership_verification_key.json
+     README.md                  # Rapidsnark setup guide
 ```
 
 ---
 
-## How It Works
+## How Agent Negotiation Works
 
 ![PayAttn system flow](docs/payattn_system_flow01.png)
 
-### 1. User Privacy (Extension)
+### 1. Advertiser Agent Makes Offers
 ```
-User enters age: 35
-   ↓
-[Stored in browser IndexedDB - NEVER sent to server]
-   ↓
-User clicks "Generate Proof"
-   ↓
-Extension generates ZK-SNARK proof (1-3 seconds)
-   ↓
-Proof: "Age is between 25 and 50" (but NOT the actual age!)
-```
-
-### 2. Backend Verification
-```
-Extension sends proof → Backend (Next.js)
-   ↓
-Backend validates format
-   ↓
-Rapidsnark C++ verifier executes (10-50ms)
-   ↓
-Result: VALID ✅ or INVALID ❌
-   ↓
-Backend returns result (does NOT learn actual age)
+Peggy (advertiser agent) runs continuously:
+   
+Scans for users matching campaign criteria
+   
+Evaluates each user's fit using LLM
+   
+Makes price offers via x402 HTTP responses
+   
+Funds Solana escrow for accepted offers
 ```
 
-### 3. Privacy Guarantee
-- User's age (35) **never leaves the browser**
-- Backend only sees: "Someone proved their age is 25-50"
-- Cryptographically impossible to extract actual age from proof
-- No tracking, no cookies, no data harvesting
+### 2. User Agent Evaluates Offers
+```
+Max (user agent) receives x402 response with offer:
+   
+Extracts: campaign_id, amount, escrow_address
+   
+Evaluates whether price is acceptable
+   
+Generates ZK proof if accepting offer
+   
+Submits proof + escrow signature
+```
+
+### 3. Privacy-Preserving Negotiation
+```
+User attributes (age, interests) stored locally:
+   
+Max generates ZK-SNARK proof: "Age is 25-50"
+   
+Backend verifies proof with Rapidsnark (10-50ms)
+   
+Proof validates without revealing actual age
+   
+Solana escrow settles payment automatically
+```
+
+### 4. Why This Matters
+- **Agents negotiate automatically** - no user interaction needed
+- **Fair pricing enforced** - both parties must agree before payment
+- **Privacy guaranteed** - ZK proofs prevent data extraction
+- **Trustless settlement** - Solana smart contracts eliminate intermediaries
+- **Real-time operation** - sub-100ms negotiation cycle
 
 ---
 
-##  Technology Stack
+## Technology Stack
 
 | Component | Technology |
 |-----------|-----------|
-| **Extension** | Chrome Manifest V3, snarkjs, IndexedDB |
-| **Circuits** | Circom 2.0, Groth16 (BN128 curve) |
+| **Max Agent** | Chrome Extension (Manifest V3), LLM integration |
+| **Peggy Agent** | Node.js, Venice AI, x402 protocol client |
+| **Privacy Layer** | Circom 2.0, Groth16 ZK-SNARKs, Rapidsnark C++ verifier |
+| **Settlement** | Solana Web3.js, Anchor smart contracts |
 | **Backend** | Next.js 16, TypeScript, Node.js 18+ |
-| **Verifier** | Rapidsnark (C++), ~10-50ms verification |
-| **Wallet** | Solana Web3.js |
-| **Storage** | IndexedDB (browser), Key-derivation (backend) |
+| **Storage** | IndexedDB (browser), PostgreSQL (backend) |
 
 ---
 
 ## Current Status
 
-✅ **Extension:** 3 circuits working, 1-3 second proof generation  
-✅ **Backend:** Rapidsnark verification, 10-50ms per proof  
-✅ **Privacy:** Zero user data leaves browser  
-✅ **Performance:** Production-ready  
+**Agent Negotiation:** Fully autonomous, real-time price agreement  
+**ZK Privacy:** 3 circuits working, 10-50ms verification  
+**Solana Escrow:** Trustless settlement operational  
+**Performance:** Production-ready agent infrastructure  
 
 ---
 
@@ -291,4 +320,4 @@ MIT License - see [LICENSE](LICENSE) file for details
 
 ---
 
-**Built with privacy-first principles. Your data stays yours. Always.** 🔐
+**Built with privacy-first principles. Your data stays yours. Always.**

@@ -25,7 +25,7 @@ export default function WalletAuthPage() {
         {/* Header */}
         <div className="text-center space-y-2 mb-6">
           <h1 className="text-3xl font-bold tracking-tight">
-            🔐 Wallet Authentication
+             Wallet Authentication
           </h1>
           <p className="text-sm text-muted-foreground">
             Securely connect your wallet to use PayAttn
@@ -69,12 +69,12 @@ export default function WalletAuthPage() {
                   >
                     {isAuthenticating ? (
                       <>
-                        <span className="mr-2">⏳</span>
+                        <span className="mr-2"></span>
                         Authenticating...
                       </>
                     ) : (
                       <>
-                        <span className="mr-2">✍️</span>
+                        <span className="mr-2"></span>
                         Sign Message
                       </>
                     )}
@@ -93,7 +93,7 @@ export default function WalletAuthPage() {
           <Card className="border-green-200 dark:border-green-900">
             <CardHeader>
               <CardTitle className="text-center text-green-600 dark:text-green-400">
-                ✅ Authentication Successful!
+                 Authentication Successful!
               </CardTitle>
               <CardDescription className="text-center">
                 Your wallet is now connected to PayAttn

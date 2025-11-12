@@ -145,7 +145,7 @@ export async function settleWithPrivacy(
 
   // Randomize order for unlinkability
   const shuffled = shuffleArray(settlements);
-  console.log('[Settlement] Random order:', shuffled.map(s => s.type).join(' → '));
+  console.log('[Settlement] Random order:', shuffled.map(s => s.type).join(' [OK] '));
 
   const results: SettlementResult[] = [];
 
@@ -187,7 +187,7 @@ export async function settleWithPrivacy(
       }
 
     } catch (err: any) {
-      console.error(`❌ [Settlement] ${type} settlement failed:`, err.message);
+      console.error(`[OK][OK][OK] [Settlement] ${type} settlement failed:`, err.message);
 
       // Add to retry queue
       await addToRetryQueue(offerId, type, pubkey, amount, err.message);
@@ -216,9 +216,9 @@ export async function settleWithPrivacy(
       .eq('offer_id', offerId);
     
     console.log(`\n*** ALL PAYMENTS COMPLETE FOR ${offerId}`);
-    console.log(`   ✓ User paid (70%)`);
-    console.log(`   ✓ Publisher paid (25%)`);
-    console.log(`   ✓ Platform paid (5%)`);
+    console.log(`   [OK][OK] User paid (70%)`);
+    console.log(`   [OK][OK] Publisher paid (25%)`);
+    console.log(`   [OK][OK] Platform paid (5%)`);
     console.log(`   Total distributed: ${amount} lamports (${(amount / 1e9).toFixed(6)} SOL)\n`);
   } else {
     // Mark as not settling (cron job will retry)
@@ -227,7 +227,7 @@ export async function settleWithPrivacy(
       .update({ settling: false })
       .eq('offer_id', offerId);
     
-    console.log(`⚠️ [Settlement] Some transactions failed for ${offerId}, added to retry queue`);
+    console.log(`[OK][OK] [Settlement] Some transactions failed for ${offerId}, added to retry queue`);
   }
 
   return results;
@@ -285,7 +285,7 @@ export async function retryFailedSettlements(): Promise<void> {
           .delete()
           .eq('id', entry.id);
 
-        console.log(`✅ [Settlement Retry] ${entry.tx_type} settlement complete for ${entry.offer_id}`);
+        console.log(`[OK][OK][OK] [Settlement Retry] ${entry.tx_type} settlement complete for ${entry.offer_id}`);
 
         // Check if all settlements are complete
         const { data: remaining } = await supabase
@@ -304,7 +304,7 @@ export async function retryFailedSettlements(): Promise<void> {
             })
             .eq('offer_id', entry.offer_id);
           
-          console.log(`✅ [Settlement Retry] All settlements complete for ${entry.offer_id}`);
+          console.log(`[OK][OK][OK] [Settlement Retry] All settlements complete for ${entry.offer_id}`);
         }
       } else {
         // Update error and increment attempts
@@ -317,7 +317,7 @@ export async function retryFailedSettlements(): Promise<void> {
           })
           .eq('id', entry.id);
         
-        console.log(`⚠️ [Settlement Retry] ${entry.tx_type} settlement still failing for ${entry.offer_id}`);
+        console.log(`[OK][OK] [Settlement Retry] ${entry.tx_type} settlement still failing for ${entry.offer_id}`);
       }
     } catch (err: any) {
       console.error(`[Settlement Retry] Error retrying ${entry.offer_id}:`, err.message);

@@ -957,7 +957,7 @@ async function evaluateSingleAd(ad, profileData, walletAddress) {
     const data = await response.json();
     
     if (data.success) {
-      console.log(`✅ [Max] Created offer: ${data.offer_id}`);
+      console.log(`[OK][OK][OK] [Max] Created offer: ${data.offer_id}`);
       return { approved: true, offerId: data.offer_id };
     } else {
       return { approved: false, reason: data.error };

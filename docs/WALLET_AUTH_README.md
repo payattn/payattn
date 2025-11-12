@@ -26,7 +26,7 @@ This project implements **WP01.2.1** (Wallet Connection) and **WP01.2.2** (First
 #### 1. **WalletProvider** (`components/WalletProvider.tsx`)
 - Wraps the app with Solana wallet adapter context
 - Configures Phantom and Solflare wallet adapters
-- Uses Devnet for development (easily switchable to Mainnet)
+- Uses Devnet for development (switchable to Mainnet)
 - Includes WalletModalProvider for wallet selection UI
 
 #### 2. **WalletButton** (`components/WalletButton.tsx`)
@@ -123,34 +123,34 @@ Visit `http://localhost:3000` to see the app.
 ## Authentication Flow
 
 ```
-┌─────────────┐
-│   Connect   │
-│   Wallet    │
-└──────┬──────┘
-       │
+
+   Connect   
+   Wallet    
+
+       
        v
-┌─────────────────────┐
-│  Generate Challenge │
-│  (timestamp + nonce)│
-└──────┬──────────────┘
-       │
+
+  Generate Challenge 
+  (timestamp + nonce)
+
+       
        v
-┌─────────────────────┐
-│ Request Signature   │
-│ from Wallet         │
-└──────┬──────────────┘
-       │
+
+ Request Signature   
+ from Wallet         
+
+       
        v
-┌─────────────────────┐
-│ Verify Signature    │
-│ (client-side)       │
-└──────┬──────────────┘
-       │
+
+ Verify Signature    
+ (client-side)       
+
+       
        v
-┌─────────────────────┐
-│  Create Session     │
-│  (24hr validity)    │
-└─────────────────────┘
+
+  Create Session     
+  (24hr validity)    
+
 ```
 
 ## Security Considerations
@@ -163,36 +163,36 @@ Visit `http://localhost:3000` to see the app.
 - Timestamp prevents stale challenges
 
 ### Production Considerations (Future)
-- 🔄 Move verification to backend (WP01.2.4)
-- 🔄 Implement JWT tokens
-- 🔄 Add refresh token mechanism
-- 🔄 Rate limiting on auth attempts
-- 🔄 Encrypted session storage
-- 🔄 HTTPS enforcement
-- 🔄 CSRF protection
+-  Move verification to backend (WP01.2.4)
+-  Implement JWT tokens
+-  Add refresh token mechanism
+-  Rate limiting on auth attempts
+-  Encrypted session storage
+-  HTTPS enforcement
+-  CSRF protection
 
 ## File Structure
 
 ```
 agent-dashboard/
-├── app/
-│   ├── layout.tsx          # Root layout with WalletProvider
-│   ├── page.tsx            # Main page with wallet + auth UI
-│   └── globals.css         # Global styles
-├── components/
-│   ├── ui/                 # Shadcn UI components
-│   │   ├── button.tsx
-│   │   ├── card.tsx
-│   │   ├── input.tsx
-│   │   └── label.tsx
-│   ├── WalletProvider.tsx  # Wallet adapter context provider
-│   └── WalletButton.tsx    # Custom wallet connection button
-├── hooks/
-│   └── useAuth.ts          # Authentication hook
-├── lib/
-│   ├── auth.ts             # Authentication service
-│   └── utils.ts            # Utility functions
-└── package.json            # Dependencies
+ app/
+    layout.tsx          # Root layout with WalletProvider
+    page.tsx            # Main page with wallet + auth UI
+    globals.css         # Global styles
+ components/
+    ui/                 # Shadcn UI components
+       button.tsx
+       card.tsx
+       input.tsx
+       label.tsx
+    WalletProvider.tsx  # Wallet adapter context provider
+    WalletButton.tsx    # Custom wallet connection button
+ hooks/
+    useAuth.ts          # Authentication hook
+ lib/
+    auth.ts             # Authentication service
+    utils.ts            # Utility functions
+ package.json            # Dependencies
 ```
 
 ## Next Steps (WP01.2.3 - WP01.2.4)
@@ -275,7 +275,7 @@ const SESSION_DURATION = 24 * 60 * 60 * 1000; // in milliseconds
 ## Success Criteria Met 
 
 ### WP01.2.1
-- User clicks button → wallet extension prompts for connection
+- User clicks button  wallet extension prompts for connection
 - Connection status persists during session
 - Clean disconnect flow works
 

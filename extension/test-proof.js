@@ -1,7 +1,7 @@
 /**
  * Age Proof Generator Test Page
  * 
- * This is a comprehensive testing interface for the ZK-SNARK age proof system.
+ * Testing interface for the ZK-SNARK age proof system.
  * 
  * Flow:
  * 1. Load user profile from chrome.storage (encrypted)
@@ -29,7 +29,7 @@ let currentProof = null;
 // ============================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
-  logConsole('🚀 Test page initialized', 'info');
+  logConsole(' Test page initialized', 'info');
   setupEventListeners();
   loadProfile();
 });
@@ -41,7 +41,7 @@ function setupEventListeners() {
   document.getElementById('generateProof').addEventListener('click', handleGenerateProof);
   document.getElementById('verifyProof').addEventListener('click', handleVerifyProof);
   document.getElementById('reloadProfile').addEventListener('click', () => {
-    logConsole('🔄 User clicked reload profile', 'info');
+    logConsole(' User clicked reload profile', 'info');
     loadProfile();
   });
   document.getElementById('clearProof').addEventListener('click', handleClearProof);
@@ -70,7 +70,7 @@ function handleProofTypeChange() {
     document.getElementById('interestInputs').style.display = 'block';
   }
   
-  logConsole(`📋 Proof type changed to: ${proofType}`, 'info');
+  logConsole(` Proof type changed to: ${proofType}`, 'info');
 }
 
 // ============================================================================
@@ -79,8 +79,8 @@ function handleProofTypeChange() {
 
 async function loadProfile() {
   try {
-    logConsole('📦 Loading profile from chrome.storage...', 'info');
-    updateProfileStatus('⏳ Loading profile from chrome.storage...', 'loading');
+    logConsole(' Loading profile from chrome.storage...', 'info');
+    updateProfileStatus(' Loading profile from chrome.storage...', 'loading');
     
     // Get auth credentials
     const result = await chrome.storage.local.get([
@@ -97,7 +97,7 @@ async function loadProfile() {
       throw new Error('Missing authentication credentials in chrome.storage');
     }
     
-    logConsole(`✅ Auth credentials loaded (wallet: ${walletAddress.slice(0, 6)}...)`, 'success');
+    logConsole(` Auth credentials loaded (wallet: ${walletAddress.slice(0, 6)}...)`, 'success');
     
     // Get encrypted profile
     const profileResult = await chrome.storage.local.get(`payattn_profile_${walletAddress}`);
@@ -107,27 +107,27 @@ async function loadProfile() {
       throw new Error('No profile found in chrome.storage. Please create a profile first.');
     }
     
-    logConsole('🔓 Decrypting profile...', 'info');
+    logConsole(' Decrypting profile...', 'info');
     
     // Decrypt profile
     try {
       const keyMaterial = await fetchKeyMaterial(keyHash, walletAddress, authToken);
-      logConsole('✅ Key material fetched from backend', 'success');
+      logConsole(' Key material fetched from backend', 'success');
       
       const decryptedJson = await decryptDataWithMaterial(
         profileData.encryptedData,
         keyMaterial,
         walletAddress
       );
-      logConsole('✅ Profile decrypted successfully', 'success');
+      logConsole(' Profile decrypted successfully', 'success');
       
       userProfile = JSON.parse(decryptedJson);
       
       // DEBUG: Show full profile structure
-      logConsole('🔍 Full profile structure:', 'info');
+      logConsole(' Full profile structure:', 'info');
       logConsole(JSON.stringify(userProfile, null, 2), 'log');
       
-      // Extract data from profile (robust to different structures)
+      // Extract data from profile (handles different structures)
       if (!userProfile.demographics && !userProfile.age) {
         throw new Error('Profile missing demographics data');
       }
@@ -141,7 +141,7 @@ async function loadProfile() {
       
       // If location is an object, extract the actual string value
       if (userLocation && typeof userLocation === 'object') {
-        logConsole(`📍 Location is object, extracting: ${JSON.stringify(userLocation)}`, 'info');
+        logConsole(` Location is object, extracting: ${JSON.stringify(userLocation)}`, 'info');
         userLocation = userLocation.code || userLocation.name || userLocation.country || userLocation.value;
       }
       
@@ -151,12 +151,12 @@ async function loadProfile() {
         throw new Error('Age not found in profile');
       }
       
-      logConsole(`🎯 User age: ${userAge}`, 'success');
-      logConsole(`📍 User location: ${userLocation || 'not set'}`, userLocation ? 'success' : 'warn');
-      logConsole(`❤️ User interests: ${userInterests.length ? userInterests.join(', ') : 'none'}`, userInterests.length ? 'success' : 'warn');
+      logConsole(` User age: ${userAge}`, 'success');
+      logConsole(` User location: ${userLocation || 'not set'}`, userLocation ? 'success' : 'warn');
+      logConsole(` User interests: ${userInterests.length ? userInterests.join(', ') : 'none'}`, userInterests.length ? 'success' : 'warn');
       
       displayProfileData();
-      updateProfileStatus('✅ Profile loaded successfully!', 'success');
+      updateProfileStatus(' Profile loaded successfully!', 'success');
       
       // Enable generate button
       document.getElementById('generateProof').disabled = false;
@@ -165,13 +165,13 @@ async function loadProfile() {
       updateTestValues();
       
     } catch (decryptError) {
-      logConsole(`❌ Decryption error: ${decryptError.message}`, 'error');
+      logConsole(` Decryption error: ${decryptError.message}`, 'error');
       throw decryptError;
     }
     
   } catch (error) {
-    logConsole(`❌ Failed to load profile: ${error.message}`, 'error');
-    updateProfileStatus(`❌ Error: ${error.message}`, 'error');
+    logConsole(` Failed to load profile: ${error.message}`, 'error');
+    updateProfileStatus(` Error: ${error.message}`, 'error');
     document.getElementById('generateProof').disabled = true;
   }
 }
@@ -191,17 +191,17 @@ function updateTestValues() {
     
     // If location is an object, try to extract the actual value
     if (location && typeof location === 'object') {
-      logConsole(`📍 Location is an object: ${JSON.stringify(location)}`, 'info');
+      logConsole(` Location is an object: ${JSON.stringify(location)}`, 'info');
       location = location.code || location.name || location.country || location.value || String(location);
     }
     
     document.getElementById('userLocation').value = location || '';
-    logConsole(`📍 Location field value: "${location}"`, location ? 'success' : 'error');
+    logConsole(` Location field value: "${location}"`, location ? 'success' : 'error');
     
     // Interests
     const interests = userProfile.interests || [];
     document.getElementById('userInterests').value = interests.length ? interests.join(', ') : '';
-    logConsole(`❤️ Interests field value: "${interests.join(', ')}"`, interests.length ? 'success' : 'error');
+    logConsole(` Interests field value: "${interests.join(', ')}"`, interests.length ? 'success' : 'error');
   }
 }
 
@@ -318,7 +318,7 @@ async function handleGenerateProof() {
       privateInputs = { value: age };
       publicInputs = { min: minAge, max: maxAge };
       
-      logConsole(`📊 Age Range: ${age} in [${minAge}, ${maxAge}] = ${age >= minAge && age <= maxAge ? 'SHOULD BE VALID ✅' : 'SHOULD BE INVALID ❌'}`, 'info');
+      logConsole(` Age Range: ${age} in [${minAge}, ${maxAge}] = ${age >= minAge && age <= maxAge ? 'SHOULD BE VALID ' : 'SHOULD BE INVALID '}`, 'info');
       
     } else if (proofType === 'location_check') {
       const allowedStr = document.getElementById('allowedCountries').value;
@@ -336,17 +336,17 @@ async function handleGenerateProof() {
       
       // If location is an object, extract the string value
       if (userLocation && typeof userLocation === 'object') {
-        logConsole(`📍 Location is object: ${JSON.stringify(userLocation)}`, 'info');
+        logConsole(` Location is object: ${JSON.stringify(userLocation)}`, 'info');
         userLocation = userLocation.code || userLocation.name || userLocation.country || userLocation.value;
       }
       
       if (!userLocation) {
-        logConsole('❌ Profile structure:', 'error');
+        logConsole(' Profile structure:', 'error');
         logConsole(JSON.stringify(userProfile, null, 2), 'log');
         throw new Error('Location not found in profile. Check console for profile structure.');
       }
       
-      logConsole(`📍 Using location: "${userLocation}"`, 'success');
+      logConsole(` Using location: "${userLocation}"`, 'success');
       
       // Hash the user's location and the allowed countries
       const userHash = await hashToFieldElement(userLocation.toUpperCase());
@@ -362,7 +362,7 @@ async function handleGenerateProof() {
       publicInputs = { set: setHashes };  // Array, not individual fields!
       
       const isInSet = allowedCountries.includes(userLocation.toUpperCase());
-      logConsole(`📊 Location Check: "${userLocation}" in [${allowedCountries.join(', ')}] = ${isInSet ? 'SHOULD BE VALID ✅' : 'SHOULD BE INVALID ❌'}`, 'info');
+      logConsole(` Location Check: "${userLocation}" in [${allowedCountries.join(', ')}] = ${isInSet ? 'SHOULD BE VALID ' : 'SHOULD BE INVALID '}`, 'info');
       
     } else if (proofType === 'interest_check') {
       const targetStr = document.getElementById('targetInterests').value;
@@ -379,20 +379,20 @@ async function handleGenerateProof() {
       // PRE-PROCESSING: Find which of the user's interests matches the advertiser's target
       const userInterests = userProfile.interests.map(i => i.toLowerCase());
       
-      logConsole(`🔍 User's interests: [${userInterests.join(', ')}]`, 'info');
-      logConsole(`🎯 Advertiser targets: [${targetInterests.join(', ')}]`, 'info');
+      logConsole(` User's interests: [${userInterests.join(', ')}]`, 'info');
+      logConsole(` Advertiser targets: [${targetInterests.join(', ')}]`, 'info');
       
       // Find first matching interest
       const matchingInterest = userInterests.find(ui => targetInterests.includes(ui));
       
       if (!matchingInterest) {
-        logConsole(`⚠️ No matching interest found!`, 'warn');
+        logConsole(` No matching interest found!`, 'warn');
         logConsole(`   Using first user interest "${userInterests[0]}" (proof will be INVALID)`, 'warn');
       }
       
       // Use the matching interest, or first interest if no match (for testing invalid case)
       const interestToProve = matchingInterest || userInterests[0];
-      logConsole(`✅ Pre-processing: Will prove "${interestToProve}" is in target set`, 'success');
+      logConsole(` Pre-processing: Will prove "${interestToProve}" is in target set`, 'success');
       
       // Hash the selected interest and the target interests
       const userHash = await hashToFieldElement(interestToProve);
@@ -408,21 +408,21 @@ async function handleGenerateProof() {
       publicInputs = { set: setHashes };  // Array, not individual fields!
       
       const isMatch = targetInterests.includes(interestToProve);
-      logConsole(`📊 Interest Check: "${interestToProve}" in [${targetInterests.join(', ')}] = ${isMatch ? 'SHOULD BE VALID ✅' : 'SHOULD BE INVALID ❌'}`, 'info');
+      logConsole(` Interest Check: "${interestToProve}" in [${targetInterests.join(', ')}] = ${isMatch ? 'SHOULD BE VALID ' : 'SHOULD BE INVALID '}`, 'info');
       
     } else {
       throw new Error(`Unknown proof type: ${proofType}`);
     }
     
     logConsole('', 'log');
-    logConsole('═'.repeat(60), 'log');
-    logConsole('⚡ PROOF GENERATION STARTED', 'info');
-    logConsole('═'.repeat(60), 'log');
+    logConsole(''.repeat(60), 'log');
+    logConsole(' PROOF GENERATION STARTED', 'info');
+    logConsole(''.repeat(60), 'log');
     
     // Disable button
     const generateBtn = document.getElementById('generateProof');
     generateBtn.disabled = true;
-    generateBtn.textContent = '⏳ Generating...';
+    generateBtn.textContent = ' Generating...';
     
     // Show container
     const proofContainer = document.getElementById('proofContainer');
@@ -433,7 +433,7 @@ async function handleGenerateProof() {
     
     // Start progress
     updateProgress(10);
-    logConsole(`🔄 Sending proof request to service worker...`, 'info');
+    logConsole(` Sending proof request to service worker...`, 'info');
     
     updateProgress(20);
     
@@ -453,7 +453,7 @@ async function handleGenerateProof() {
     const proof = response.proof;
     
     updateProgress(60);
-    logConsole('✅ Proof generated successfully', 'success');
+    logConsole(' Proof generated successfully', 'success');
     
     // Store for later use
     currentProof = proof;
@@ -465,19 +465,19 @@ async function handleGenerateProof() {
     
     updateProgress(100);
     logConsole('', 'log');
-    logConsole('═'.repeat(60), 'log');
-    logConsole('✅ PROOF GENERATION COMPLETE', 'success');
-    logConsole('═'.repeat(60), 'log');
+    logConsole(''.repeat(60), 'log');
+    logConsole(' PROOF GENERATION COMPLETE', 'success');
+    logConsole(''.repeat(60), 'log');
     logConsole('Next: Click "Send to Backend & Verify" to verify the proof', 'info');
     
   } catch (error) {
-    logConsole(`❌ Proof generation failed: ${error.message}`, 'error');
+    logConsole(` Proof generation failed: ${error.message}`, 'error');
     logConsole(`Stack: ${error.stack}`, 'error');
     
     const generationStatus = document.getElementById('generationStatus');
     generationStatus.innerHTML = `
       <div class="status-box status-error">
-        <strong>❌ Error:</strong> ${error.message}
+        <strong> Error:</strong> ${error.message}
       </div>
     `;
     
@@ -508,7 +508,7 @@ async function hashToFieldElement(str) {
 }
 
 function displayProof(proof, publicInputs) {
-  logConsole('📋 Proof details:', 'log');
+  logConsole(' Proof details:', 'log');
   
   // Details table
   const details = [
@@ -530,11 +530,11 @@ function displayProof(proof, publicInputs) {
   const proofJson = JSON.stringify(proof, null, 2);
   document.getElementById('proofJson').textContent = proofJson;
   
-  logConsole(`  • Circuit: ${proof.circuitName}`, 'log');
-  logConsole(`  • Public signals: [${proof.publicSignals.join(', ')}]`, 'log');
-  logConsole(`  • Proof (first 50 chars): ${JSON.stringify(proof.proof).slice(0, 50)}...`, 'log');
-  logConsole(`  • ℹ️ Public inputs: ${JSON.stringify(publicInputs)}`, 'info');
-  logConsole(`  • ℹ️ Private data (age ${userAge}) is NOT in the proof`, 'success');
+  logConsole(`   Circuit: ${proof.circuitName}`, 'log');
+  logConsole(`   Public signals: [${proof.publicSignals.join(', ')}]`, 'log');
+  logConsole(`   Proof (first 50 chars): ${JSON.stringify(proof.proof).slice(0, 50)}...`, 'log');
+  logConsole(`    Public inputs: ${JSON.stringify(publicInputs)}`, 'info');
+  logConsole(`    Private data (age ${userAge}) is NOT in the proof`, 'success');
 }
 
 function handleClearProof() {
@@ -542,20 +542,20 @@ function handleClearProof() {
   document.getElementById('verificationContainer').style.display = 'none';
   document.getElementById('generationStatus').innerHTML = '';
   currentProof = null;
-  logConsole('🗑️ Proof cleared', 'log');
+  logConsole(' Proof cleared', 'log');
 }
 
 function handleCopyProof() {
   if (!currentProof) {
-    logConsole('❌ No proof to copy', 'error');
+    logConsole(' No proof to copy', 'error');
     return;
   }
   
   const proofJson = JSON.stringify(currentProof, null, 2);
   navigator.clipboard.writeText(proofJson).then(() => {
-    logConsole('📋 Proof JSON copied to clipboard', 'success');
+    logConsole(' Proof JSON copied to clipboard', 'success');
   }).catch(err => {
-    logConsole(`❌ Failed to copy: ${err.message}`, 'error');
+    logConsole(` Failed to copy: ${err.message}`, 'error');
   });
 }
 
@@ -570,15 +570,15 @@ async function handleVerifyProof() {
     }
     
     logConsole('', 'log');
-    logConsole('═'.repeat(60), 'log');
-    logConsole('🔐 VERIFICATION STARTED', 'info');
-    logConsole('═'.repeat(60), 'log');
+    logConsole(''.repeat(60), 'log');
+    logConsole(' VERIFICATION STARTED', 'info');
+    logConsole(''.repeat(60), 'log');
     
     const verifyBtn = document.getElementById('verifyProof');
     verifyBtn.disabled = true;
-    verifyBtn.textContent = '⏳ Verifying...';
+    verifyBtn.textContent = ' Verifying...';
     
-    logConsole('📤 Sending proof to backend: POST /api/verify-proof', 'info');
+    logConsole(' Sending proof to backend: POST /api/verify-proof', 'info');
     
     // Prepare payload
     const payload = {
@@ -587,10 +587,10 @@ async function handleVerifyProof() {
       circuitName: currentProof.circuitName
     };
     
-    logConsole('📦 Payload:', 'log');
-    logConsole(`  • Circuit: ${payload.circuitName}`, 'log');
-    logConsole(`  • Public Signals: [${payload.publicSignals.join(', ')}]`, 'log');
-    logConsole(`  • Proof: ${JSON.stringify(payload.proof).slice(0, 80)}...`, 'log');
+    logConsole(' Payload:', 'log');
+    logConsole(`   Circuit: ${payload.circuitName}`, 'log');
+    logConsole(`   Public Signals: [${payload.publicSignals.join(', ')}]`, 'log');
+    logConsole(`   Proof: ${JSON.stringify(payload.proof).slice(0, 80)}...`, 'log');
     
     // Send to backend
     const response = await fetch('http://localhost:3000/api/verify-proof', {
@@ -601,7 +601,7 @@ async function handleVerifyProof() {
       body: JSON.stringify(payload)
     });
     
-    logConsole(`📨 Backend response: ${response.status} ${response.statusText}`, 'info');
+    logConsole(` Backend response: ${response.status} ${response.statusText}`, 'info');
     
     if (!response.ok) {
       const errorText = await response.text();
@@ -610,8 +610,8 @@ async function handleVerifyProof() {
     
     const result = await response.json();
     
-    logConsole('✅ Response received from backend', 'success');
-    logConsole(`📋 Full response: ${JSON.stringify(result)}`, 'log');
+    logConsole(' Response received from backend', 'success');
+    logConsole(` Full response: ${JSON.stringify(result)}`, 'log');
     
     // Backend returns: { success: boolean, result: { valid: boolean, ... }, metadata: {...} }
     // Check multiple possible field names for the validity result
@@ -620,30 +620,30 @@ async function handleVerifyProof() {
                     result.isValid !== undefined ? result.isValid : 
                     result.valid;
     
-    logConsole(`  • success field: ${result.success}`, 'log');
-    logConsole(`  • result.valid field: ${result.result?.valid}`, 'log');
-    logConsole(`  • isValid field: ${result.isValid}`, 'log');
-    logConsole(`  • valid field: ${result.valid}`, 'log');
-    logConsole(`  • Computed isValid: ${isValid}`, isValid ? 'success' : 'error');
+    logConsole(`   success field: ${result.success}`, 'log');
+    logConsole(`   result.valid field: ${result.result?.valid}`, 'log');
+    logConsole(`   isValid field: ${result.isValid}`, 'log');
+    logConsole(`   valid field: ${result.valid}`, 'log');
+    logConsole(`   Computed isValid: ${isValid}`, isValid ? 'success' : 'error');
     
     if (result.message || result.result?.message) {
-      logConsole(`  • Message: ${result.message || result.result?.message}`, 'log');
+      logConsole(`   Message: ${result.message || result.result?.message}`, 'log');
     }
     
     if (result.result?.verificationTime) {
-      logConsole(`  • Time: ${result.result.verificationTime}ms`, 'log');
+      logConsole(`   Time: ${result.result.verificationTime}ms`, 'log');
     }
     
     // Display result
     displayVerificationResult(result);
     
     logConsole('', 'log');
-    logConsole('═'.repeat(60), 'log');
-    logConsole('✅ VERIFICATION COMPLETE', 'success');
-    logConsole('═'.repeat(60), 'log');
+    logConsole(''.repeat(60), 'log');
+    logConsole(' VERIFICATION COMPLETE', 'success');
+    logConsole(''.repeat(60), 'log');
     
   } catch (error) {
-    logConsole(`❌ Verification failed: ${error.message}`, 'error');
+    logConsole(` Verification failed: ${error.message}`, 'error');
     logConsole(`Stack: ${error.stack}`, 'error');
     
     displayVerificationError(error);
@@ -674,7 +674,7 @@ function displayVerificationResult(result) {
   if (isValid) {
     resultDiv.className = 'verification-result valid';
     resultDiv.innerHTML = `
-      <h3>✅ Proof Valid!</h3>
+      <h3> Proof Valid!</h3>
       <p>The zero-knowledge proof was successfully verified by the backend.</p>
       ${verificationTime ? `<p style="margin-top: 4px; font-size: 11px; color: #cbd5e1;">Verified in ${verificationTime}ms</p>` : ''}
       <p style="margin-top: 8px; font-size: 12px; color: #cbd5e1;">
@@ -684,7 +684,7 @@ function displayVerificationResult(result) {
   } else {
     resultDiv.className = 'verification-result invalid';
     resultDiv.innerHTML = `
-      <h3>❌ Proof Invalid</h3>
+      <h3> Proof Invalid</h3>
       <p>The backend rejected the proof.</p>
       ${message || result.error ? `<p style="margin-top: 8px; font-size: 12px;">${message || result.error}</p>` : ''}
     `;
@@ -698,7 +698,7 @@ function displayVerificationError(error) {
   const resultDiv = document.getElementById('verificationResult');
   resultDiv.className = 'verification-result invalid';
   resultDiv.innerHTML = `
-    <h3>❌ Verification Error</h3>
+    <h3> Verification Error</h3>
     <p>${error.message}</p>
     <p style="margin-top: 8px; font-size: 11px; color: #cbd5e1;">
       Check the console for details. Make sure the backend is running at http://localhost:3000
@@ -715,7 +715,7 @@ function handleResetConfig() {
   document.getElementById('maxAge').value = 65;
   document.getElementById('allowedCountries').value = 'US,UK,CA,AU,DE';
   document.getElementById('targetInterests').value = 'cars,sports,technology,travel,food';
-  logConsole('↻ Configuration reset to defaults', 'log');
+  logConsole(' Configuration reset to defaults', 'log');
 }
 
 // ============================================================================
@@ -769,7 +769,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         );
         
         console.log('[Helper Page] Proof generated successfully');
-        logConsole('✓ Proof generated for background service', 'success');
+        logConsole(' Proof generated for background service', 'success');
         
         // Send response back to service worker
         chrome.runtime.sendMessage({
@@ -780,7 +780,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         
       } catch (error) {
         console.error('[Helper Page] Proof generation failed:', error);
-        logConsole(`✗ Proof generation failed: ${error.message}`, 'error');
+        logConsole(` Proof generation failed: ${error.message}`, 'error');
         
         // Send error response
         chrome.runtime.sendMessage({
@@ -820,15 +820,15 @@ window.testServiceWorkerProof = async function(age, minAge, maxAge) {
     });
     
     if (response.success) {
-      console.log('[Test] ✅ Proof generated successfully!');
+      console.log('[Test] [OK][OK][OK] Proof generated successfully!');
       console.log('[Test] Proof:', response.proof);
       return response.proof;
     } else {
-      console.error('[Test] ❌ Proof generation failed:', response.error);
+      console.error('[Test] [OK][OK][OK] Proof generation failed:', response.error);
       throw new Error(response.error);
     }
   } catch (error) {
-    console.error('[Test] ❌ Service worker communication failed:', error);
+    console.error('[Test] [OK][OK][OK] Service worker communication failed:', error);
     throw error;
   }
 };
@@ -864,16 +864,16 @@ window.testRangeCheck = async function(value, min, max) {
     });
     
     if (response.success) {
-      console.log('[Test] ✅ Range check proof generated!');
+      console.log('[Test] [OK][OK][OK] Range check proof generated!');
       console.log('[Test] Proof:', response.proof);
       console.log('[Test] Public signals:', response.proof.publicSignals);
       return response.proof;
     } else {
-      console.error('[Test] ❌ Proof generation failed:', response.error);
+      console.error('[Test] [OK][OK][OK] Proof generation failed:', response.error);
       throw new Error(response.error);
     }
   } catch (error) {
-    console.error('[Test] ❌ Test failed:', error);
+    console.error('[Test] [OK][OK][OK] Test failed:', error);
     throw error;
   }
 };
@@ -955,7 +955,7 @@ window.testSetMembership = async function(userValue, allowedSet) {
     });
     
     if (response.success) {
-      console.log('[Test] ✅ Set membership proof generated!');
+      console.log('[Test] [OK][OK][OK] Set membership proof generated!');
       console.log('[Test] Proof:', response.proof);
       console.log('[Test] Public signals:', response.proof.publicSignals);
       
@@ -965,11 +965,11 @@ window.testSetMembership = async function(userValue, allowedSet) {
       
       return response.proof;
     } else {
-      console.error('[Test] ❌ Proof generation failed:', response.error);
+      console.error('[Test] [OK][OK][OK] Proof generation failed:', response.error);
       throw new Error(response.error);
     }
   } catch (error) {
-    console.error('[Test] ❌ Test failed:', error);
+    console.error('[Test] [OK][OK][OK] Test failed:', error);
     throw error;
   }
 };

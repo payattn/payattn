@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
         );
       }
       
-      console.log('✅ Transaction verified on-chain');
+      console.log('[OK][OK][OK] Transaction verified on-chain');
       
     } catch (txError: any) {
       console.error('Transaction verification failed:', txError);
@@ -113,7 +113,7 @@ export async function POST(request: NextRequest) {
     );
     
     if (!verification.valid) {
-      console.error('❌ Escrow verification failed:', verification.error);
+      console.error('[OK][OK][OK] Escrow verification failed:', verification.error);
       return NextResponse.json(
         { 
           error: 'Escrow verification failed',
@@ -123,7 +123,7 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    console.log('✅ Escrow verified on-chain:', verification.escrowPda);
+    console.log('[OK][OK][OK] Escrow verified on-chain:', verification.escrowPda);
     
     // Update offer status to "funded"
     const { error: updateError } = await supabase
@@ -143,7 +143,7 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    console.log(`✅ Offer ${offerId} marked as funded`);
+    console.log(`[OK][OK][OK] Offer ${offerId} marked as funded`);
     
     // Return success
     return NextResponse.json({

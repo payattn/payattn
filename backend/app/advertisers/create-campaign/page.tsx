@@ -104,11 +104,11 @@ function CreateCampaignForm({ advertiser_id }: { advertiser_id: string }) {
 
       setSuccess(true);
       setCreatedAdId(data.ad_creative_id);
-      console.log('✅ Ad created:', data);
+      console.log('[OK][OK][OK] Ad created:', data);
 
     } catch (err: any) {
       setError(err.message);
-      console.error('❌ Failed to create ad:', err);
+      console.error('[OK][OK][OK] Failed to create ad:', err);
     } finally {
       setLoading(false);
     }
@@ -126,12 +126,12 @@ function CreateCampaignForm({ advertiser_id }: { advertiser_id: string }) {
 
         {success ? (
           <div className="border rounded-lg p-6 mb-6" style={{ background: '#064e3b', borderColor: '#065f46' }}>
-            <h2 className="text-xl font-semibold mb-2" style={{ color: '#6ee7b7' }}>✅ Ad Created Successfully!</h2>
+            <h2 className="text-xl font-semibold mb-2" style={{ color: '#6ee7b7' }}> Ad Created Successfully!</h2>
             <p className="mb-4" style={{ color: '#a7f3d0' }}>
               Ad ID: <code className="px-2 py-1 rounded" style={{ background: '#047857' }}>{createdAdId}</code>
             </p>
             <div className="space-y-2 text-sm" style={{ color: '#a7f3d0' }}>
-              <p>🔄 <strong>Next steps:</strong></p>
+              <p> <strong>Next steps:</strong></p>
               <ul className="list-disc list-inside ml-4 space-y-1">
                 <li>Extension will sync this ad via /api/user/adstream</li>
                 <li>Max will evaluate against user profiles</li>
@@ -355,7 +355,7 @@ function CreateCampaignForm({ advertiser_id }: { advertiser_id: string }) {
 
                 {error && (
                   <div className="border rounded-lg p-4" style={{ background: '#7f1d1d', borderColor: '#991b1b', color: '#fca5a5' }}>
-                    ❌ {error}
+                     {error}
                   </div>
                 )}
 

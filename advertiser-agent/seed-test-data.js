@@ -116,7 +116,7 @@ const TEST_OFFERS = [
  * Clean up test data
  */
 async function cleanupTestData() {
-  console.log('🧹 Cleaning up test data...\n');
+  console.log('[OK][OK] Cleaning up test data...\n');
   
   try {
     // Delete test offers
@@ -126,9 +126,9 @@ async function cleanupTestData() {
       .like('offer_id', 'offer_peggy_test_%');
     
     if (offersError) {
-      console.error('❌ Error deleting offers:', offersError);
+      console.error('[OK][OK][OK] Error deleting offers:', offersError);
     } else {
-      console.log('✅ Deleted test offers');
+      console.log('[OK][OK][OK] Deleted test offers');
     }
     
     // Delete test users
@@ -138,9 +138,9 @@ async function cleanupTestData() {
       .like('user_id', 'user_test_%');
     
     if (usersError) {
-      console.error('❌ Error deleting users:', usersError);
+      console.error('[OK][OK][OK] Error deleting users:', usersError);
     } else {
-      console.log('✅ Deleted test users');
+      console.log('[OK][OK][OK] Deleted test users');
     }
     
     // Delete test advertiser
@@ -150,15 +150,15 @@ async function cleanupTestData() {
       .eq('advertiser_id', 'adv_001');
     
     if (advertiserError) {
-      console.error('❌ Error deleting advertiser:', advertiserError);
+      console.error('[OK][OK][OK] Error deleting advertiser:', advertiserError);
     } else {
-      console.log('✅ Deleted test advertiser');
+      console.log('[OK][OK][OK] Deleted test advertiser');
     }
     
-    console.log('\n✅ Cleanup complete!\n');
+    console.log('\n[OK][OK][OK] Cleanup complete!\n');
     
   } catch (error) {
-    console.error('❌ Cleanup failed:', error);
+    console.error('[OK][OK][OK] Cleanup failed:', error);
     process.exit(1);
   }
 }
@@ -167,7 +167,7 @@ async function cleanupTestData() {
  * Seed test data
  */
 async function seedTestData() {
-  console.log('🌱 Seeding test data for Peggy...\n');
+  console.log('[OK][OK][OK] Seeding test data for Peggy...\n');
   
   try {
     // 1. Create test advertiser
@@ -179,11 +179,11 @@ async function seedTestData() {
       .single();
     
     if (advertiserError) {
-      console.error('❌ Error creating advertiser:', advertiserError);
+      console.error('[OK][OK][OK] Error creating advertiser:', advertiserError);
       throw advertiserError;
     }
     
-    console.log('✅ Advertiser created:', advertiser.advertiser_id);
+    console.log('[OK][OK][OK] Advertiser created:', advertiser.advertiser_id);
     console.log(`   Name: ${advertiser.name}`);
     console.log(`   Wallet: ${advertiser.wallet_pubkey}\n`);
     
@@ -197,9 +197,9 @@ async function seedTestData() {
         .single();
       
       if (error) {
-        console.error(`❌ Error creating user ${user.user_id}:`, error);
+        console.error(`[OK][OK][OK] Error creating user ${user.user_id}:`, error);
       } else {
-        console.log(`✅ User created: ${data.user_id}`);
+        console.log(`[OK][OK][OK] User created: ${data.user_id}`);
       }
     }
     console.log('');
@@ -228,29 +228,29 @@ async function seedTestData() {
         .single();
       
       if (error) {
-        console.error(`❌ Error creating offer ${offer.offer_id}:`, error);
+        console.error(`[OK][OK][OK] Error creating offer ${offer.offer_id}:`, error);
       } else {
         const priceSOL = (offer.amount_lamports / 1e9).toFixed(3);
         const priceUSD = (offer.amount_lamports / 1e9).toFixed(3);
         const expectedDecision = 
-          (offer.match_score >= 4 && offer.amount_lamports <= 25000000) ? '✅ ACCEPT' :
-          (offer.match_score === 3 && offer.amount_lamports <= 18000000) ? '✅ ACCEPT' :
-          '❌ REJECT';
+          (offer.match_score >= 4 && offer.amount_lamports <= 25000000) ? ' ACCEPT' :
+          (offer.match_score === 3 && offer.amount_lamports <= 18000000) ? ' ACCEPT' :
+          ' REJECT';
         
         console.log(`${expectedDecision} | ${data.offer_id}`);
         console.log(`   Match: ${offer.match_score}/5 | Price: ${priceSOL} SOL ($${priceUSD}) | Rep: ${(offer.user_reputation * 100).toFixed(0)}%`);
       }
     }
     
-    console.log('\n✅ Test data seeded successfully!\n');
-    console.log('📊 Summary:');
+    console.log('\n[OK][OK][OK] Test data seeded successfully!\n');
+    console.log('[OK][OK] Summary:');
     console.log(`   Advertiser: 1 (${TEST_ADVERTISER.advertiser_id})`);
     console.log(`   Users: ${TEST_USERS.length}`);
     console.log(`   Offers: ${TEST_OFFERS.length} (mix of good and bad offers)`);
-    console.log('\n🚀 Ready to test Peggy! Run: npm start\n');
+    console.log('\n[OK][OK][OK][OK] Ready to test Peggy! Run: npm start\n');
     
   } catch (error) {
-    console.error('❌ Seeding failed:', error);
+    console.error('[OK][OK][OK] Seeding failed:', error);
     process.exit(1);
   }
 }

@@ -33,11 +33,11 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 console.log('[Seed] Checking environment variables...');
-console.log(`  NEXT_PUBLIC_SUPABASE_URL: ${supabaseUrl ? '✓' : '✗'}`);
-console.log(`  Supabase Key: ${supabaseKey ? '✓' : '✗'}\n`);
+console.log(`  NEXT_PUBLIC_SUPABASE_URL: ${supabaseUrl ? '[OK][OK]' : '[OK][OK]'}`);
+console.log(`  Supabase Key: ${supabaseKey ? '[OK][OK]' : '[OK][OK]'}\n`);
 
 if (!supabaseUrl || !supabaseKey) {
-  console.error('❌ Missing Supabase credentials in environment variables');
+  console.error('[OK][OK][OK] Missing Supabase credentials in environment variables');
   process.exit(1);
 }
 
@@ -136,7 +136,7 @@ function generateTestOffers() {
 }
 
 async function seedOffers() {
-  console.log('🌱 Seeding test offers for Peggy...');
+  console.log('[OK][OK][OK] Seeding test offers for Peggy...');
   console.log(`Advertiser: ${ADVERTISER_WALLET}\n`);
 
   try {
@@ -145,7 +145,7 @@ async function seedOffers() {
     
     console.log('Generated unique offer IDs:');
     testOffers.forEach(offer => {
-      console.log(`  • ${offer.offer_id}`);
+      console.log(`  [OK][OK] ${offer.offer_id}`);
     });
     console.log('');
 

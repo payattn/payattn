@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      console.log(`✅ [Click] Incremented counter for ad_creative ${offer.ad_creative_id}`);
+      console.log(`[OK][OK][OK] [Click] Incremented counter for ad_creative ${offer.ad_creative_id}`);
     }
 
     return NextResponse.json({

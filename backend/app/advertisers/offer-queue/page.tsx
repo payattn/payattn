@@ -109,7 +109,7 @@ export default function OfferQueuePage() {
   
   async function handleAssess() {
     setLoading(true);
-    setStatus('📥 Fetching pending offers...');
+    setStatus(' Fetching pending offers...');
     setPendingOffers([]);
     setCurrentSession(null);
     setLiveResults(new Map());
@@ -129,21 +129,21 @@ export default function OfferQueuePage() {
       const { offers } = await fetchResponse.json();
       
       if (offers.length === 0) {
-        setStatus('✅ No pending offers to assess');
+        setStatus(' No pending offers to assess');
         setLoading(false);
         return;
       }
       
       // Display offers as "pending"
       setPendingOffers(offers);
-      setStatus(`🤖 Peggy is assessing ${offers.length} offer(s)...`);
+      setStatus(` Peggy is assessing ${offers.length} offer(s)...`);
       
       // Assess them one by one
       const results: AssessmentResult[] = [];
       
       for (let i = 0; i < offers.length; i++) {
         setAssessingIndex(i);
-        setStatus(`🤖 Peggy is assessing offer ${i + 1} of ${offers.length}...`);
+        setStatus(` Peggy is assessing offer ${i + 1} of ${offers.length}...`);
         
         // Assess single offer
         const assessResponse = await fetch('/api/advertiser/assess/single', {
@@ -191,14 +191,14 @@ export default function OfferQueuePage() {
       setPendingOffers([]);
       setAssessingIndex(-1);
       setLiveResults(new Map()); // Clear live results after session is complete
-      setStatus(`✅ Assessment complete! ${session.stats.accepted} accepted, ${session.stats.rejected} rejected`);
+      setStatus(` Assessment complete! ${session.stats.accepted} accepted, ${session.stats.rejected} rejected`);
       
       // Reload sessions
       await loadSessions();
       
     } catch (error) {
       console.error('Assessment failed:', error);
-      setStatus(`❌ Assessment failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      setStatus(` Assessment failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
       setPendingOffers([]);
       setAssessingIndex(-1);
     } finally {
@@ -302,7 +302,7 @@ export default function OfferQueuePage() {
                         ? 'bg-amber-600 text-white' 
                         : 'bg-slate-700 text-slate-400'
                     }`}>
-                      {isAssessing ? '🤖 ASSESSING' : '⏳ PENDING'}
+                      {isAssessing ? ' ASSESSING' : ' PENDING'}
                     </div>
                   </div>
                   
@@ -328,7 +328,7 @@ export default function OfferQueuePage() {
               disabled={currentSessionIndex >= sessions.length - 1}
               className="px-4 py-2 bg-slate-700 border border-slate-600 rounded-md text-slate-200 text-sm font-medium hover:bg-slate-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              ← Previous
+               Previous
             </button>
             
             <div className="text-center">
@@ -345,7 +345,7 @@ export default function OfferQueuePage() {
               disabled={currentSessionIndex === 0}
               className="px-4 py-2 bg-slate-700 border border-slate-600 rounded-md text-slate-200 text-sm font-medium hover:bg-slate-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Next →
+              Next 
             </button>
           </div>
         )}
@@ -449,11 +449,11 @@ function OfferCard({ result }: { result: AssessmentResult }) {
         <div className="text-sm">
           {result.proofValidation.isValid ? (
             <div className="text-cyan-400">
-              ✅ {result.proofValidation.validProofs.length} valid proof(s): {result.proofValidation.validProofs.join(', ')}
+               {result.proofValidation.validProofs.length} valid proof(s): {result.proofValidation.validProofs.join(', ')}
             </div>
           ) : (
             <div className="text-orange-400">
-              ❌ {result.proofValidation.invalidProofs.length} invalid proof(s): {result.proofValidation.invalidProofs.join(', ')}
+               {result.proofValidation.invalidProofs.length} invalid proof(s): {result.proofValidation.invalidProofs.join(', ')}
             </div>
           )}
           <div className="text-xs text-slate-400 mt-1">{result.proofValidation.summary}</div>
@@ -474,7 +474,7 @@ function OfferCard({ result }: { result: AssessmentResult }) {
           <div className="text-xs font-semibold text-slate-300 mb-2">Escrow Funding</div>
           {result.funded.success ? (
             <div className="space-y-1 text-xs">
-              <div className="text-cyan-400">✅ Funded successfully!</div>
+              <div className="text-cyan-400"> Funded successfully!</div>
               {result.funded.signature && (
                 <>
                   <div className="text-slate-400">
@@ -486,14 +486,14 @@ function OfferCard({ result }: { result: AssessmentResult }) {
                     rel="noopener noreferrer"
                     className="text-cyan-400 hover:text-cyan-300 underline"
                   >
-                    View on Solana Explorer →
+                    View on Solana Explorer 
                   </a>
                 </>
               )}
             </div>
           ) : (
             <div className="text-orange-400 text-xs">
-              ❌ Funding failed: {result.funded.error || 'Unknown error'}
+               Funding failed: {result.funded.error || 'Unknown error'}
             </div>
           )}
         </div>

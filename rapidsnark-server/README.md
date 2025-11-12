@@ -7,7 +7,7 @@
 ## Architecture
 
 ```
-Extension (generates proof) → Backend → Rapidsnark Verifier CLI → Verification
+Extension (generates proof)  Backend  Rapidsnark Verifier CLI  Verification
 ```
 
 - **Extension:** Generates proofs using snarkjs (1-3 seconds, all working perfectly)
@@ -20,15 +20,15 @@ Extension (generates proof) → Backend → Rapidsnark Verifier CLI → Verifica
 
 ```
 rapidsnark-server/
-├── README.md                           # This file
-├── rapidsnark/                         # Rapidsnark source code (git clone)
-│   └── build_prover_macos_arm64/      # Compiled binaries
-│       └── verifier                   # CLI binary we use
-├── keys/                               # Verification keys (JSON format)
-│   ├── range_check_verification_key.json
-│   ├── age_range_verification_key.json
-│   └── set_membership_verification_key.json
-└── .gitignore
+ README.md                           # This file
+ rapidsnark/                         # Rapidsnark source code (git clone)
+    build_prover_macos_arm64/      # Compiled binaries
+        verifier                   # CLI binary we use
+ keys/                               # Verification keys (JSON format)
+    range_check_verification_key.json
+    age_range_verification_key.json
+    set_membership_verification_key.json
+ .gitignore
 ```
 
 ## Setup Instructions

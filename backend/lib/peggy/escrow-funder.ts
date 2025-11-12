@@ -131,7 +131,7 @@ export class EscrowFunder {
       console.log(`   [OK] PDA verified (bump: ${bump})`);
       
       // Check if escrow already exists
-      console.log(`   🔍 Checking if escrow already exists...`);
+      console.log(`   [OK][OK] Checking if escrow already exists...`);
       try {
         const existingEscrow = await (this.program.account as any).escrow.fetch(new PublicKey(escrowPda));
         
@@ -208,7 +208,7 @@ export class EscrowFunder {
       console.log(`   Explorer: https://explorer.solana.com/tx/${tx}?cluster=devnet`);
       
       // Wait for confirmation
-      console.log(`   ⏳ Waiting for confirmation...`);
+      console.log(`   [OK] Waiting for confirmation...`);
       await this.connection.confirmTransaction(tx, 'confirmed');
       console.log(`   [OK] Transaction confirmed!`);
       
@@ -220,7 +220,7 @@ export class EscrowFunder {
       
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : 'Unknown error';
-      console.error(`   ❌ Escrow funding failed:`, errorMsg);
+      console.error(`   [OK][OK][OK] Escrow funding failed:`, errorMsg);
       
       // Log program logs if available
       if (error && typeof error === 'object' && 'logs' in error) {

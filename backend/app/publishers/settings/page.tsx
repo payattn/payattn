@@ -171,7 +171,7 @@ export default function PublisherSettingsPage() {
                   </div>
                 </div>
                 {currentWallet === walletAddress && (
-                  <span className="text-green-600 text-sm">✓ Saved</span>
+                  <span className="text-green-600 text-sm"> Saved</span>
                 )}
               </div>
             </div>
@@ -200,12 +200,12 @@ export default function PublisherSettingsPage() {
           {/* Warning */}
           <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
             <div className="space-y-2">
-              <div className="font-semibold text-sm">⚠️ Important</div>
+              <div className="font-semibold text-sm"> Important</div>
               <ul className="text-xs space-y-1 text-gray-600">
-                <li>• Verify this address carefully - payments cannot be reversed</li>
-                <li>• Make sure you control the private key for this wallet</li>
-                <li>• Payments are sent on Solana devnet for demo purposes</li>
-                <li>• You will receive 25% of each impression (~$0.0025 in test SOL)</li>
+                <li> Verify this address carefully - payments cannot be reversed</li>
+                <li> Make sure you control the private key for this wallet</li>
+                <li> Payments are sent on Solana devnet for demo purposes</li>
+                <li> You will receive 25% of each impression (~$0.0025 in test SOL)</li>
               </ul>
             </div>
           </div>
@@ -219,7 +219,7 @@ export default function PublisherSettingsPage() {
               {saving ? 'Saving...' : 'Save Wallet Address'}
             </Button>
             {saved && (
-              <span className="text-green-600 text-sm">✓ Saved successfully</span>
+              <span className="text-green-600 text-sm"> Saved successfully</span>
             )}
           </div>
 
@@ -248,7 +248,7 @@ export default function PublisherSettingsPage() {
               </div>
             </div>
             <p className="text-xs text-muted-foreground text-center mt-2">
-              Settlement occurs automatically when a user views your ad for ≥1 second
+              Settlement occurs automatically when a user views your ad for 1 second
             </p>
           </div>
 
@@ -261,7 +261,7 @@ export default function PublisherSettingsPage() {
                 rel="noopener noreferrer"
                 className="text-sm text-blue-600 hover:underline"
               >
-                View wallet on Solana Explorer →
+                View wallet on Solana Explorer 
               </a>
             </div>
           )}
@@ -275,7 +275,7 @@ export default function PublisherSettingsPage() {
         </CardHeader>
         <CardContent className="space-y-3 text-sm">
           <div className="flex gap-3">
-            <div className="text-2xl">1️⃣</div>
+            <div className="text-2xl">1</div>
             <div>
               <div className="font-semibold">User Views Ad</div>
               <div className="text-muted-foreground">
@@ -284,7 +284,7 @@ export default function PublisherSettingsPage() {
             </div>
           </div>
           <div className="flex gap-3">
-            <div className="text-2xl">2️⃣</div>
+            <div className="text-2xl">2</div>
             <div>
               <div className="font-semibold">SDK on your site reports ad impression</div>
               <div className="text-muted-foreground">
@@ -293,7 +293,7 @@ export default function PublisherSettingsPage() {
             </div>
           </div>
           <div className="flex gap-3">
-            <div className="text-2xl">3️⃣</div>
+            <div className="text-2xl">3</div>
             <div>
               <div className="font-semibold">Privacy-Preserving Settlement</div>
               <div className="text-muted-foreground">
@@ -302,7 +302,7 @@ export default function PublisherSettingsPage() {
             </div>
           </div>
           <div className="flex gap-3">
-            <div className="text-2xl">4️⃣</div>
+            <div className="text-2xl">4</div>
             <div>
               <div className="font-semibold">Payment Received</div>
               <div className="text-muted-foreground">

@@ -125,7 +125,7 @@
           ${escapeHtml(ad.cta)}
         </a>
         <div style="margin-top: 12px; font-size: 10px; color: #9ca3af;">
-          Ad by PayAttn • Privacy-preserving advertising
+          Ad by PayAttn  Privacy-preserving advertising
         </div>
       </div>
     `;
@@ -189,7 +189,7 @@
    * Report impression to backend for settlement
    */
   async function reportImpression(offerId, duration) {
-    console.log(`[PayAttn SDK] 🎯 Reporting impression: ${offerId} (${duration}ms)`);
+    console.log(`[PayAttn SDK] [OK][OK] Reporting impression: ${offerId} (${duration}ms)`);
 
     try {
       const response = await fetch(`${API_BASE}/api/publisher/impressions`, {
@@ -207,17 +207,17 @@
       const result = await response.json();
 
       if (result.settled) {
-        console.log('✅ [PayAttn SDK] Settlement completed!');
-        console.log('💰 Transactions:', result.transactions);
+        console.log('[OK][OK][OK] [PayAttn SDK] Settlement completed!');
+        console.log('[OK][OK] Transactions:', result.transactions);
         
         // Show settlement success message (optional)
         showSettlementResult(result);
       } else {
-        console.warn('⚠️ [PayAttn SDK] Settlement incomplete:', result.message);
+        console.warn('[OK][OK] [PayAttn SDK] Settlement incomplete:', result.message);
       }
 
     } catch (err) {
-      console.error('❌ [PayAttn SDK] Failed to report impression:', err);
+      console.error('[OK][OK][OK] [PayAttn SDK] Failed to report impression:', err);
     }
   }
 
@@ -225,7 +225,7 @@
    * Track click (reporting only, no payment)
    */
   async function trackClick(offerId) {
-    console.log(`[PayAttn SDK] 🖱️ Ad clicked: ${offerId}`);
+    console.log(`[PayAttn SDK] [OK][OK] Ad clicked: ${offerId}`);
 
     try {
       await fetch(`${API_BASE}/api/publisher/clicks`, {
@@ -239,9 +239,9 @@
         })
       });
 
-      console.log('✅ [PayAttn SDK] Click tracked');
+      console.log('[OK][OK][OK] [PayAttn SDK] Click tracked');
     } catch (err) {
-      console.error('❌ [PayAttn SDK] Failed to track click:', err);
+      console.error('[OK][OK][OK] [PayAttn SDK] Failed to track click:', err);
     }
   }
 
@@ -268,7 +268,7 @@
     `;
 
     banner.innerHTML = `
-      <div style="font-weight: 600; margin-bottom: 8px;">✅ Payment Settled!</div>
+      <div style="font-weight: 600; margin-bottom: 8px;"> Payment Settled!</div>
       <div style="font-size: 12px; opacity: 0.9;">
         ${result.transactions.filter(t => t.success).length} of 3 transactions succeeded
       </div>
@@ -313,7 +313,7 @@
           adSlot.innerHTML = `
             <div style="padding: 20px; background: #fef3c7; border: 1px solid #fbbf24; border-radius: 8px; text-align: center;">
               <p style="margin: 0; color: #92400e; font-size: 14px;">
-                💡 <strong>PayAttn Extension Required</strong><br>
+                 <strong>PayAttn Extension Required</strong><br>
                 Install the PayAttn extension to see privacy-preserving ads and earn rewards.
               </p>
             </div>

@@ -51,7 +51,7 @@ async function fundEscrow() {
   console.log('Amount:', AMOUNT_LAMPORTS, 'lamports (0.01 SOL)');
   console.log('User:', USER_PUBKEY.toBase58());
   console.log('Platform:', PLATFORM_PUBKEY.toBase58());
-  console.log('Publisher: Will be specified at settlement time ✓');
+  console.log('Publisher: Will be specified at settlement time [OK][OK]');
   console.log('\nStep 1: Creating escrow on-chain...\n');
 
   try {
@@ -117,7 +117,7 @@ async function fundEscrow() {
     }
 
   } catch (error) {
-    console.error('\n❌ Error:', error.message);
+    console.error('\n[OK][OK][OK] Error:', error.message);
     if (error.logs) {
       console.error('Program logs:', error.logs);
     }

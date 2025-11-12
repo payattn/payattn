@@ -35,7 +35,7 @@ if (!config.supabaseAnonKey) {
 }
 
 if (!config.veniceApiKey || config.veniceApiKey === 'your_venice_api_key_here') {
-  console.warn('⚠️  WARNING: Venice API key not configured in .env');
+  console.warn('[OK][OK]  WARNING: Venice API key not configured in .env');
   console.warn('   Peggy will not be able to evaluate offers without it.');
   console.warn('   Add VENICE_API_KEY to .env file before running.\n');
 }

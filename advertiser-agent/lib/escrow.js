@@ -75,7 +75,7 @@ export class EscrowFunder {
   async fundEscrow(x402Data) {
     const { offerId, escrowPda, paymentAmount, userPubkey, platformPubkey } = x402Data;
     
-    console.log(`\n💰 Funding escrow for offer ${offerId}...`);
+    console.log(`\n[OK][OK] Funding escrow for offer ${offerId}...`);
     console.log(`   Amount: ${paymentAmount} lamports (${(paymentAmount / 1e9).toFixed(4)} SOL)`);
     console.log(`   Escrow PDA: ${escrowPda}`);
     
@@ -90,7 +90,7 @@ export class EscrowFunder {
         throw new Error(`PDA mismatch! Backend: ${escrowPda}, Derived: ${derivedPda.toBase58()}`);
       }
       
-      console.log(`   ✅ PDA verified (bump: ${bump})`);
+      console.log(`   [OK][OK][OK] PDA verified (bump: ${bump})`);
       
       // Check balance
       const balance = await this.connection.getBalance(this.advertiserKeypair.publicKey);
@@ -104,7 +104,7 @@ export class EscrowFunder {
       }
       
       // Call createEscrow instruction
-      console.log(`   📤 Submitting transaction...`);
+      console.log(`   [OK][OK] Submitting transaction...`);
       
       const tx = await this.program.methods
         .createEscrow(
@@ -120,19 +120,19 @@ export class EscrowFunder {
         })
         .rpc();
       
-      console.log(`   ✅ Transaction submitted!`);
+      console.log(`   [OK][OK][OK] Transaction submitted!`);
       console.log(`   Signature: ${tx}`);
       console.log(`   Explorer: https://explorer.solana.com/tx/${tx}?cluster=devnet`);
       
       // Wait for confirmation
-      console.log(`   ⏳ Waiting for confirmation...`);
+      console.log(`   [OK] Waiting for confirmation...`);
       await this.connection.confirmTransaction(tx, 'confirmed');
-      console.log(`   ✅ Transaction confirmed!`);
+      console.log(`   [OK][OK][OK] Transaction confirmed!`);
       
       return tx;
       
     } catch (error) {
-      console.error(`   ❌ Escrow funding failed:`, error.message);
+      console.error(`   [OK][OK][OK] Escrow funding failed:`, error.message);
       
       // Log more details for debugging
       if (error.logs) {

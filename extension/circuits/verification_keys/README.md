@@ -166,18 +166,18 @@ app.post('/verify', async (req, res) => {
       // Check if this matches campaign requirements
       const campaign = getCampaign(req.body.campaignId);
       if (minAge == campaign.minAge && maxAge == campaign.maxAge) {
-        // ✅ User qualifies for campaign
+        // [YES] User qualifies for campaign
         res.json({ verified: true });
       } else {
-        // ❌ Public inputs don't match campaign
+        // [NO] Public inputs don't match campaign
         res.json({ verified: false, reason: 'Age range mismatch' });
       }
     } else {
-      // ❌ Constraint not satisfied (should never happen if proof is valid)
+      // [NO] Constraint not satisfied (should never happen if proof is valid)
       res.json({ verified: false, reason: 'Constraint failed' });
     }
   } else {
-    // ❌ Invalid proof
+    // [NO] Invalid proof
     res.json({ verified: false, reason: 'Invalid proof' });
   }
 });
@@ -187,12 +187,12 @@ app.post('/verify', async (req, res) => {
 
 When verifying proofs, always:
 
-✅ **Verify the proof cryptographically**
+[YES] **Verify the proof cryptographically**
 ```javascript
 const isValid = await snarkjs.groth16.verify(vKey, publicSignals, proof);
 ```
 
-✅ **Check public signals match expectations**
+[YES] **Check public signals match expectations**
 ```javascript
 const [valid, minAge, maxAge] = publicSignals;
 if (minAge !== campaign.minAge || maxAge !== campaign.maxAge) {
@@ -201,7 +201,7 @@ if (minAge !== campaign.minAge || maxAge !== campaign.maxAge) {
 }
 ```
 
-✅ **Check the circuit name**
+[YES] **Check the circuit name**
 ```javascript
 if (req.body.circuitName !== 'age_range') {
   // Wrong circuit!
@@ -209,15 +209,15 @@ if (req.body.circuitName !== 'age_range') {
 }
 ```
 
-❌ **Don't trust unverified claims**
+[NO] **Don't trust unverified claims**
 ```javascript
 // WRONG: Don't trust user's claim without verification
-if (req.body.userAge >= campaign.minAge) {  // ❌ User could lie
+if (req.body.userAge >= campaign.minAge) {  // [NO] User could lie
   // allow access
 }
 
 // RIGHT: Only trust cryptographically verified proof
-if (await verifyProof(proof, publicSignals)) {  // ✅ Mathematically guaranteed
+if (await verifyProof(proof, publicSignals)) {  // [YES] Mathematically guaranteed
   // allow access
 }
 ```

@@ -109,7 +109,7 @@ async function handleSend() {
 
     if (response.success) {
       showResponse(response);
-      setStatus('✓ Response received successfully', 'success');
+      setStatus(' Response received successfully', 'success');
       updateDebug(`Tokens used: ${response.usage?.total_tokens || 'N/A'}`);
     } else {
       setStatus(`Error: ${response.error || 'Unknown error'}`, 'error');
@@ -151,7 +151,7 @@ async function handleAnalyzeMatch() {
     const response = await window.VeniceAI.analyzeAdMatch(adData, userProfile);
 
     if (response.success) {
-      const matchDisplay = response.matches ? '✅ MATCH' : '❌ NO MATCH';
+      const matchDisplay = response.matches ? ' MATCH' : ' NO MATCH';
       const content = `${matchDisplay} (Score: ${response.matchScore}%)
 
 Reasoning: ${response.reasoning}
@@ -160,7 +160,7 @@ Matched Criteria: ${response.matchedCriteria?.join(', ') || 'None'}
 Unmatched Criteria: ${response.unmatchedCriteria?.join(', ') || 'None'}`;
 
       showResponse({ ...response, content });
-      setStatus('✓ Analysis complete', 'success');
+      setStatus(' Analysis complete', 'success');
       updateDebug(`Match Score: ${response.matchScore}%`);
     } else {
       setStatus(`Error: ${response.error || 'Unknown error'}`, 'error');

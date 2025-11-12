@@ -98,7 +98,7 @@ export default function PublishersPage() {
         {/* SDK Integration */}
         <div className="bg-white shadow rounded-lg p-8 mb-6">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">
-            🚀 Get Started in 60 Seconds
+             Get Started in 60 Seconds
           </h2>
           <p className="text-gray-700 mb-6">
             All you need to do to start showing PayAttn ads on your website is paste this snippet into your HTML. 
@@ -120,13 +120,13 @@ export default function PublishersPage() {
               onClick={handleCopy}
               className="absolute top-8 right-3 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
             >
-              {copied ? '✓ Copied!' : 'Copy'}
+              {copied ? ' Copied!' : 'Copy'}
             </button>
           </div>
 
           <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
             <p className="text-sm text-yellow-900">
-              <span className="font-semibold">💡 Tip:</span> Add this snippet right before your closing <code className="bg-yellow-100 px-1">&lt;/body&gt;</code> tag 
+              <span className="font-semibold"> Tip:</span> Add this snippet right before your closing <code className="bg-yellow-100 px-1">&lt;/body&gt;</code> tag 
               for optimal performance.
             </p>
           </div>
@@ -135,7 +135,7 @@ export default function PublishersPage() {
         {/* Wallet Setup */}
         <div className="bg-white shadow rounded-lg p-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">
-            💰 Set Up Your Wallet
+             Set Up Your Wallet
           </h2>
           <p className="text-gray-700 mb-6">
             To receive payments, you need to connect your Solana wallet. Your earnings (25% of each impression) 

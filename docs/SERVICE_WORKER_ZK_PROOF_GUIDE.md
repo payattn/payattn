@@ -1,4 +1,4 @@
-# Service Worker ZK-SNARK Proof Generation - WORKING ✅
+# Service Worker ZK-SNARK Proof Generation - WORKING 
 
 **Status**: Successfully implemented and tested (Nov 5, 2025)
 
@@ -9,9 +9,9 @@ The PayAttn extension can now generate ZK-SNARK proofs autonomously in the servi
 **Important Notes:**
 - **Proof Storage:** Proofs are NOT automatically stored - they exist only in memory and are returned directly from the function. Send them immediately to the backend or cache in `chrome.storage` if needed.
 - **Available Circuits:** 
-  - ✅ `age_range` - Age verification (specific use case)
-  - ✅ `range_check` - Generic range proof (age, income, credit score, etc.)
-  - ✅ `set_membership` - Categorical membership (countries, interests, etc. - requires hashing)
+  -  `age_range` - Age verification (specific use case)
+  -  `range_check` - Generic range proof (age, income, credit score, etc.)
+  -  `set_membership` - Categorical membership (countries, interests, etc. - requires hashing)
 - **String Hashing:** The `set_membership` circuit requires strings to be hashed to field elements. See `circuits/HASHING_SCHEME.md` for details.
 - **Backend Verification:** Verification keys for all circuits are in `circuits/verification_keys/` - copy these to your backend.
 
@@ -21,11 +21,11 @@ The PayAttn extension can now generate ZK-SNARK proofs autonomously in the servi
 
 ```
 Service Worker (background.js)
-  ↓
+  
 Patched snarkjs (lib/snarkjs-patched.js)
-  ↓ [singleThread: true - forced in service worker context]
+   [singleThread: true - forced in service worker context]
 ZK Proof Generation
-  ↓
+  
 Proof returned to caller
 ```
 
@@ -379,7 +379,7 @@ When integrating into `runAgentCycle()`:
 
 ### Updating snarkjs
 
-**⚠️ WARNING:** Do NOT simply update to a new snarkjs version!
+** WARNING:** Do NOT update to a new snarkjs version!
 
 If you need to update snarkjs:
 
@@ -424,7 +424,7 @@ testServiceWorkerProof(30, 18, 65)
 [snarkjs] Building ABC
 ... (many snarkjs logs) ...
 [Service Worker ZK] Proof generated successfully
-[Test] ✅ Proof generated successfully!
+[Test]  Proof generated successfully!
 ```
 
 ### Automated Testing (TODO)
@@ -477,10 +477,10 @@ describe('Service Worker Proof Generation', () => {
 - Working memory: ~5MB during generation
 - Peak memory: ~10MB
 
-Service workers can handle this easily.
+Service workers can handle this.
 
 ---
 
 **Last Updated:** November 5, 2025  
-**Status:** ✅ Production Ready  
+**Status:**  Production Ready  
 **Tested:** Chrome Extension Manifest V3

@@ -37,7 +37,7 @@ export async function syncAuthToExtension(keyHash: string, walletAddress: string
           window.removeEventListener('message', responseHandler);
           
           if (event.data.success) {
-            console.log('[extension-sync] ✅ Successfully synced to extension!');
+            console.log('[extension-sync] [OK][OK][OK] Successfully synced to extension!');
             resolve(true);
           } else {
             console.log('[extension-sync] Failed:', event.data.error);
@@ -106,7 +106,7 @@ export async function syncProfileToExtension(
           window.removeEventListener('message', responseHandler);
           
           if (event.data.success) {
-            console.log('[extension-sync] ✅ Profile synced to extension!');
+            console.log('[extension-sync] [OK][OK][OK] Profile synced to extension!');
             resolve(true);
           } else {
             console.log('[extension-sync] Profile sync failed:', event.data.error);

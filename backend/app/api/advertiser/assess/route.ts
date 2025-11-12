@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
     const results: AssessmentResult[] = [];
     
     for (const offer of offers) {
-      console.log(`─────────────────────────────────────────`);
+      console.log(`[OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK]`);
       console.log(`[PROCESS] Offer ${offer.offer_id}`);
       
       try {
@@ -100,7 +100,7 @@ export async function POST(request: NextRequest) {
           summary: proofValidation.summary
         });
         
-        const emoji = evaluation.decision === 'accept' ? '✅' : '❌';
+        const emoji = evaluation.decision === 'accept' ? '' : '';
         console.log(`   ${emoji} Decision: ${evaluation.decision.toUpperCase()}`);
         console.log(`   Reasoning: ${evaluation.reasoning}`);
         console.log(`   Confidence: ${(evaluation.confidence * 100).toFixed(0)}%`);
@@ -176,7 +176,7 @@ export async function POST(request: NextRequest) {
             result.funded = fundingResult;
             
           } catch (error) {
-            console.error(`   ❌ Funding failed:`, error instanceof Error ? error.message : 'Unknown error');
+            console.error(`   [OK][OK][OK] Funding failed:`, error instanceof Error ? error.message : 'Unknown error');
             result.funded = {
               success: false,
               error: error instanceof Error ? error.message : 'Unknown error'
@@ -185,7 +185,7 @@ export async function POST(request: NextRequest) {
         }
         
         results.push(result);
-        console.log('─────────────────────────────────────────\n');
+        console.log('[OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK][OK]\n');
         
         // Update offer status in database based on decision
         try {
@@ -193,11 +193,11 @@ export async function POST(request: NextRequest) {
           await db.updateOfferStatus(offer.offer_id, newStatus);
           console.log(`   [DB] Updated offer status to: ${newStatus}`);
         } catch (statusError) {
-          console.error(`   ⚠️  Failed to update offer status:`, statusError);
+          console.error(`   [OK][OK]  Failed to update offer status:`, statusError);
         }
         
       } catch (error) {
-        console.error(`   ❌ Failed to process offer:`, error);
+        console.error(`   [OK][OK][OK] Failed to process offer:`, error);
         results.push({
           offerId: offer.offer_id,
           adId: offer.ad_id,
@@ -236,7 +236,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(session);
     
   } catch (error) {
-    console.error('❌ Assessment failed:', error);
+    console.error('[OK][OK][OK] Assessment failed:', error);
     return NextResponse.json(
       { 
         error: 'Assessment failed',

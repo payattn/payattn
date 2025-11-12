@@ -67,7 +67,7 @@ async function fundEscrow() {
       })
       .rpc();
 
-    console.log('✅ Escrow created!');
+    console.log('[OK][OK][OK] Escrow created!');
     console.log('Transaction:', tx);
     console.log('Explorer:', `https://explorer.solana.com/tx/${tx}?cluster=devnet`);
     console.log('\nStep 2: Fetching escrow account...\n');
@@ -86,7 +86,7 @@ async function fundEscrow() {
     console.log('  Settled:', escrowAccount.settled);
     console.log('  Created at:', new Date(escrowAccount.createdAt.toNumber() * 1000).toISOString());
 
-    console.log('\n✅ Escrow verified on-chain!');
+    console.log('\n[OK][OK][OK] Escrow verified on-chain!');
     console.log('\nStep 3: Call payment verification endpoint...\n');
 
     // Call backend verification endpoint
@@ -105,18 +105,18 @@ async function fundEscrow() {
 
     if (verifyResponse.ok && verifyResult.verified) {
       console.log('\n========================================');
-      console.log('✅ TEST PASSED - ESCROW FULLY FUNDED');
+      console.log('[OK][OK][OK] TEST PASSED - ESCROW FULLY FUNDED');
       console.log('========================================');
       console.log(`Offer status: ${verifyResult.offerStatus}`);
       console.log(`Escrow PDA: ${verifyResult.escrowPda}`);
       console.log(`Resource URL: ${verifyResult.resourceUrl}`);
       console.log('\nNext step: User can view ad and trigger settlement');
     } else {
-      console.log('\n❌ Verification failed:', verifyResult);
+      console.log('\n[OK][OK][OK] Verification failed:', verifyResult);
     }
 
   } catch (error: any) {
-    console.error('\n❌ Error:', error.message);
+    console.error('\n[OK][OK][OK] Error:', error.message);
     if (error.logs) {
       console.error('Program logs:', error.logs);
     }

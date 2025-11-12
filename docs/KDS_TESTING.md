@@ -24,18 +24,18 @@ This guide walks through testing the complete Key Derivation Service (KDS) flow.
    - Age: 30
    - Interests: web3, defi, nfts
    - Country: US
-6. Click "💾 Save Profile"
+6. Click " Save Profile"
 7. **Verify in console:** No errors, "Profile saved successfully"
 
 ### 2. Verify IndexedDB Storage
 
-1. Open Chrome DevTools → Application → IndexedDB → payattn_db
+1. Open Chrome DevTools  Application  IndexedDB  payattn_db
 2. Check `profiles` store:
    ```javascript
    {
      walletAddress: "ABC123...",
-     encryptedData: "base64...",  // ✅ Encrypted
-     keyHash: "f87b4d...",         // ✅ Hash stored (not key!)
+     encryptedData: "base64...",  //  Encrypted
+     keyHash: "f87b4d...",         //  Hash stored (not key!)
      version: "v1",
      timestamp: 1730678400000
    }
@@ -68,7 +68,7 @@ This guide walks through testing the complete Key Derivation Service (KDS) flow.
 
 1. Refresh the page (http://localhost:3000/storage-test)
 2. Connect wallet again (session persisted)
-3. Click "📂 Load Profile"
+3. Click " Load Profile"
 4. **Verify:** Form fills with saved data
 5. **Check console:**
    ```
@@ -78,14 +78,14 @@ This guide walks through testing the complete Key Derivation Service (KDS) flow.
 
 ### 5. Test Extension Background Script
 
-1. Open Chrome → Extensions → PayAttn Extension → Background Page
+1. Open Chrome  Extensions  PayAttn Extension  Background Page
 2. **Check console logs:**
    ```
    [Extension] PayAttn Agent loaded
    [Extension] Setting up 30-minute alarm
    [Extension] Extension installed and alarm set!
    ```
-3. Click extension icon → popup opens
+3. Click extension icon  popup opens
 4. Click "Run Now" button
 5. **Expected console output:**
    ```
@@ -119,10 +119,10 @@ This guide walks through testing the complete Key Derivation Service (KDS) flow.
 
 ### 8. Security Verification
 
-1. **In DevTools Application → IndexedDB:**
-   - ✅ `encryptedData` is base64 gibberish (can't read)
-   - ✅ `keyHash` is just a hash (useless without KDS endpoint)
-   - ✅ No plaintext keys stored anywhere
+1. **In DevTools Application  IndexedDB:**
+   -  `encryptedData` is base64 gibberish (can't read)
+   -  `keyHash` is just a hash (useless without KDS endpoint)
+   -  No plaintext keys stored anywhere
 
 2. **Attacker scenario:**
    - Has database dump with `encryptedData` + `keyHash`
@@ -224,11 +224,11 @@ indexedDB.deleteDatabase('payattn_db')
 ## Success!
 
 If all tests pass, you have:
-1. ✅ Secure key management (KDS)
-2. ✅ No "key under doormat" problem
-3. ✅ Autonomous extension operation
-4. ✅ Shared data between website and extension
-5. ✅ Defense-in-depth encryption
-6. ✅ Privacy-first architecture
+1.  Secure key management (KDS)
+2.  No "key under doormat" problem
+3.  Autonomous extension operation
+4.  Shared data between website and extension
+5.  Defense-in-depth encryption
+6.  Privacy-first architecture
 
-**The KDS architecture is working!** 🎉
+**The KDS architecture is working!** 

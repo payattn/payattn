@@ -18,9 +18,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Update header
   if (walletAddress) {
     document.getElementById('walletBadge').textContent = 
-      `🔐 ${walletAddress.slice(0, 4)}...${walletAddress.slice(-4)}`;
+      ` ${walletAddress.slice(0, 4)}...${walletAddress.slice(-4)}`;
   } else {
-    document.getElementById('walletBadge').textContent = '⚠️ Not authenticated';
+    document.getElementById('walletBadge').textContent = ' Not authenticated';
     showAlert('Please authenticate your wallet first', 'error');
   }
   
@@ -96,7 +96,7 @@ async function loadProfile() {
         document.getElementById('painThresholdValue').textContent = profile.preferences.painThreshold || 5;
       }
       
-      showAlert('✅ Profile loaded successfully', 'success');
+      showAlert(' Profile loaded successfully', 'success');
       
     } catch (decryptError) {
       console.error('Failed to decrypt profile:', decryptError);
@@ -106,7 +106,7 @@ async function loadProfile() {
                                 decryptError.name === 'OperationError';
       
       if (isDecryptionError) {
-        showAlert('⚠️ Profile was encrypted with an old wallet signature. You can create a new profile below.', 'error');
+        showAlert(' Profile was encrypted with an old wallet signature. You can create a new profile below.', 'error');
         // Clear the old profile
         await chrome.storage.local.remove(`payattn_profile_${walletAddress}`);
       } else {
@@ -132,7 +132,7 @@ async function saveProfile() {
   try {
     const saveButton = document.getElementById('saveButton');
     saveButton.disabled = true;
-    saveButton.textContent = '💾 Saving...';
+    saveButton.textContent = ' Saving...';
     
     // Collect form data
     const age = document.getElementById('age').value;
@@ -186,10 +186,10 @@ async function saveProfile() {
       [`payattn_profile_${walletAddress}`]: profileData
     });
     
-    showAlert('✅ Profile saved successfully!', 'success');
+    showAlert(' Profile saved successfully!', 'success');
     
     saveButton.disabled = false;
-    saveButton.textContent = '💾 Save Profile';
+    saveButton.textContent = ' Save Profile';
     
   } catch (error) {
     console.error('Failed to save profile:', error);
@@ -197,7 +197,7 @@ async function saveProfile() {
     
     const saveButton = document.getElementById('saveButton');
     saveButton.disabled = false;
-    saveButton.textContent = '💾 Save Profile';
+    saveButton.textContent = ' Save Profile';
   }
 }
 

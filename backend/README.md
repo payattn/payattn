@@ -53,19 +53,19 @@ Visit [http://localhost:3000/storage-test](http://localhost:3000/storage-test) t
 
 ```
 agent-dashboard/
-├── app/
-│   ├── page.tsx              # Main landing page
-│   └── storage-test/         # Test dashboard for encryption & JWT
-├── components/
-│   ├── WalletButton.tsx      # Wallet connection UI
-│   ├── WalletProvider.tsx    # Solana wallet context
-│   └── ui/                   # shadcn/ui components
-├── lib/
-│   ├── auth.ts               # Authentication & JWT management
-│   ├── storage.ts            # Encrypted storage wrapper
-│   └── storage-examples.ts   # Usage examples
-└── hooks/
-    └── useAuth.ts            # Authentication hook
+ app/
+    page.tsx              # Main landing page
+    storage-test/         # Test dashboard for encryption & JWT
+ components/
+    WalletButton.tsx      # Wallet connection UI
+    WalletProvider.tsx    # Solana wallet context
+    ui/                   # shadcn/ui components
+ lib/
+    auth.ts               # Authentication & JWT management
+    storage.ts            # Encrypted storage wrapper
+    storage-examples.ts   # Usage examples
+ hooks/
+     useAuth.ts            # Authentication hook
 ```
 
 ## Documentation

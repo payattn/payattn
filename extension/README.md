@@ -9,15 +9,15 @@ Privacy-first ad agent that runs autonomously in the background.
 2. Enable **"Developer mode"** (toggle in top-right corner)
 3. Click **"Load unpacked"**
 4. Select this `extension` folder
-5. Done! ✅ The extension is now installed and running
+5. Done!  The extension is now installed and running
 
 ### Firefox:
 1. Open `about:debugging#/runtime/this-firefox`
 2. Click **"Load Temporary Add-on"**
 3. Select the `manifest.json` file from this folder
-4. Done! ✅
+4. Done! 
 
-## ⚙ How It Works
+##  How It Works
 
 ### Background Processing:
 - **Runs every 30 minutes** automatically using Chrome Alarms API
@@ -26,7 +26,7 @@ Privacy-first ad agent that runs autonomously in the background.
 
 ### Storage (IndexedDB):
 - Uses **IndexedDB** (shared between website and extension)
-- Website saves profiles → Extension reads same data
+- Website saves profiles  Extension reads same data
 - Both use the same encrypted storage
 - **No server storage** - everything stays local
 
@@ -39,7 +39,7 @@ Privacy-first ad agent that runs autonomously in the background.
 
 The extension shares IndexedDB storage with the web dashboard at `localhost:3000/storage-test`:
 
-1. Visit website → Create/edit your profile
+1. Visit website  Create/edit your profile
 2. Profile saved to IndexedDB (encrypted)
 3. Extension automatically reads from same IndexedDB
 4. Both interfaces see the same data instantly
@@ -53,7 +53,7 @@ The extension shares IndexedDB storage with the web dashboard at `localhost:3000
 3. **Add ZK proof generation**: Implement the actual ad processing logic
 4. **Connect to your backend**: Add API calls to fetch ads and submit bids
 
-## 🐛 Debugging
+##  Debugging
 
 - Open `chrome://extensions/`
 - Click "background page" under your extension
@@ -70,4 +70,4 @@ When ready to publish:
 
 ---
 
-**Status**: MVP ready for local testing! 🎉
+**Status**: MVP ready for local testing! 

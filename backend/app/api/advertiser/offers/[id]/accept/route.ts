@@ -82,7 +82,7 @@ export async function POST(
     // Derive escrow PDA (Peggy will fund this address)
     const [escrowPda] = await derivePDA(offerId);
     
-    console.log(`✅ Offer ${offerId} accepted, sending x402 response`);
+    console.log(`[OK][OK][OK] Offer ${offerId} accepted, sending x402 response`);
     
     // Send HTTP 402 "Payment Required" with escrow details
     return new NextResponse(

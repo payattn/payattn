@@ -39,7 +39,7 @@ try {
   platformWallet = Keypair.fromSecretKey(Uint8Array.from(keypairData));
   console.log('[OK] Platform wallet loaded:', platformWallet.publicKey.toBase58());
 } catch (err) {
-  console.error('❌ Failed to load platform wallet:', err);
+  console.error('[OK][OK][OK] Failed to load platform wallet:', err);
   throw new Error('Platform wallet not configured');
 }
 
@@ -130,7 +130,7 @@ export async function verifyEscrow(
     };
     
   } catch (err: any) {
-    console.error('❌ Escrow verification failed:', err);
+    console.error('[OK][OK][OK] Escrow verification failed:', err);
     return {
       valid: false,
       escrowPda: '',
@@ -174,7 +174,7 @@ export async function settleUser(
     return { success: true, txSignature };
     
   } catch (err: any) {
-    console.error(`❌ User settlement failed:`, err);
+    console.error(`[OK][OK][OK] User settlement failed:`, err);
     return { success: false, error: err.message || 'Transaction failed' };
   }
 }
@@ -214,7 +214,7 @@ export async function settlePublisher(
     return { success: true, txSignature };
     
   } catch (err: any) {
-    console.error(`❌ Publisher settlement failed:`, err);
+    console.error(`[OK][OK][OK] Publisher settlement failed:`, err);
     return { success: false, error: err.message || 'Transaction failed' };
   }
 }
@@ -255,7 +255,7 @@ export async function settlePlatform(
     return { success: true, txSignature };
     
   } catch (err: any) {
-    console.error(`❌ Platform settlement failed:`, err);
+    console.error(`[OK][OK][OK] Platform settlement failed:`, err);
     return { success: false, error: err.message || 'Transaction failed' };
   }
 }

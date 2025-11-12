@@ -44,7 +44,7 @@ console.log('   - Returns 401 if missing headers');
 console.log('   - Returns 403 if signature invalid');
 console.log('   - Returns 403 if keyHash mismatch\n');
 
-console.log('✅ Security implementation complete!');
+console.log('[OK][OK][OK] Security implementation complete!');
 console.log('\nTo test with real wallet:');
 console.log('1. Authenticate on website (localhost:3000/wallet-auth)');
 console.log('2. Open extension popup - check chrome.storage has authToken');

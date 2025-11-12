@@ -1,5 +1,5 @@
 -- =====================================================
--- COMPREHENSIVE ADVERTISER DATA AUDIT
+-- ADVERTISER DATA AUDIT
 -- =====================================================
 
 -- 1. Show all advertisers

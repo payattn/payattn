@@ -18,63 +18,63 @@ const idlPath = path.join(__dirname, 'target/idl/payattn_escrow.json');
 const idl = JSON.parse(fs.readFileSync(idlPath, 'utf8'));
 
 // Test 1: Check instructions exist
-console.log("✓ Test 1: Checking instructions...");
+console.log("[OK][OK] Test 1: Checking instructions...");
 const instructions = idl.instructions.map(i => i.name);
 const required = ['create_escrow', 'settle_user', 'settle_publisher', 'settle_platform', 'refund_escrow'];
 const missing = required.filter(r => !instructions.includes(r));
 if (missing.length > 0) {
-  console.error("✗ Missing instructions:", missing);
+  console.error("[OK][OK] Missing instructions:", missing);
   process.exit(1);
 }
-console.log("  ✓ All 5 instructions present:", instructions.join(', '));
+console.log("  [OK][OK] All 5 instructions present:", instructions.join(', '));
 
 // Test 2: Check settle_user instruction structure
-console.log("\n✓ Test 2: Checking settle_user instruction...");
+console.log("\n[OK][OK] Test 2: Checking settle_user instruction...");
 const settleUser = idl.instructions.find(i => i.name === 'settle_user');
 const settleUserAccounts = settleUser.accounts.map(a => a.name);
 console.log("  Accounts:", settleUserAccounts.join(', '));
 if (!settleUserAccounts.includes('user')) {
-  console.error("✗ Missing 'user' account in settle_user");
+  console.error("[OK][OK] Missing 'user' account in settle_user");
   process.exit(1);
 }
 if (!settleUserAccounts.includes('escrow')) {
-  console.error("✗ Missing 'escrow' account in settle_user");
+  console.error("[OK][OK] Missing 'escrow' account in settle_user");
   process.exit(1);
 }
-console.log("  ✓ settle_user has correct accounts");
+console.log("  [OK][OK] settle_user has correct accounts");
 
 // Test 3: Check settle_publisher instruction structure
-console.log("\n✓ Test 3: Checking settle_publisher instruction...");
+console.log("\n[OK][OK] Test 3: Checking settle_publisher instruction...");
 const settlePublisher = idl.instructions.find(i => i.name === 'settle_publisher');
 const settlePublisherAccounts = settlePublisher.accounts.map(a => a.name);
 console.log("  Accounts:", settlePublisherAccounts.join(', '));
 if (!settlePublisherAccounts.includes('publisher')) {
-  console.error("✗ Missing 'publisher' account in settle_publisher");
+  console.error("[OK][OK] Missing 'publisher' account in settle_publisher");
   process.exit(1);
 }
 if (!settlePublisherAccounts.includes('escrow')) {
-  console.error("✗ Missing 'escrow' account in settle_publisher");
+  console.error("[OK][OK] Missing 'escrow' account in settle_publisher");
   process.exit(1);
 }
-console.log("  ✓ settle_publisher has correct accounts");
+console.log("  [OK][OK] settle_publisher has correct accounts");
 
 // Test 4: Check settle_platform instruction structure
-console.log("\n✓ Test 4: Checking settle_platform instruction...");
+console.log("\n[OK][OK] Test 4: Checking settle_platform instruction...");
 const settlePlatform = idl.instructions.find(i => i.name === 'settle_platform');
 const settlePlatformAccounts = settlePlatform.accounts.map(a => a.name);
 console.log("  Accounts:", settlePlatformAccounts.join(', '));
 if (!settlePlatformAccounts.includes('platform')) {
-  console.error("✗ Missing 'platform' account in settle_platform");
+  console.error("[OK][OK] Missing 'platform' account in settle_platform");
   process.exit(1);
 }
 if (!settlePlatformAccounts.includes('escrow')) {
-  console.error("✗ Missing 'escrow' account in settle_platform");
+  console.error("[OK][OK] Missing 'escrow' account in settle_platform");
   process.exit(1);
 }
-console.log("  ✓ settle_platform has correct accounts");
+console.log("  [OK][OK] settle_platform has correct accounts");
 
 // Test 5: Check Escrow account structure
-console.log("\n✓ Test 5: Checking Escrow account structure...");
+console.log("\n[OK][OK] Test 5: Checking Escrow account structure...");
 const escrowAccount = idl.types.find(t => t.name === 'Escrow');
 const escrowFields = escrowAccount.type.fields.map(f => f.name);
 console.log("  Fields:", escrowFields.join(', '));
@@ -83,13 +83,13 @@ const requiredFields = ['offer_id', 'advertiser', 'user', 'platform', 'amount',
                         'created_at', 'user_settled', 'publisher_settled', 'platform_settled', 'bump'];
 const missingFields = requiredFields.filter(f => !escrowFields.includes(f));
 if (missingFields.length > 0) {
-  console.error("✗ Missing fields in Escrow:", missingFields);
+  console.error("[OK][OK] Missing fields in Escrow:", missingFields);
   process.exit(1);
 }
-console.log("  ✓ All required fields present");
+console.log("  [OK][OK] All required fields present");
 
 // Test 6: Validate settlement math
-console.log("\n✓ Test 6: Validating settlement math...");
+console.log("\n[OK][OK] Test 6: Validating settlement math...");
 const testAmount = 1000000000; // 1 SOL in lamports
 const rentReserve = 5000;
 const distributable = testAmount - rentReserve;
@@ -105,10 +105,10 @@ console.log(`    - User (70%): ${userAmount} lamports`);
 console.log(`    - Publisher (25%): ${publisherAmount} lamports`);
 console.log(`    - Platform (remainder): ${platformAmount} lamports`);
 console.log(`    - Total distributed: ${userAmount + publisherAmount + platformAmount} lamports`);
-console.log(`    - Matches distributable: ${userAmount + publisherAmount + platformAmount === distributable ? '✓' : '✗'}`);
+console.log(`    - Matches distributable: ${userAmount + publisherAmount + platformAmount === distributable ? '[OK][OK]' : '[OK][OK]'}`);
 
 if (userAmount + publisherAmount + platformAmount !== distributable) {
-  console.error("✗ Math doesn't add up!");
+  console.error("[OK][OK] Math doesn't add up!");
   process.exit(1);
 }
 
@@ -119,12 +119,12 @@ const platformPercent = (platformAmount / distributable * 100).toFixed(2);
 console.log(`  Actual percentages: User ${userPercent}%, Publisher ${publisherPercent}%, Platform ${platformPercent}%`);
 
 // Test 7: Check error codes
-console.log("\n✓ Test 7: Checking error codes...");
+console.log("\n[OK][OK] Test 7: Checking error codes...");
 if (!idl.errors || idl.errors.length === 0) {
-  console.error("✗ No error codes defined");
+  console.error("[OK][OK] No error codes defined");
   process.exit(1);
 }
-console.log(`  ✓ ${idl.errors.length} error codes defined`);
+console.log(`  [OK][OK] ${idl.errors.length} error codes defined`);
 idl.errors.forEach(e => {
   console.log(`    - ${e.name}: ${e.msg}`);
 });

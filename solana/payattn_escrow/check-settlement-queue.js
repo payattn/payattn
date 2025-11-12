@@ -7,7 +7,7 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseKey) {
-  console.error('❌ Missing Supabase environment variables');
+  console.error('[OK][OK][OK] Missing Supabase environment variables');
   console.error('Run: source <(grep -v "^#" ../../backend/.env.local | sed \'s/^/export /\')');
   process.exit(1);
 }

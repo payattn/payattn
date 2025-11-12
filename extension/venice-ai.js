@@ -487,25 +487,25 @@ function handleMakeOfferToolCall(args) {
 
   const priceFormatted = typeof args.price === 'number' ? args.price.toFixed(4) : args.price;
 
-  console.log('\n✅ [MAKEOFFER] OFFER SUBMITTED');
-  console.log('━'.repeat(60));
+  console.log('\n[OK][OK][OK] [MAKEOFFER] OFFER SUBMITTED');
+  console.log('[OK]'.repeat(60));
   console.log(`Campaign: ${args.campaignId}`);
-  console.log(`Price: £${priceFormatted}`);
+  console.log(`Price: ${priceFormatted}`);
   console.log(`Provable Requirements: ${args.matchedRequirements?.length || 0}`);
   
   if (args.matchedRequirements && Array.isArray(args.matchedRequirements)) {
     args.matchedRequirements.forEach((req, idx) => {
       console.log(`\n  ${idx + 1}. ${req.requirement}`);
       console.log(`     Advertiser Criteria: ${JSON.stringify(req.advertiserCriteria)}`);
-      console.log(`     ⚡ ZK-SNARK proof to be generated`);
+      console.log(`     [OK][OK] ZK-SNARK proof to be generated`);
     });
   }
   
-  console.log('\n' + '━'.repeat(60) + '\n');
+  console.log('\n' + '[OK]'.repeat(60) + '\n');
 
   return {
     success: true,
-    message: `Offer submitted: £${priceFormatted} for ${args.campaignId} with ${args.matchedRequirements?.length || 0} provable requirements`,
+    message: `Offer submitted: ${priceFormatted} for ${args.campaignId} with ${args.matchedRequirements?.length || 0} provable requirements`,
     offer: {
       campaignId: args.campaignId,
       price: args.price,

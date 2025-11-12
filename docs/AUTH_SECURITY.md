@@ -124,7 +124,7 @@ Server verification process:
 ### Profile Encryption Flow
 1. Extension reads keyHash, walletAddress, authToken from storage
 2. Calls KDS: GET /api/k/[keyHash] with X-Wallet and X-Auth-Token headers
-3. Server verifies signature → returns key material
+3. Server verifies signature  returns key material
 4. Extension derives encryption key from material + wallet address
 5. Encrypts profile data with AES-256-GCM
 6. Stores encrypted data in chrome.storage.local
@@ -132,7 +132,7 @@ Server verification process:
 ### Profile Decryption Flow
 1. Extension reads encrypted data, keyHash, walletAddress, authToken
 2. Calls KDS with authentication headers
-3. Server verifies → returns key material
+3. Server verifies  returns key material
 4. Extension derives decryption key
 5. Decrypts profile data
 6. Displays in popup
@@ -156,29 +156,29 @@ Server verification process:
 ### Attack Scenarios
 
 ####  Attacker knows wallet address
-- Can compute keyHash ✓
-- CANNOT access KDS without valid signature ✗
-- No key material → cannot decrypt
+- Can compute keyHash 
+- CANNOT access KDS without valid signature 
+- No key material  cannot decrypt
 
 ####  Attacker intercepts encrypted data
-- Has encrypted profile ✓
-- CANNOT compute keyHash without wallet address ✗
-- CANNOT access KDS without signature ✗
-- No key material → cannot decrypt
+- Has encrypted profile 
+- CANNOT compute keyHash without wallet address 
+- CANNOT access KDS without signature 
+- No key material  cannot decrypt
 
 ####  Attacker has keyHash + encrypted data
-- Knows keyHash ✓
-- Has encrypted data ✓
-- CANNOT access KDS without signature ✗
-- No key material → cannot decrypt
+- Knows keyHash 
+- Has encrypted data 
+- CANNOT access KDS without signature 
+- No key material  cannot decrypt
 
 ####  Valid user with signature
-- Has wallet address ✓
-- Can compute keyHash ✓
-- Can sign message (has private key) ✓
-- KDS verifies signature ✓
-- Gets key material ✓
-- Can decrypt profile ✓
+- Has wallet address 
+- Can compute keyHash 
+- Can sign message (has private key) 
+- KDS verifies signature 
+- Gets key material 
+- Can decrypt profile 
 
 ## Testing
 
@@ -187,7 +187,7 @@ Server verification process:
    - Authenticate on localhost:3000/wallet-auth
    - Check extension popup shows auth status
    - Create/edit profile in extension
-   - Disconnect and reconnect → profile should persist
+   - Disconnect and reconnect  profile should persist
 
 2. **Unauthorized access**:
    ```bash

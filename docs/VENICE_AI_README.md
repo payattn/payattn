@@ -1,41 +1,41 @@
-# ✨ Venice AI Privacy-First Integration - Complete Setup
+#  Venice AI Privacy-First Integration - Complete Setup
 
 ## What You Now Have
 
-### 🏗 Architecture (Privacy First)
+###  Architecture (Privacy First)
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                        YOUR DEVICE                              │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                 │
-│  EXTENSION (Chrome Sandbox)                                     │
-│  ├─ User Profile Data (IndexedDB)                               │
-│  │  └─ Age, gender, interests, income, preferences              │
-│  │                                                              │
-│  ├─ API Key Storage (chrome.storage.local)                      │
-│  │  └─ Secure sandbox - never leaves device                     │
-│  │                                                              │
-│  ├─ Venice AI Utility (venice-ai.js)                            │
-│  │  ├─ analyzeAdMatch()        ← MAIN: Match users to ads       │
-│  │  ├─ sendMessage()           ← Process any message            │
-│  │  ├─ processAd()             ← Analyze ad content             │
-│  │  └─ setVeniceAPIKey()       ← Manage API key                 │
-│  │                                                              │
-│  └─ Configuration UI (settings.html)                            │
-│     └─ User-friendly API key setup                              │
-│                                                              │
-└──────────────────────── ↓ HTTPS ──────────────────────────────────┘
+
+                        YOUR DEVICE                              
+
+                                                                 
+  EXTENSION (Chrome Sandbox)                                     
+   User Profile Data (IndexedDB)                               
+     Age, gender, interests, income, preferences              
+                                                                
+   API Key Storage (chrome.storage.local)                      
+     Secure sandbox - never leaves device                     
+                                                                
+   Venice AI Utility (venice-ai.js)                            
+     analyzeAdMatch()         MAIN: Match users to ads       
+     sendMessage()            Process any message            
+     processAd()              Analyze ad content             
+     setVeniceAPIKey()        Manage API key                 
+                                                                
+   Configuration UI (settings.html)                            
+      User-friendly API key setup                              
+                                                              
+  HTTPS 
                   Direct to Venice AI API
                   (privacy-respecting)
-┌──────────────────────────────────────────────────────────────────┐
-│                    VENICE AI (OpenAI Compatible)                 │
-│  ├─ Process requests                                            │
-│  ├─ Return analysis results                                     │
-│  └─ No request logging (privacy-first)                          │
-└──────────────────────────────────────────────────────────────────┘
 
-PayAttn Servers → ❌ ZERO ACCESS TO USER DATA OR API KEYS
+                    VENICE AI (OpenAI Compatible)                 
+   Process requests                                            
+   Return analysis results                                     
+   No request logging (privacy-first)                          
+
+
+PayAttn Servers   ZERO ACCESS TO USER DATA OR API KEYS
 ```
 
 ##  Files You're Getting
@@ -52,13 +52,13 @@ PayAttn Servers → ❌ ZERO ACCESS TO USER DATA OR API KEYS
 
 ## Getting Started (5 Steps)
 
-### 1⃣ Get Venice API Key
+### 1 Get Venice API Key
 ```
 Visit: https://docs.venice.ai/overview/getting-started
-Sign up → Create API key → Copy (format: sk_...)
+Sign up  Create API key  Copy (format: sk_...)
 ```
 
-### 2⃣ Load Extension
+### 2 Load Extension
 ```
 1. Open chrome://extensions/
 2. Toggle "Developer mode" (top-right)
@@ -66,26 +66,26 @@ Sign up → Create API key → Copy (format: sk_...)
 4. Select: agent-dashboard/extension folder
 ```
 
-### 3⃣ Configure API Key
+### 3 Configure API Key
 ```
 1. Click PayAttn extension icon
-2. See popup → Click "🎯 Ad Management"
+2. See popup  Click " Ad Management"
 3. In new tab: navigate to extension/settings.html
    (URL format: chrome-extension://YOUR_EXTENSION_ID/settings.html)
 4. Paste your API key
-5. Click "💾 Save API Key"
-6. Click "🧪 Test Connection" to verify
+5. Click " Save API Key"
+6. Click " Test Connection" to verify
 ```
 
-### 4⃣ Test Basic Functionality
+### 4 Test Basic Functionality
 ```
 Navigate to extension/venice-test.html
 Try "Simple Chat" tab first with a template
 ```
 
-### 5⃣ Test Ad Matching (Your Main Feature!)
+### 5 Test Ad Matching (Your Main Feature!)
 ```
-In venetest.html → "🎯 Ad Matching" tab
+In venetest.html  " Ad Matching" tab
 Enter user profile JSON (age 46, interests, etc.)
 Enter ad data JSON (targeting age 45-50, interests, etc.)
 Click "Analyze Match"
@@ -108,7 +108,7 @@ const result = await window.VeniceAI.analyzeAdMatch(
     }
   },
   {
-    demographics: { age: 46 },  // Your user is 46 → MATCH!
+    demographics: { age: 46 },  // Your user is 46  MATCH!
     interests: ["technology", "privacy"],
     financial: { incomeRange: "$100,000 - $150,000" },
     preferences: { maxAdsPerHour: 5, painThreshold: 7 }
@@ -142,7 +142,7 @@ const result = await window.VeniceAI.analyzeAdMatch(
 
 ### Network Traffic
 ```
-Only traffic: Your Extension ←→ Venice AI API
+Only traffic: Your Extension  Venice AI API
 Nothing goes through PayAttn servers
 ```
 
@@ -194,7 +194,7 @@ All three docs are in your agent-dashboard folder:
    - Security details
    - Troubleshooting
 
-## ❓ FAQ
+##  FAQ
 
 **Q: Does PayAttn see my user profiles?**
 A: No. Profiles stay in IndexedDB on your device. PayAttn servers are never involved.
@@ -260,16 +260,16 @@ async function analyzeWithVenice(ad, userProfile) {
 4. **Transparent** - No hidden data collection or transmission
 5. **Flexible** - Use Venice for any processing, not just ads
 
-## 🎓 Next Steps
+##  Next Steps
 
-1. ✅ Get your Venice API key (https://docs.venice.ai)
-2. ✅ Load the extension in Chrome
-3. ✅ Configure API key in settings.html
-4. ✅ Test in venice-test.html
-5. ✅ Read VENICE_AI_QUICK_REFERENCE.md for function signatures
-6. ✅ Integrate analyzeAdMatch() into your ad processing logic
-7. ✅ Store results locally in IndexedDB
-8. ✅ Display match scores/reasoning in your UI
+1.  Get your Venice API key (https://docs.venice.ai)
+2.  Load the extension in Chrome
+3.  Configure API key in settings.html
+4.  Test in venice-test.html
+5.  Read VENICE_AI_QUICK_REFERENCE.md for function signatures
+6.  Integrate analyzeAdMatch() into your ad processing logic
+7.  Store results locally in IndexedDB
+8.  Display match scores/reasoning in your UI
 
 ## You're All Set!
 

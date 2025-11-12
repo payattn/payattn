@@ -239,19 +239,19 @@ async function handleFetchAndAssess() {
     statusBanner.style.background = '#dc2626';
     statusBanner.style.borderColor = '#ef4444';
     statusBanner.innerHTML = `
-      <p class="status-text">⚠️ LLM Provider Not Configured</p>
+      <p class="status-text"> LLM Provider Not Configured</p>
       <p class="status-subtext">Configure your AI provider in extension settings to use Max</p>
     `;
     
     contentDiv.innerHTML = `
       <div class="error" style="text-align: center; padding: 40px 20px;">
-        <div style="font-size: 48px; margin-bottom: 16px;">🔑</div>
+        <div style="font-size: 48px; margin-bottom: 16px;"></div>
         <div style="font-size: 18px; font-weight: 600; margin-bottom: 12px;">AI Provider Not Configured</div>
         <div style="font-size: 14px; margin-bottom: 24px;">
           Max needs an AI provider to evaluate ads. Choose Venice AI or local LM Studio.
         </div>
         <a href="settings.html" style="display: inline-block; padding: 12px 24px; background: #6366f1; color: white; text-decoration: none; border-radius: 6px; font-weight: 600; transition: all 0.2s;">
-          ⚙️ Open Settings
+           Open Settings
         </a>
         <div style="margin-top: 24px; font-size: 12px; color: #cbd5e1;">
           Venice AI: <a href="https://docs.venice.ai/overview/getting-started" target="_blank" style="color: #60a5fa; text-decoration: none;">Get free API key</a> | 
@@ -264,7 +264,7 @@ async function handleFetchAndAssess() {
   
   // Disable button
   fetchBtn.disabled = true;
-  fetchBtn.textContent = '⏳ Fetching ads...';
+  fetchBtn.textContent = ' Fetching ads...';
   
   try {
     // Create new session
@@ -277,7 +277,7 @@ async function handleFetchAndAssess() {
     
     // Update status
     statusBanner.innerHTML = `
-      <p class="status-text">📥 Fetching ad campaigns...</p>
+      <p class="status-text"> Fetching ad campaigns...</p>
       <p class="status-subtext">Loading from database</p>
     `;
     statusBanner.className = 'status-banner processing';
@@ -292,12 +292,12 @@ async function handleFetchAndAssess() {
       statusBanner.style.background = '#dc2626';
       statusBanner.style.borderColor = '#ef4444';
       statusBanner.innerHTML = `
-        <p class="status-text">❌ Failed to fetch ads</p>
+        <p class="status-text"> Failed to fetch ads</p>
         <p class="status-subtext">${fetchError.message}</p>
       `;
       contentDiv.innerHTML = `
         <div class="error" style="text-align: center; padding: 40px 20px;">
-          <div style="font-size: 48px; margin-bottom: 16px;">⚠️</div>
+          <div style="font-size: 48px; margin-bottom: 16px;"></div>
           <div style="font-size: 18px; font-weight: 600; margin-bottom: 12px;">Backend Connection Error</div>
           <div style="font-size: 14px; margin-bottom: 24px;">
             ${fetchError.message}
@@ -308,19 +308,19 @@ async function handleFetchAndAssess() {
         </div>
       `;
       fetchBtn.disabled = false;
-      fetchBtn.textContent = '🤖 Fetch & Assess New Ads';
+      fetchBtn.textContent = ' Fetch & Assess New Ads';
       return;
     }
     
     if (campaigns.length === 0) {
       contentDiv.innerHTML = '<div class="info">No new ad campaigns available at this time</div>';
       statusBanner.innerHTML = `
-        <p class="status-text">✅ All caught up!</p>
+        <p class="status-text"> All caught up!</p>
         <p class="status-subtext">No new ads to assess right now</p>
       `;
       statusBanner.className = 'status-banner success';
       fetchBtn.disabled = false;
-      fetchBtn.textContent = '🤖 Fetch & Assess New Ads';
+      fetchBtn.textContent = ' Fetch & Assess New Ads';
       return;
     }
     
@@ -340,7 +340,7 @@ async function handleFetchAndAssess() {
     
     // Update status
     statusBanner.innerHTML = `
-      <p class="status-text">🤖 Max is assessing opportunities...</p>
+      <p class="status-text"> Max is assessing opportunities...</p>
       <p class="status-subtext">Evaluating ad 1 of ${campaigns.length}</p>
     `;
     
@@ -351,7 +351,7 @@ async function handleFetchAndAssess() {
       
       // Update status
       statusBanner.innerHTML = `
-        <p class="status-text">🤖 Max is assessing opportunities...</p>
+        <p class="status-text"> Max is assessing opportunities...</p>
         <p class="status-subtext">Evaluating ad ${i + 1} of ${campaigns.length}</p>
       `;
       
@@ -388,7 +388,7 @@ async function handleFetchAndAssess() {
     // Update status - complete
     statusBanner.className = 'status-banner complete';
     statusBanner.innerHTML = `
-      <p class="status-text">✅ Assessment Complete</p>
+      <p class="status-text"> Assessment Complete</p>
       <p class="status-subtext">Evaluated ${campaigns.length} campaigns</p>
     `;
     
@@ -412,7 +412,7 @@ async function handleFetchAndAssess() {
     showError(`Failed to assess ads: ${error.message}`);
   } finally {
     fetchBtn.disabled = false;
-    fetchBtn.textContent = '🤖 Fetch & Assess New Ads';
+    fetchBtn.textContent = ' Fetch & Assess New Ads';
   }
 }
 
@@ -438,22 +438,22 @@ function createPendingAdElement(campaign, index) {
     
     <div class="ad-body">
       <div class="thinking-text" style="color: #64748b;">
-        ⏳ <strong>Max is considering the opportunity...</strong><br>
+         <strong>Max is considering the opportunity...</strong><br>
         Ad queued for assessment
       </div>
     </div>
     
     <div class="targeting-info">
       <div class="targeting-item">
-        💵 Pays: $${(advertiser.avgPaid30d || 0).toFixed(4)}
+         Pays: $${(advertiser.avgPaid30d || 0).toFixed(4)}
       </div>
       <div class="targeting-item">
-        📊 Account Age: ${advertiser.accountAge || 0}d
+         Account Age: ${advertiser.accountAge || 0}d
       </div>
     </div>
     
     <div class="decision queued">
-      ⏳ Max is looking at the ad...
+       Max is looking at the ad...
     </div>
   `;
   
@@ -551,7 +551,7 @@ async function fetchAndAssessAds(session) {
     
     // Update status
     statusBanner.innerHTML = `
-      <p class="status-text">⏳ Fetching ad opportunities...</p>
+      <p class="status-text"> Fetching ad opportunities...</p>
       <p class="status-subtext">Connecting to campaign server</p>
     `;
     
@@ -572,7 +572,7 @@ async function fetchAndAssessAds(session) {
     // Update status banner
     statusBanner.classList.add('processing');
     statusBanner.innerHTML = `
-      <p class="status-text">🤖 Max is assessing opportunities...</p>
+      <p class="status-text"> Max is assessing opportunities...</p>
       <p class="status-subtext">Found ${campaigns.length} ad opportunities</p>
     `;
     
@@ -600,8 +600,8 @@ async function fetchAndAssessAds(session) {
     const rejectedCount = assessedAds.filter(a => a.assessment.decision === 'REJECT').length;
     
     statusBanner.innerHTML = `
-      <p class="status-text">✅ Assessment complete!</p>
-      <p class="status-subtext">Evaluated ${assessedAds.length} ads • ${offeredCount} offers • ${rejectedCount} rejected</p>
+      <p class="status-text"> Assessment complete!</p>
+      <p class="status-subtext">Evaluated ${assessedAds.length} ads  ${offeredCount} offers  ${rejectedCount} rejected</p>
     `;
     
     // Render the ads
@@ -742,14 +742,14 @@ async function submitOfferToBackend(campaign, price, zkProofs) {
     
     const data = await response.json();
     
-    console.log(`✅ [Offer Submission] Success! Offer ID: ${data.offer_id}`);
+    console.log(`[OK][OK][OK] [Offer Submission] Success! Offer ID: ${data.offer_id}`);
     console.log(`[Offer Submission] Status: ${data.status}`);
     console.log(`[Offer Submission] Next: Peggy will evaluate and potentially fund escrow`);
     
     return data;
     
   } catch (error) {
-    console.error('❌ [Offer Submission] Failed:', error.message);
+    console.error('[OK][OK][OK] [Offer Submission] Failed:', error.message);
     throw error;
   }
 }
@@ -969,7 +969,7 @@ async function generateProofsForOffer(offer, campaign) {
   
   // Output generated proofs if any
   if (Object.keys(proofsObject).length > 0) {
-    console.log(`\n🔐 [ZK-SNARK] Campaign: ${campaign.campaign?.id || campaign.campaign_id} - Generated ${Object.keys(proofsObject).length} proof(s):`);
+    console.log(`\n[OK][OK] [ZK-SNARK] Campaign: ${campaign.campaign?.id || campaign.campaign_id} - Generated ${Object.keys(proofsObject).length} proof(s):`);
     Object.entries(proofsObject).forEach(([type, proofPackage]) => {
       console.log(`   - ${type}: ${proofPackage.circuitName} (${proofPackage.publicSignals.length} public signals)`);
     });
@@ -1083,11 +1083,11 @@ function createAdElement(campaign, assessment) {
     const summaryIndex = lines.findIndex(l => l.trim() === 'SUMMARY:');
     const decisionIndex = lines.findIndex(l => l.includes('DECISION:'));
     
-    // Main assessment is everything before SUMMARY (new order: narrative → SUMMARY → DECISION)
+    // Main assessment is everything before SUMMARY (new order: narrative  SUMMARY  DECISION)
     if (summaryIndex > 0) {
       mainAssessment = lines.slice(0, summaryIndex).join(' ').trim();
     } else if (decisionIndex > 0) {
-      // Fallback for old format (narrative → DECISION → SUMMARY)
+      // Fallback for old format (narrative  DECISION  SUMMARY)
       mainAssessment = lines.slice(0, decisionIndex).join(' ').trim();
     } else {
       mainAssessment = lines[0] || '';
@@ -1100,7 +1100,7 @@ function createAdElement(campaign, assessment) {
         : lines.slice(summaryIndex + 1);
       
       summaryBullets = bulletLines
-        .filter(l => l.trim().startsWith('•'))
+        .filter(l => l.trim().startsWith(''))
         .map(l => l.trim().substring(1).trim());
     }
   }
@@ -1130,7 +1130,7 @@ function createAdElement(campaign, assessment) {
   if (isAccepted && summaryBullets.length > 0) {
     summaryHTML = `
       <div style="margin-top: 8px; font-size: 12px; color: #cbd5e1;">
-        ${summaryBullets.map(bullet => `<div style="margin: 4px 0;">• ${bullet}</div>`).join('')}
+        ${summaryBullets.map(bullet => `<div style="margin: 4px 0;"> ${bullet}</div>`).join('')}
       </div>
     `;
   }
@@ -1164,7 +1164,7 @@ function createAdElement(campaign, assessment) {
     
     <div class="decision ${statusClass}" style="margin-top: 12px;">
       <div style="font-weight: 700; font-size: 14px;">
-        ${isRejected ? '❌ REJECTED' : isAccepted ? '✅ MAKING OFFER' : '🤔 Max is thinking about this one...'}
+        ${isRejected ? ' REJECTED' : isAccepted ? ' MAKING OFFER' : ' Max is thinking about this one...'}
       </div>
       ${isAccepted ? summaryHTML : ''}
       ${offerDetailsHTML}
@@ -1175,7 +1175,7 @@ function createAdElement(campaign, assessment) {
       <div class="zk-proof">
         <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
           <div style="flex: 1;">
-            🔐 <strong>ZK-Proofs being sent:</strong> 
+             <strong>ZK-Proofs being sent:</strong> 
             ${assessment.toolCallResults && assessment.toolCallResults[0]?.matchedRequirements 
               ? assessment.toolCallResults[0].matchedRequirements.map(req => {
                   // Extract requirement type from string or object
@@ -1287,11 +1287,11 @@ function showError(message) {
   const statusBanner = document.getElementById('statusBanner');
   
   statusBanner.innerHTML = `
-    <p class="status-text">⚠️ Error</p>
+    <p class="status-text"> Error</p>
     <p class="status-subtext">${message}</p>
   `;
   
-  contentDiv.innerHTML = `<div class="error">❌ ${message}</div>`;
+  contentDiv.innerHTML = `<div class="error"> ${message}</div>`;
 }
 
 function generateSessionId() {

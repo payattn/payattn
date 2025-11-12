@@ -7,10 +7,10 @@
 https://docs.venice.ai/overview/getting-started
 
 # 2. Load extension
-chrome://extensions → Load unpacked → select extension/ folder
+chrome://extensions  Load unpacked  select extension/ folder
 
 # 3. Configure API key
-Click extension → Ad Management → settings.html → Save key
+Click extension  Ad Management  settings.html  Save key
 
 # 4. Test it
 Navigate to venice-test.html in the extension
@@ -141,12 +141,12 @@ console.log(result);
 ```
 API Key:        chrome.storage.local (never leaves device)
 User Profile:   IndexedDB (never leaves device)
-Ad Data:        → Venice AI (only when you call analyzeAdMatch)
+Ad Data:         Venice AI (only when you call analyzeAdMatch)
 Results:        IndexedDB (stored locally)
-PayAttn:        ← Never sees any of this data
+PayAttn:         Never sees any of this data
 ```
 
-## 🚨 Common Issues
+##  Common Issues
 
 | Issue | Solution |
 |-------|----------|
@@ -195,7 +195,7 @@ if (result?.success && result?.matches) {
 }
 ```
 
-## 💭 System Prompt Ideas
+##  System Prompt Ideas
 
 ```javascript
 // Privacy expert
@@ -220,4 +220,4 @@ if (result?.success && result?.matches) {
 
 ---
 
-**Key Point:** Your API key and user data never leave your device. Only Venice AI sees the data you send for processing. PayAttn's servers have zero visibility. 🔒
+**Key Point:** Your API key and user data never leave your device. Only Venice AI sees the data you send for processing. PayAttn's servers have zero visibility. 

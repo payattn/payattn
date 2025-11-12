@@ -110,11 +110,11 @@ export default function StorageTestPage() {
           setMaxAdsPerHour(profile.preferences.maxAdsPerHour.toString());
           setPainThreshold(profile.preferences.painThreshold.toString());
         }
-        setStatus('✅ Profile loaded');
+        setStatus(' Profile loaded');
       }
     } catch (error) {
       console.error('Failed to load profile:', error);
-      setStatus('❌ Failed to load profile');
+      setStatus(' Failed to load profile');
     }
   };
   
@@ -127,7 +127,7 @@ export default function StorageTestPage() {
         setCurrentProfile(null);
         clearFormFields();
         setLastWallet(pubKeyStr);
-        setStatus(`✅ New wallet: ${pubKeyStr.substring(0, 8)}...`);
+        setStatus(` New wallet: ${pubKeyStr.substring(0, 8)}...`);
         return;
       }
       
@@ -135,12 +135,12 @@ export default function StorageTestPage() {
       
       if (isAuthenticated) {
         loadUserProfile();
-        setStatus(`✅ Session active`);
+        setStatus(` Session active`);
       } else {
-        setStatus(`✅ Wallet connected`);
+        setStatus(` Wallet connected`);
       }
     } else {
-      setStatus(lastWallet ? '⚠️ Disconnected' : 'Connect wallet');
+      setStatus(lastWallet ? ' Disconnected' : 'Connect wallet');
       setLastWallet(null);
     }
   }, [connected, publicKey, isAuthenticated, lastWallet]);
@@ -183,19 +183,19 @@ export default function StorageTestPage() {
       setStatus('Requesting signature...');
       const success = await authenticate();
       if (success) {
-        setStatus('✅ Authenticated (24h)');
+        setStatus(' Authenticated (24h)');
         await loadUserProfile();
       } else {
-        setStatus('❌ Failed');
+        setStatus(' Failed');
       }
     } catch (error) {
-      setStatus('❌ Cancelled');
+      setStatus(' Cancelled');
     }
   };
   
   const handleSaveProfile = async () => {
     if (!publicKey || !isAuthenticated) {
-      setStatus('❌ Authenticate first');
+      setStatus(' Authenticate first');
       return;
     }
     
@@ -215,23 +215,23 @@ export default function StorageTestPage() {
       await saveProfile(profile, publicKey.toBase58());
       setCurrentProfile(profile);
       refreshWalletList();
-      setStatus('✅ Saved');
+      setStatus(' Saved');
       
       if (!swStatus?.registered) {
-        setStatus('✅ Saved - Registering SW...');
+        setStatus(' Saved - Registering SW...');
         const status = await registerServiceWorker();
         setSwStatus(status);
-        setStatus(status.registered ? '✅ Saved & SW registered!' : '✅ Saved');
+        setStatus(status.registered ? ' Saved & SW registered!' : ' Saved');
       }
     } catch (error) {
-      setStatus('❌ Save failed');
+      setStatus(' Save failed');
     }
   };
   
   const handleManualSync = async () => {
     setIsSyncing(true);
     try {
-      setStatus('🔄 Running service worker...');
+      setStatus(' Running service worker...');
       
       // Load all profiles to send to SW (SW can't access localStorage)
       const wallets = await getAllStoredWallets();
@@ -271,14 +271,14 @@ export default function StorageTestPage() {
       const lastLog = logs[logs.length - 1];
       
       if (lastLog && lastLog.success) {
-        setStatus(`✅ Sync completed! ${lastLog.error || ''}`);
+        setStatus(` Sync completed! ${lastLog.error || ''}`);
       } else if (lastLog && !lastLog.success) {
-        setStatus(`⚠️ Sync completed with error: ${lastLog.error}`);
+        setStatus(` Sync completed with error: ${lastLog.error}`);
       } else {
-        setStatus('✅ Sync triggered - check execution log');
+        setStatus(' Sync triggered - check execution log');
       }
     } catch (error) {
-      setStatus('❌ Sync failed');
+      setStatus(' Sync failed');
       console.error('Manual sync error:', error);
     } finally {
       setIsSyncing(false);
@@ -294,7 +294,7 @@ export default function StorageTestPage() {
       }
       setAutoRunEnabled(false);
       localStorage.setItem('payattn_autorun_enabled', 'false');
-      setStatus('⏸️ Auto-run disabled');
+      setStatus(' Auto-run disabled');
     } else {
       // Start auto-run (every 30 minutes)
       const interval = setInterval(() => {
@@ -305,7 +305,7 @@ export default function StorageTestPage() {
       setAutoRunInterval(interval);
       setAutoRunEnabled(true);
       localStorage.setItem('payattn_autorun_enabled', 'true');
-      setStatus('▶️ Auto-run enabled (every 30 mins)');
+      setStatus(' Auto-run enabled (every 30 mins)');
     }
   };
   
@@ -341,7 +341,7 @@ export default function StorageTestPage() {
       {currentProfile && (
         <Card className="mb-6 border-green-500">
           <CardHeader>
-            <CardTitle className="text-green-700">✅ Active Profile</CardTitle>
+            <CardTitle className="text-green-700"> Active Profile</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 gap-4 text-sm">
@@ -366,16 +366,16 @@ export default function StorageTestPage() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label>Wallet</Label>
-                <p className="text-sm">{connected ? `✅ ${publicKey?.toBase58().substring(0, 8)}...` : '❌ Not connected'}</p>
+                <p className="text-sm">{connected ? ` ${publicKey?.toBase58().substring(0, 8)}...` : ' Not connected'}</p>
               </div>
               <div>
                 <Label>Session</Label>
-                <p className="text-sm">{isAuthenticated ? '✅ Active (24h)' : '❌ Not authenticated'}</p>
+                <p className="text-sm">{isAuthenticated ? ' Active (24h)' : ' Not authenticated'}</p>
               </div>
             </div>
             <div className="flex gap-2">
               <Button onClick={handleAuthenticate} disabled={!connected || isAuthenticated}>Verify Wallet</Button>
-              <Button onClick={() => { clearAuth(); setCurrentProfile(null); clearFormFields(); setStatus('✅ Logged out - you can now switch wallets'); }} variant="outline" disabled={!isAuthenticated}>Logout</Button>
+              <Button onClick={() => { clearAuth(); setCurrentProfile(null); clearFormFields(); setStatus(' Logged out - you can now switch wallets'); }} variant="outline" disabled={!isAuthenticated}>Logout</Button>
             </div>
           </CardContent>
         </Card>
@@ -397,9 +397,9 @@ export default function StorageTestPage() {
             <div><Label>Pain (1-10)</Label><Input type="number" min="1" max="10" value={painThreshold} onChange={(e) => setPainThreshold(e.target.value)} disabled={!isAuthenticated} /></div>
           </div>
           <div className="flex gap-2">
-            <Button onClick={handleSaveProfile} disabled={!isAuthenticated}>💾 Save</Button>
-            <Button onClick={loadUserProfile} variant="outline" disabled={!isAuthenticated}>🔄 Reload</Button>
-            <Button onClick={() => { deleteProfile(publicKey!.toBase58()); setCurrentProfile(null); clearFormFields(); refreshWalletList(); setStatus('✅ Deleted'); }} variant="destructive" disabled={!isAuthenticated}>🗑️ Delete</Button>
+            <Button onClick={handleSaveProfile} disabled={!isAuthenticated}> Save</Button>
+            <Button onClick={loadUserProfile} variant="outline" disabled={!isAuthenticated}> Reload</Button>
+            <Button onClick={() => { deleteProfile(publicKey!.toBase58()); setCurrentProfile(null); clearFormFields(); refreshWalletList(); setStatus(' Deleted'); }} variant="destructive" disabled={!isAuthenticated}> Delete</Button>
           </div>
         </CardContent>
       </Card>
@@ -414,13 +414,13 @@ export default function StorageTestPage() {
             <div>
               <Label>Process Status</Label>
               <p className="text-sm font-semibold">
-                {swStatus?.registered ? '🟢 Active' : '🔴 Inactive'}
+                {swStatus?.registered ? ' Active' : ' Inactive'}
               </p>
             </div>
             <div>
               <Label>Auto-Run (30 min interval)</Label>
               <p className="text-sm font-semibold">
-                {autoRunEnabled ? '✅ Enabled' : '⏸️ Disabled'}
+                {autoRunEnabled ? ' Enabled' : ' Disabled'}
               </p>
             </div>
           </div>
@@ -470,14 +470,14 @@ export default function StorageTestPage() {
               disabled={!swStatus?.registered}
               variant={autoRunEnabled ? "destructive" : "secondary"}
             >
-              {autoRunEnabled ? '⏸️ Disable Auto-Run' : '▶️ Enable Auto-Run'}
+              {autoRunEnabled ? ' Disable Auto-Run' : ' Enable Auto-Run'}
             </Button>
             <Button 
               onClick={handleManualSync}
               disabled={!swStatus?.registered || isSyncing}
               variant="secondary"
             >
-              {isSyncing ? '⏳ Running...' : '🔄 Run Now'}
+              {isSyncing ? ' Running...' : ' Run Now'}
             </Button>
           </div>
         </CardContent>
@@ -492,7 +492,7 @@ export default function StorageTestPage() {
           <div className="flex justify-between">
             <p className="text-sm">{swLogs.length} execution(s) logged</p>
             <div className="flex gap-2">
-              <Button onClick={async () => { await loadSwLogs(); await loadSwRuntimeStatus(); }} variant="outline" size="sm">🔄 Refresh</Button>
+              <Button onClick={async () => { await loadSwLogs(); await loadSwRuntimeStatus(); }} variant="outline" size="sm"> Refresh</Button>
               <Button onClick={async () => { await clearLogsIDB(); setSwLogs([]); }} variant="ghost" size="sm">Clear</Button>
             </div>
           </div>
@@ -501,7 +501,7 @@ export default function StorageTestPage() {
               <div key={idx} className={`p-3 rounded border text-sm ${log.success ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
                 <div className="flex justify-between items-start">
                   <span className="text-xs text-gray-600">{new Date(log.timestamp).toLocaleString()}</span>
-                  <span className="font-medium">{log.success ? '✅' : '❌'} {log.profilesProcessed} profile(s)</span>
+                  <span className="font-medium">{log.success ? '' : ''} {log.profilesProcessed} profile(s)</span>
                 </div>
                 {log.error && <p className={`text-xs mt-1 ${log.success ? 'text-gray-700' : 'text-red-600'}`}>{log.error}</p>}
               </div>
@@ -520,7 +520,7 @@ export default function StorageTestPage() {
               {storedWallets.map((w, i) => (
                 <div key={i} className="text-sm font-mono bg-gray-100 p-2 rounded flex justify-between">
                   <span>{w.substring(0, 20)}...{w.slice(-8)}</span>
-                  {publicKey?.toBase58() === w && <span className="text-green-600">← Current</span>}
+                  {publicKey?.toBase58() === w && <span className="text-green-600"> Current</span>}
                 </div>
               ))}
             </div>

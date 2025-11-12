@@ -46,12 +46,12 @@ solana transfer <RECIPIENT_PUBKEY> <AMOUNT> \
 **Current Working State (Nov 8, 2025):**
 - Smart contract deployed with 3-transaction settlement
 - Backend integration complete (x402 flow + settlement service)
-- End-to-end tested: escrow creation → funding → settlement → verification
+- End-to-end tested: escrow creation  funding  settlement  verification
 - Privacy verified: random ordering, variable delays (7s, 5s observed)
 - Math verified: 70/25/5 split working correctly
-- ⏳ Extension validation (WP-SOL-03) - Escrow validator created, needs integration
-- ⏳ Demo polish (WP-SOL-05) - Ready for UI improvements
-- ⏳ Documentation (WP-SOL-06) - In progress
+-  Extension validation (WP-SOL-03) - Escrow validator created, needs integration
+-  Demo polish (WP-SOL-05) - Ready for UI improvements
+-  Documentation (WP-SOL-06) - In progress
 
 ---
 
@@ -62,15 +62,15 @@ solana transfer <RECIPIENT_PUBKEY> <AMOUNT> \
 **Solution:** Use Solana smart contracts to hold funds in escrow - nobody has to trust Payattn.
 
 **Flow:**
-1. Advertiser's agent (Peggy) accepts offer → Backend sends x402 "Payment Required" response
+1. Advertiser's agent (Peggy) accepts offer  Backend sends x402 "Payment Required" response
 2. Peggy funds escrow on Solana (funds locked in Program Derived Address)
 3. Backend verifies escrow on-chain, marks offer as "funded"
-4. User's agent (Max) fetches funded offers → queues ad locally
-5. User views ad on publisher site → Publisher SDK reports impression
+4. User's agent (Max) fetches funded offers  queues ad locally
+5. User views ad on publisher site  Publisher SDK reports impression
 6. Backend submits 3 SEPARATE transactions (privacy-preserving, unlinked):
-   - TX1: Escrow → User wallet (70%)
-   - TX2: Escrow → Publisher wallet (25%)
-   - TX3: Escrow → Platform wallet (5%)
+   - TX1: Escrow  User wallet (70%)
+   - TX2: Escrow  Publisher wallet (25%)
+   - TX3: Escrow  Platform wallet (5%)
 7. Random delays between txs prevent timing-based linking
 
 **Why this wins the hackathon:**
@@ -94,11 +94,11 @@ Create the Anchor project as a subdirectory of your main project:
 ```
 ```
 /Users/jmd/nosync/org.payattn.main/
-├── backend/              # Next.js backend (x402 facilitator)
-├── extension/            # Chrome extension (Max - user agent)
-├── solana/               # Anchor project (smart contracts)
-│   └── payattn_escrow/
-├── package.json
+ backend/              # Next.js backend (x402 facilitator)
+ extension/            # Chrome extension (Max - user agent)
+ solana/               # Anchor project (smart contracts)
+    payattn_escrow/
+ package.json
 ```
 ```
 
@@ -209,7 +209,7 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
   anchor init solana --program-name payattn_escrow
   cd solana
   ```
-  ✅ DONE: Project initialized at `/solana/payattn_escrow`
+   DONE: Project initialized at `/solana/payattn_escrow`
 
 - [x] **01.2** - Write smart contract in `programs/payattn_escrow/src/lib.rs`
   - **CRITICAL DESIGN (Nov 8):** THREE SEPARATE settlement instructions for privacy
@@ -230,13 +230,13 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
   - Rent reserve: 5000 lamports to keep account alive through all 3 settlements
   - Settlement: Backend calls 3 separate instructions with random ordering and delays (0-5s)
   - Refund: After 14 days, advertiser can reclaim funds if unsettled
-  ✅ DONE: Professional contract with privacy-preserving 3-tx design, comprehensive docs, error handling
+   DONE: Professional contract with privacy-preserving 3-tx design, detailed docs, error handling
 
 - [x] **01.3** - Build the program
   ```bash
   anchor build --verifiable  # Use Docker for version compatibility
   ```
-  ✅ DONE: Clean build, no warnings
+   DONE: Clean build, no warnings
   - **IMPORTANT:** Always use `--verifiable` flag to build in Docker container
   - Avoids Rust/Anchor version conflicts on local machine
   - Output: `target/verifiable/payattn_escrow.so` (reproducible build)
@@ -248,7 +248,7 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
   # Copy this address and update declare_id!() in lib.rs
   anchor build --verifiable  # Rebuild after updating ID
   ```
-  ✅ DONE: Program ID `6ZEekbTJZ6D6KrfSGDY2ByoWENWfe8RzhvpBS4KtPdZr`
+   DONE: Program ID `6ZEekbTJZ6D6KrfSGDY2ByoWENWfe8RzhvpBS4KtPdZr`
 
 - [x] **01.5** - Deploy to devnet
   ```bash
@@ -264,10 +264,10 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
     --max-sign-attempts 200 \
     --use-rpc
   ```
-  ✅ DONE: Deployed to devnet (Nov 8, 2025)
+   DONE: Deployed to devnet (Nov 8, 2025)
   - Program: https://explorer.solana.com/address/6ZEekbTJZ6D6KrfSGDY2ByoWENWfe8RzhvpBS4KtPdZr?cluster=devnet
   - IDL: `target/idl/payattn_escrow.json`
-  - Features: 14-day refund, overflow-safe math, comprehensive error codes, 3-tx privacy-preserving settlement
+  - Features: 14-day refund, overflow-safe math, detailed error codes, 3-tx privacy-preserving settlement
   - **LESSON LEARNED:** Devnet can be unstable - use `--max-sign-attempts 200 --use-rpc` for reliable deployments
   - **LESSON LEARNED:** Test contract logic with `node test-contract-logic.js` BEFORE deploying to save SOL
 
@@ -281,7 +281,7 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
   # Test: create_escrow, settle_user, settle_publisher, settle_platform, refund_escrow
   # Verify: 70/25/5 split, privacy (3 separate txs), refund after 14 days
   ```
-  ✅ DONE: Logic validation passing
+   DONE: Logic validation passing
   - Created `test-contract-logic.js` for quick validation without deploying
   - Validates: 5 instructions present, correct account structures, math calculations (70/25/5 split), 7 error codes
   - **NOTE:** Full Anchor tests require devnet airdrops which can be rate-limited
@@ -305,7 +305,7 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
 
   /api/advertiser/*     - Peggy (advertiser agent) endpoints  
     GET  /offers        - Get pending offers (auth in header)
-    POST /offers/:id/accept - Accept offer → returns x402
+    POST /offers/:id/accept - Accept offer  returns x402
     POST /payments/verify - Submit payment proof after funding escrow
 
   /api/publisher/*      - Publisher SDK endpoints
@@ -317,13 +317,13 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
   ```
 
 - [x] **02A.2** - Add offer status state machine to database
-  ✅ DONE: Schema applied to Supabase
+   DONE: Schema applied to Supabase
   - Tables created: offers (with status state machine), settlement_queue, publishers (with wallet_address)
   - Sample test data inserted
-  - Status flow: "offer_made" → "accepted" → "funded" → "settling" → "settled"
+  - Status flow: "offer_made"  "accepted"  "funded"  "settling"  "settled"
   ```sql
   -- Offer status flow:
-  -- "offer_made" → "accepted" → "funded" → "settling" → "settled"
+  -- "offer_made"  "accepted"  "funded"  "settling"  "settled"
   
   ALTER TABLE offers ADD COLUMN status VARCHAR(20) DEFAULT 'offer_made';
   ALTER TABLE offers ADD COLUMN escrow_pda VARCHAR(64);
@@ -352,10 +352,10 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
   cd /path/to/backend
   npm install @coral-xyz/anchor @solana/web3.js
   ```
-  ✅ DONE: Dependencies installed in backend
+   DONE: Dependencies installed in backend
 
 - [x] **02B.2** - Create `lib/solana-escrow.ts`
-  ✅ DONE: Created with functions:
+   DONE: Created with functions:
   - `derivePDA(offerId)` - Derive escrow PDA from offer_id
   - `verifyEscrow(offerId, amount, userPubkey, advertiserPubkey)` - Verify on-chain escrow
   - **NEW:** `settleUser(offerId, userPubkey)` - Submit user settlement tx (70%)
@@ -368,7 +368,7 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
   - **CRITICAL:** Updated for 3 separate settlement instructions (not single atomic tx)
 
 - [x] **02B.3** - Add environment variables
-  ✅ DONE: Added to `.env.local`:
+   DONE: Added to `.env.local`:
   - SOLANA_RPC_URL=https://api.devnet.solana.com
   - SOLANA_PROGRAM_ID=6ZEekbTJZ6D6KrfSGDY2ByoWENWfe8RzhvpBS4KtPdZr
   - SOLANA_PLATFORM_KEYPAIR_PATH=/Users/jmd/.config/solana/payattn-backend.json
@@ -378,8 +378,8 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
 #### 2C: x402 Payment Required Flow (2 hours)
 
 - [x] **02C.1** - Implement `POST /api/advertiser/offers/:id/accept`
-  ✅ DONE: Created `/app/api/advertiser/offers/[id]/accept/route.ts`
-  - Updates offer status from "offer_made" → "accepted"
+   DONE: Created `/app/api/advertiser/offers/[id]/accept/route.ts`
+  - Updates offer status from "offer_made"  "accepted"
   - Derives escrow PDA for the offer
   - Responds with HTTP 402 "Payment Required"
   - Includes x402 headers:
@@ -389,7 +389,7 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
     - X-Verification-Endpoint
 
 - [x] **02C.2** - Implement `POST /api/advertiser/payments/verify`
-  ✅ DONE: Created `/app/api/advertiser/payments/verify/route.ts`
+   DONE: Created `/app/api/advertiser/payments/verify/route.ts`
   - Verifies transaction exists on-chain (getTransaction)
   - Derives PDA and fetches escrow account
   - Validates: amount, user_pubkey, advertiser_pubkey match
@@ -397,18 +397,18 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
   - Returns success with escrowPda and resource URL
 
 - [x] **02C.3** - Test x402 flow
-  ✅ DONE: End-to-end test successful
+   DONE: End-to-end test successful
   - HTTP 402 response with all x402 headers verified
   - Escrow PDA derivation working: B6a1aL5g4oP9iAqCU1egBszdB1CBcYBmEBaUBeVQoeKo
-  - Status transitions working: offer_made → accepted
+  - Status transitions working: offer_made  accepted
   - Next.js 16 async params pattern implemented (await context.params)
   - Test script created: `/solana/payattn_escrow/test-x402-complete.sh`
 
-**Success criteria:** ✅ **COMPLETE** - x402 flow tested end-to-end successfully!
+**Success criteria:**  **COMPLETE** - x402 flow tested end-to-end successfully!
 - HTTP 402 response working with all required headers
 - Escrow funded on-chain WITHOUT publisher (correct x402 flow): [Transaction](https://explorer.solana.com/tx/5tx1mGUjD5hgqaLkunuGUq4fK6KhDTcZVFMCYr2c2WnTdvsAnpCS1EYAZbhgfpXTz7dczuYmHwYCT4DAoqffH7CG?cluster=devnet)
 - Escrow PDA: `EqCj1kyPwB8pCXUAiLoubFFMBdCTc7XYuEBb3MRpcys3`
-- Publisher will be specified at settlement time (when user views ad) ✓
+- Publisher will be specified at settlement time (when user views ad) 
 - Payment verification working, offer status updated to "funded"
 - Ready for settlement implementation with publisher parameter
 
@@ -419,7 +419,7 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
 **Goal:** Max (user agent) validates escrow before queueing ad
 
 - [x] **03.1** - Install Solana dependencies in extension
-  ✅ DONE: Installed @solana/web3.js and @coral-xyz/anchor
+   DONE: Installed @solana/web3.js and @coral-xyz/anchor
   ```bash
   cd extension
   npm install @solana/web3.js @coral-xyz/anchor
@@ -428,7 +428,7 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
   - Created package.json for extension dependency management
 
 - [x] **03.2** - Create escrow validator module
-  ✅ DONE: Created `/extension/lib/escrow-validator.js`
+   DONE: Created `/extension/lib/escrow-validator.js`
   - Imports IDL from symlinked `solana-idl/payattn_escrow.json`
   - Derives PDA using same seeds as contract: `["escrow", offer_id]`
   - Fetches escrow account on-chain via Solana RPC
@@ -494,9 +494,9 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
       if (valid) {
         // Queue ad locally in extension
         await queueAd(offer);
-        console.log(`✅ Escrow verified: ${offer.offer_id}`);
+        console.log(` Escrow verified: ${offer.offer_id}`);
       } else {
-        console.error(`❌ Escrow invalid: ${offer.offer_id} - ${error}`);
+        console.error(` Escrow invalid: ${offer.offer_id} - ${error}`);
       }
     }
   }
@@ -507,15 +507,15 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
 
 - [ ] **03.5** - Add user feedback in extension popup
   - Show "Validating escrow..." spinner during check
-  - Show "✅ Escrow verified on Solana" on success
+  - Show " Escrow verified on Solana" on success
   - Show error message with retry button if validation fails
   - Link to Solana Explorer for transparency
 
 - [ ] **03.6** - Test validation flow
-  - Create valid escrow → Verify ad queues successfully
-  - Try queuing ad without escrow → Verify rejection
-  - Try queuing ad with settled escrow → Verify rejection
-  - Try queuing ad with wrong amount → Verify rejection
+  - Create valid escrow  Verify ad queues successfully
+  - Try queuing ad without escrow  Verify rejection
+  - Try queuing ad with settled escrow  Verify rejection
+  - Try queuing ad with wrong amount  Verify rejection
 
 **Success criteria:** Extension only queues ads with valid on-chain escrows
 
@@ -528,7 +528,7 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
 #### 4A: Publisher Registration (1 hour)
 
 - [x] **04A.1** - Add publisher wallet field to dashboard
-  ✅ DONE: Created `/app/publishers/settings/page.tsx`
+   DONE: Created `/app/publishers/settings/page.tsx`
   - Clean UI with wallet address input field
   - Real-time Solana address validation using @solana/web3.js
   - Quick-fill buttons for test wallets (publisher, user, advertiser)
@@ -536,14 +536,14 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
   - Solana Explorer link for transparency
 
 - [x] **04A.2** - Add validation
-  ✅ DONE: Validation implemented in page component
+   DONE: Validation implemented in page component
   - Uses `PublicKey` class from @solana/web3.js to validate
   - Real-time validation on input change
   - Clear error messages for invalid addresses
   - Prevents saving invalid addresses
 
 - [x] **04A.3** - Update database schema
-  ✅ DONE: Schema already exists + API endpoints created
+   DONE: Schema already exists + API endpoints created
   - publishers table has `wallet_address` column
   - publishers table has `wallet_verified` column  
   - Index on wallet_address for fast lookup
@@ -555,7 +555,7 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
 #### 4B: Backend Settlement Service (3 hours)
 
 - [x] **04B.1** - Create settlement service (`lib/settlement-service.ts`)
-  ✅ DONE: Created with full implementation
+   DONE: Created with full implementation
   - `settleWithPrivacy()` - Main function with 3 unlinked transactions
   - Random ordering + delays (0-5s) for privacy
   - 70% user / 25% publisher / 5% platform split
@@ -615,10 +615,10 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
         );
         
         results.push({ type, success: true, txSignature });
-        console.log(`✅ Settled ${type}: ${txSignature}`);
+        console.log(` Settled ${type}: ${txSignature}`);
         
       } catch (err) {
-        console.error(`❌ Settlement failed for ${type}:`, err);
+        console.error(` Settlement failed for ${type}:`, err);
         
         // Add to failed settlement queue for retry
         await db.query(
@@ -656,7 +656,7 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
   ```
 
 - [x] **04B.2** - Implement `POST /api/publisher/impressions`
-  ✅ DONE: Created `/app/api/publisher/impressions/route.ts`
+   DONE: Created `/app/api/publisher/impressions/route.ts`
   - Validates impression duration (>= 1 second)
   - Fetches offer from database (must be status='funded')
   - Looks up publisher wallet address
@@ -714,7 +714,7 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
   ```
 
 - [x] **04B.3** - Add failed settlement tracking
-  ✅ DONE: Created `/app/api/admin/settlements/failed/route.ts`
+   DONE: Created `/app/api/admin/settlements/failed/route.ts`
   - Endpoint to view failed settlements (admin only)
   - Returns settlement_queue entries with < 10 attempts
   - Shows offer details (amount, status)
@@ -739,8 +739,8 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
   ## Gas Fee Economics
   
   **Costs per impression:**
-  - 3 separate transactions = 3 × 0.000005 SOL = 0.000015 SOL
-  - At $200/SOL: 0.000015 × 200 = $0.003 in gas fees
+  - 3 separate transactions = 3  0.000005 SOL = 0.000015 SOL
+  - At $200/SOL: 0.000015  200 = $0.003 in gas fees
   
   **Revenue:**
   - Minimum impression value: $0.01 (eCPM of $10)
@@ -748,7 +748,7 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
   - Net profit: $0.0005 - $0.003 = -$0.0025 (loss per impression)
   
   **Break-even:**
-  - Need impression value ≥ $0.06 for platform to break even
+  - Need impression value  $0.06 for platform to break even
   - At $0.10/impression: Platform nets $0.002 profit
   
   **Recommendation:**
@@ -784,22 +784,22 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
   # Check random timing between txs (0-5 seconds)
   # Verify final balances: user +70%, publisher +25%, platform +5%
   ```
-  ✅ DONE (Nov 8, 2025): All tests passing
+   DONE (Nov 8, 2025): All tests passing
   - Created escrow: `offer_test_v3_1762636084025`
   - PDA: `6kqNeiPo3GNvSNvX8f3BJ6nXFsuKSS8YNhbapEhvqpTh`
-  - Verified 3 separate transactions with random ordering (User→Platform→Publisher)
+  - Verified 3 separate transactions with random ordering (UserPlatformPublisher)
   - Verified delays: 7s and 5s between transactions
   - Math confirmed: 7M + 500K + 2.5M = 10M lamports (0.01 SOL)
 
 - [x] **04D.2** - Test failed settlement recovery
-  ✅ DONE: Settlement queue implemented
+   DONE: Settlement queue implemented
   - Failed transactions added to `settlement_queue` table
   - `retryFailedSettlements()` function ready for cron job
   - Admin endpoint: GET /api/admin/settlements/failed
 
 - [x] **04D.3** - Test privacy (unlinkability)
-  ✅ DONE: Privacy features verified
-  - Transaction ordering randomized (not sequential User→Publisher→Platform)
+   DONE: Privacy features verified
+  - Transaction ordering randomized (not sequential UserPublisherPlatform)
   - Variable delays between transactions (7s, 5s observed)
   - No shared signers except escrow PDA (funding source)
   - Transactions appear unlinked on Solana Explorer
@@ -807,7 +807,7 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
 
 **Success criteria:** 3 unlinked transactions submitted with random delays, failed txs queued for retry, gas fees documented
 
-**✅ WP-SOL-04 COMPLETE (Nov 8, 2025):**
+** WP-SOL-04 COMPLETE (Nov 8, 2025):**
 - **Task 4A:** Publisher Registration - COMPLETE
   - Publisher settings UI created with wallet validation (`/app/publishers/settings/page.tsx`)
   - API endpoints for saving/fetching wallet addresses
@@ -825,7 +825,7 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
     - User (70%): [361WvESb...](https://explorer.solana.com/tx/361WvESb1r91rUQ7kLYmrXhv4MwLLnTNRvn9W3FCX6f1drZGrrd4FsuTVAtVsxZqPj2f3KCRHgMUxpotrDmQTdiq?cluster=devnet) - 7,000,000 lamports
     - Platform (5%): [42386jno...](https://explorer.solana.com/tx/42386jnoB5tsTyzdtvzAJqL6XfcX8PrCmWkEbQNPxYS5Lg72iDpNBpovmoW9WQLJY4cqdztrXK1FUbodtaooYwn2?cluster=devnet) - 500,000 lamports
     - Publisher (25%): [rPnbXzAQ...](https://explorer.solana.com/tx/rPnbXzAQLEB6m2PHtrZp1Ty3DiEHxottfi289xAEBz2yLgWSPXa9QxDkDcn4LDTdKMLwqLaR62KRDbRC69R36DF?cluster=devnet) - 2,500,000 lamports
-  - **Privacy verified:** Random ordering (User→Platform→Publisher), variable delays (7s, 5s)
+  - **Privacy verified:** Random ordering (UserPlatformPublisher), variable delays (7s, 5s)
   - **Math verified:** 70% + 25% + 5% = 100% distribution confirmed
 
 **Next:** WP-SOL-05 (Demo polish) and WP-SOL-06 (Documentation)
@@ -922,10 +922,10 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
   - Payment verification endpoint tested successfully
   - Fixed Next.js 16 async params issue
   - **END-TO-END TEST PASSED:** Complete flow working
-    - Accept offer → HTTP 402 response ✅
-    - Fund escrow → On-chain escrow created ✅
-    - Verify payment → Backend verified on-chain ✅
-    - Offer status: `offer_made` → `accepted` → `funded` ✅
+    - Accept offer  HTTP 402 response 
+    - Fund escrow  On-chain escrow created 
+    - Verify payment  Backend verified on-chain 
+    - Offer status: `offer_made`  `accepted`  `funded` 
 - **COMPLETE:** WP-SOL-04 (Privacy-preserving settlement)
   - Smart contract rewritten with 3 separate settlement instructions
   - Fixed "Transfer: `from` must not carry data" error with manual lamports manipulation
@@ -969,13 +969,13 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
 - **Random Order**: Submitted in shuffled sequence to prevent pattern analysis
 - **Random Delays**: 0-5 seconds between txs to prevent timing correlation
 - **Unlinkability**: No shared signers/recipients means blockchain analysis can't definitively link them
-- **Tradeoff**: Higher gas costs (3× single atomic tx) but preserves user privacy
+- **Tradeoff**: Higher gas costs (3 single atomic tx) but preserves user privacy
 
 ### Why Solana (Not Any Chain)
 - **Speed**: 400ms settlement (Ethereum = 15 minutes)
 - **Cost**: $0.0001/tx (Ethereum = $5-50/tx)
 - **UX**: Users negotiate 15 ads/hour = 15 escrows/hour
-- **PDAs**: Elegant escrow pattern without deploy-per-escrow overhead
+- **PDAs**: Efficient escrow pattern without deploy-per-escrow overhead
 - **Economics**: Even with 3 separate txs, gas = $0.003 (acceptable for $0.01+ impressions)
 
 ### Trust Model
@@ -987,7 +987,7 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
 ### Gas Fee Economics
 - **Single atomic tx**: 0.000005 SOL = $0.001 (simple, cheap, but linkable)
 - **3 separate txs**: 0.000015 SOL = $0.003 (privacy-preserving, higher cost)
-- **Break-even**: Need ≥$0.06 impressions for platform to profit with 3-tx model
+- **Break-even**: Need $0.06 impressions for platform to profit with 3-tx model
 - **Strategy**: Platform absorbs gas costs for demo, batching for production
 
 ---
@@ -1004,7 +1004,7 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
 **Final Design (Implemented):**
 - THREE separate instructions: `settle_user()`, `settle_publisher()`, `settle_platform()`
 - Backend calls them independently with random delays (0-5s) and random ordering
-- Privacy-preserving: blockchain analysis can't definitively link user ↔ publisher
+- Privacy-preserving: blockchain analysis can't definitively link user  publisher
 - Documented in original plan at commit `23679f0`
 
 ### Critical Bug Fixes
@@ -1074,7 +1074,7 @@ node test-contract-logic.js  # Validates IDL structure, math, errors
 **Verification Checklist:**
 - All 3 transactions successful (user, publisher, platform)
 - Correct amounts: 70%, 25%, 5% split
-- Random ordering (not always user→publisher→platform)
+- Random ordering (not always userpublisherplatform)
 - Variable delays between transactions (0-5s + network time)
 - No shared signers except escrow PDA
 
@@ -1176,7 +1176,7 @@ solana airdrop 2 <pubkey>
 
 - `test-contract-logic.js` - Validates IDL structure, math, error codes (NO deployment needed)
 - `fund-escrow-new.js` - Creates funded escrow on-chain for testing
-- `test-x402-complete.sh` - Tests complete x402 flow (accept → fund → verify)
+- `test-x402-complete.sh` - Tests complete x402 flow (accept  fund  verify)
 - `test-impression-settlement.sh` - Tests settlement API endpoint
 - `tests/payattn_escrow.ts` - Full Anchor integration tests (requires devnet airdrops)
 
@@ -1199,30 +1199,30 @@ solana airdrop 2 <pubkey>
 
 ### Offer Lifecycle
 ```
-1. Max makes offer → status: "offer_made"
-2. Peggy accepts → status: "accepted" → backend sends x402
-3. Peggy funds escrow → status: "funded" (verified on-chain)
-4. Max validates & queues ad → status: "queued" (local only)
-5. User views ad → SDK reports → status: "settling"
-6. Backend submits 3 txs → status: "settled" (or queued if failed)
+1. Max makes offer  status: "offer_made"
+2. Peggy accepts  status: "accepted"  backend sends x402
+3. Peggy funds escrow  status: "funded" (verified on-chain)
+4. Max validates & queues ad  status: "queued" (local only)
+5. User views ad  SDK reports  status: "settling"
+6. Backend submits 3 txs  status: "settled" (or queued if failed)
 ```
 
 ### x402 Flow
 ```
 POST /api/advertiser/offers/:id/accept
-↓
+
 HTTP 402 Payment Required
 X-Offer-Id: abc123
 X-Payment-Amount: 10000000
 X-Escrow-PDA: 8hN...
-↓
+
 Peggy funds escrow (createEscrow instruction)
-↓
+
 POST /api/advertiser/payments/verify
 { offerId, txSignature }
-↓
+
 Backend verifies on-chain
-↓
+
 HTTP 200 OK
 { verified: true, offerStatus: "funded" }
 ```
@@ -1230,24 +1230,24 @@ HTTP 200 OK
 ### Settlement Flow
 ```
 User views ad 1+ seconds
-↓
+
 SDK: POST /api/publisher/impressions
 { offerId, publisherId, duration }
-↓
+
 Backend looks up publisher wallet
-↓
+
 Backend calls settleWithPrivacy():
   1. Shuffle order of [user, publisher, platform]
   2. For each recipient:
      - Random delay 0-5 seconds
      - Call settle instruction (settleUser/settlePublisher/settlePlatform)
      - Track success/failure
-  3. Example order: User → Platform → Publisher (randomized)
+  3. Example order: User  Platform  Publisher (randomized)
   4. Observed delays: 7s, 5s between transactions
-↓
-All succeed → status: "settled", settled_at = NOW()
-Any fail → add to settlement_queue for retry, settling = false
-↓
+
+All succeed  status: "settled", settled_at = NOW()
+Any fail  add to settlement_queue for retry, settling = false
+
 Return results with Explorer links for all 3 transactions
 ```
 
@@ -1256,23 +1256,23 @@ Return results with Explorer links for all 3 transactions
 - Backend orchestrates timing/ordering for privacy
 - Failed transactions queued for retry (settlement_queue table)
 - `settling` flag prevents refunds during multi-tx settlement process
-- Platform settlement closes escrow account (balance → 0)
+- Platform settlement closes escrow account (balance  0)
 
 ### Privacy Design
 - **Unlinkability**: Each tx has unique recipient, no shared signers
 - **Timing Obfuscation**: Random 0-5s delays between txs
 - **Order Randomization**: User/Publisher/Platform shuffled each time
-- **Result**: Blockchain analysis can't definitively link user ↔ publisher
-- **Tradeoff**: 3× gas costs but preserves user privacy
+- **Result**: Blockchain analysis can't definitively link user  publisher
+- **Tradeoff**: 3 gas costs but preserves user privacy
 
 
 ## Wallets
 
 **Current Balances (Nov 8, 2025 - After Settlement Test):**
-- Backend/Platform: ~16.89 SOL ✅ (received 10 SOL transfer from advertiser for deployments)
-- Advertiser: ~4.46 SOL ✅ (funded test escrow, sent 10 SOL to backend)
-- Test User: ~0.51 SOL ✅ (received 0.007 SOL from settlement)
-- Publisher: ~0.01 SOL ✅ (received 0.0025 SOL from settlement)
+- Backend/Platform: ~16.89 SOL  (received 10 SOL transfer from advertiser for deployments)
+- Advertiser: ~4.46 SOL  (funded test escrow, sent 10 SOL to backend)
+- Test User: ~0.51 SOL  (received 0.007 SOL from settlement)
+- Publisher: ~0.01 SOL  (received 0.0025 SOL from settlement)
 
 All wallets funded and ready for testing.
 
@@ -1292,5 +1292,5 @@ export PATH="/tmp/solana-release/bin:$PATH" && echo "=== WALLET ADDRESSES ===" &
 
 ```
 cd /Users/jmd/nosync/org.payattn.main
-node convert-keypair-to-base58.js ~/.config/solana/advertiser.json
+node tools/convert-keypair-to-base58.js ~/.config/solana/advertiser.json
 ```

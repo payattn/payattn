@@ -7,7 +7,7 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://your-projec
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'your-anon-key';
 
 if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-  console.error('❌ Error: NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY must be set');
+  console.error('[OK][OK][OK] Error: NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY must be set');
   console.error('   Load from backend/.env.local: source <(grep -v "^#" ../backend/.env.local | sed "s/^/export /")');
   process.exit(1);
 }
@@ -33,7 +33,7 @@ async function createTestOffer() {
     .select();
   
   if (error) {
-    console.error('❌ Error creating offer:', error);
+    console.error('[OK][OK][OK] Error creating offer:', error);
     process.exit(1);
   }
   

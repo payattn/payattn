@@ -173,7 +173,7 @@ export async function POST(request: NextRequest) {
       })
       .eq('id', ad_creative_id);
 
-    console.log(`✅ [Offer] Created offer ${offerId} for ${amount_lamports} lamports`);
+    console.log(`[OK][OK][OK] [Offer] Created offer ${offerId} for ${amount_lamports} lamports`);
     console.log(`[Offer] Status: offer_made, waiting for Peggy to fund escrow`);
 
     return NextResponse.json({

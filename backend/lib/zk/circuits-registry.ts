@@ -98,7 +98,7 @@ export const CIRCUITS: Record<string, CircuitRegistry> = {
    * Proves: any numeric value is between min and max
    * Reusable for: age, income, score, etc.
    * 
-   * ✅ IMPLEMENTED
+   *  IMPLEMENTED
    * 
    * Example:
    *   Private: { value: 35000 }
@@ -134,13 +134,13 @@ export const CIRCUITS: Record<string, CircuitRegistry> = {
    * Proves: a hashed value is in an allowed set
    * Reusable for: countries, interests, categories, etc.
    * 
-   * ✅ IMPLEMENTED
+   *  IMPLEMENTED
    * 
    * IMPORTANT: Uses SHA-256 hashing for string-to-field conversion
    * 
    * Example:
-   *   Private: { value: "uk" } → hashed to field element
-   *   Public: { set: ["us", "uk", "ca"] } → each hashed to field element, padded to 10
+   *   Private: { value: "uk" }  hashed to field element
+   *   Public: { set: ["us", "uk", "ca"] }  each hashed to field element, padded to 10
    *   Output: [1, hash("us"), hash("uk"), hash("ca"), 0, 0, 0, 0, 0, 0, 0]
    * 
    * Backend MUST use identical hashing:

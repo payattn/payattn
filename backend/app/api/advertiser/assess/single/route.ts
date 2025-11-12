@@ -142,10 +142,10 @@ export async function POST(request: NextRequest) {
         };
         
         if (!fundResult.success) {
-          console.error('❌ X402 Payment Failed:', fundResult.error);
+          console.error('[OK][OK][OK] X402 Payment Failed:', fundResult.error);
         }
       } catch (error) {
-        console.error('❌ X402 Payment Exception:', error);
+        console.error('[OK][OK][OK] X402 Payment Exception:', error);
         result.funded = {
           success: false,
           error: error instanceof Error ? error.message : 'Unknown error'

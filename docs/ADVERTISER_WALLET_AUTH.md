@@ -32,10 +32,10 @@ Implemented Phantom wallet authentication for the advertiser dashboard. Advertis
 **Flow:**
 ```
 1. User visits /advertisers
-2. If no wallet → Show "Connect Wallet" screen
-3. Wallet connects → Fetch profile from DB
-4. If not found → Show onboarding form
-5. User creates profile → Store in DB
+2. If no wallet  Show "Connect Wallet" screen
+3. Wallet connects  Fetch profile from DB
+4. If not found  Show onboarding form
+5. User creates profile  Store in DB
 6. Show dashboard with wallet in header
 ```
 
@@ -74,7 +74,7 @@ CREATE TABLE public.advertisers (
 ### First Time User:
 1. Visit `/advertisers`
 2. See "Connect Wallet" screen
-3. Click "Connect Wallet" → Phantom opens
+3. Click "Connect Wallet"  Phantom opens
 4. Approve connection
 5. See onboarding form: "Welcome! Create your profile"
 6. Enter advertiser name (e.g., "Acme Corp Marketing")
@@ -91,9 +91,9 @@ CREATE TABLE public.advertisers (
 ## Header Layout
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│ PayAttn Advertiser | Acme Corp Marketing    [Wallet▼]   │
-└─────────────────────────────────────────────────────────┘
+
+ PayAttn Advertiser | Acme Corp Marketing    [Wallet]   
+
 ```
 
 - Left: "PayAttn Advertiser" + advertiser name from DB

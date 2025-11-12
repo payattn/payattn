@@ -174,7 +174,7 @@ pub mod payattn_escrow {
     ///
     /// **Privacy-Preserving Design:** Final settlement transaction, called with
     /// random delay. Since all three settlements are independent transactions,
-    /// blockchain analysis cannot easily link them to the same impression.
+    /// blockchain analysis cannot link them to the same impression.
     ///
     /// **Gas Efficiency:** Single CPI transfer, minimal state update (1 bool flip)
     ///

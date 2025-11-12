@@ -19,11 +19,11 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 console.log('[Seed] Checking environment variables...');
-console.log(`  NEXT_PUBLIC_SUPABASE_URL: ${supabaseUrl ? '✓' : '✗'}`);
-console.log(`  Supabase Key: ${supabaseKey ? '✓' : '✗'}\n`);
+console.log(`  NEXT_PUBLIC_SUPABASE_URL: ${supabaseUrl ? '[OK][OK]' : '[OK][OK]'}`);
+console.log(`  Supabase Key: ${supabaseKey ? '[OK][OK]' : '[OK][OK]'}\n`);
 
 if (!supabaseUrl || !supabaseKey) {
-  console.error('❌ Missing Supabase credentials in environment variables');
+  console.error('[OK][OK][OK] Missing Supabase credentials in environment variables');
   process.exit(1);
 }
 
@@ -58,8 +58,8 @@ const TEST_ADS = [
     advertiser_id: 'test_adv_bet365',
     campaign_id: 'test_camp_football_001',
     type: 'text',
-    headline: 'Premier League Betting - Get £30 Free Bet',
-    body: 'Bet on your favorite team and get a £30 welcome bonus. Best odds guaranteed.',
+    headline: 'Premier League Betting - Get 30 Free Bet',
+    body: 'Bet on your favorite team and get a 30 welcome bonus. Best odds guaranteed.',
     cta: 'Claim Bonus',
     destination_url: 'https://test-bet365.example.com/football',
     targeting: {
@@ -252,7 +252,7 @@ const TEST_ADS = [
     advertiser_id: 'test_adv_shadycrypto',
     campaign_id: 'test_camp_lowquality_001',
     type: 'text',
-    headline: '🚀 GET RICH QUICK WITH DOGECOIN 🚀',
+    headline: ' GET RICH QUICK WITH DOGECOIN ',
     body: 'Triple your money in 24 hours GUARANTEED! Limited spots available!!!',
     cta: 'JOIN NOW',
     destination_url: 'https://test-scam.example.com/getrich',
@@ -288,7 +288,7 @@ const TEST_ADS = [
 ];
 
 async function seedTestAds() {
-  console.log('🌱 Seeding test ads into test_ad_creative table...\n');
+  console.log('[OK][OK][OK] Seeding test ads into test_ad_creative table...\n');
   
   try {
     // Check if test_ad_creative table exists
@@ -298,7 +298,7 @@ async function seedTestAds() {
       .limit(1);
     
     if (tableError && tableError.code === '42P01') {
-      console.error('❌ test_ad_creative table does not exist!');
+      console.error('[OK][OK][OK] test_ad_creative table does not exist!');
       console.error('   Run the migration first: psql < backend/db/migrations/create_test_ad_creative.sql');
       process.exit(1);
     }
@@ -327,7 +327,7 @@ async function seedTestAds() {
         .select();
       
       if (error) {
-        console.error(`❌ Failed to insert ${ad.ad_creative_id}:`, error.message);
+        console.error(`[OK][OK][OK] Failed to insert ${ad.ad_creative_id}:`, error.message);
         failCount++;
       } else {
         console.log(`[OK] Inserted ${ad.ad_creative_id} (${ad.headline})`);
@@ -335,16 +335,16 @@ async function seedTestAds() {
       }
     }
     
-    console.log(`\n✨ Seeding complete!`);
+    console.log(`\n[OK][OK] Seeding complete!`);
     console.log(`   Success: ${successCount}/${TEST_ADS.length}`);
     if (failCount > 0) {
       console.log(`   Failed: ${failCount}/${TEST_ADS.length}`);
     }
-    console.log(`\n💡 Test ads are now available in test_ad_creative table`);
+    console.log(`\n[OK][OK] Test ads are now available in test_ad_creative table`);
     console.log(`   Backend will automatically use this table if DATABASE_MODE=test is set in .env.local`);
     
   } catch (error) {
-    console.error('❌ Seeding failed:', error);
+    console.error('[OK][OK][OK] Seeding failed:', error);
     process.exit(1);
   }
 }

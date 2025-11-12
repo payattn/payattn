@@ -60,13 +60,13 @@ try {
   console.log('\n*** INSTRUCTIONS:');
   console.log('1. Copy the private key above (the long string)');
   console.log('2. Open Phantom wallet');
-  console.log('3. Click Settings → Add / Connect Wallet → Import Private Key');
+  console.log('3. Click Settings [OK] Add / Connect Wallet [OK] Import Private Key');
   console.log('4. Paste the private key');
   console.log('5. Make sure network is set to DEVNET');
   console.log('6. You should see address: AE6uwbubDn9WyXrpzvqU58jfirvqZAxWCZCfDDwW5MMb\n');
   
 } catch (error) {
-  console.error('❌ ERROR:', error.message);
+  console.error('ERROR:', error.message);
   console.log('\nUsage: node convert-keypair-to-base58.js [path-to-keypair.json]');
   console.log('Example: node convert-keypair-to-base58.js ~/.config/solana/advertiser.json');
   process.exit(1);

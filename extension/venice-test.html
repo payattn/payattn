@@ -219,17 +219,17 @@
 </head>
 <body>
   <div class="container">
-    <h1>🤖 Venice AI Test</h1>
+    <h1> Venice AI Test</h1>
     <p class="subtitle">Test the Venice AI integration directly from the extension</p>
 
     <div class="notice">
-      💡 <strong>Tip:</strong> Configure your Venice AI API key first in <a href="settings.html">Extension Settings</a>
+       <strong>Tip:</strong> Configure your Venice AI API key first in <a href="settings.html">Extension Settings</a>
     </div>
 
     <!-- Tab Buttons -->
     <div class="tab-buttons">
-      <button class="tab-btn" id="tabSimple" data-tab="simple">💬 Simple Chat</button>
-      <button class="tab-btn" id="tabMatching" data-tab="matching">🎯 Ad Matching</button>
+      <button class="tab-btn" id="tabSimple" data-tab="simple"> Simple Chat</button>
+      <button class="tab-btn" id="tabMatching" data-tab="matching"> Ad Matching</button>
     </div>    <div id="status" class="status idle">
       Ready to test
     </div>
@@ -306,7 +306,7 @@
       </div>
 
       <div class="button-group">
-        <button class="btn-primary" id="analyzeMatchBtn">🎯 Analyze Match</button>
+        <button class="btn-primary" id="analyzeMatchBtn"> Analyze Match</button>
         <button class="btn-secondary" id="clearMatchingBtn">Clear</button>
       </div>
     </div>
@@ -406,7 +406,7 @@
 
         if (response.success) {
           showResponse(response);
-          setStatus('✓ Response received successfully', 'success');
+          setStatus(' Response received successfully', 'success');
           updateDebug(`Tokens used: ${response.usage?.total_tokens || 'N/A'}`);
         } else {
           setStatus(`Error: ${response.error || 'Unknown error'}`, 'error');
@@ -448,7 +448,7 @@
         const response = await window.VeniceAI.analyzeAdMatch(adData, userProfile);
 
         if (response.success) {
-          const matchDisplay = response.matches ? '✅ MATCH' : '❌ NO MATCH';
+          const matchDisplay = response.matches ? ' MATCH' : ' NO MATCH';
           const content = `${matchDisplay} (Score: ${response.matchScore}%)
 
 Reasoning: ${response.reasoning}
@@ -457,7 +457,7 @@ Matched Criteria: ${response.matchedCriteria?.join(', ') || 'None'}
 Unmatched Criteria: ${response.unmatchedCriteria?.join(', ') || 'None'}`;
 
           showResponse({ ...response, content });
-          setStatus('✓ Analysis complete', 'success');
+          setStatus(' Analysis complete', 'success');
           updateDebug(`Match Score: ${response.matchScore}%`);
         } else {
           setStatus(`Error: ${response.error || 'Unknown error'}`, 'error');

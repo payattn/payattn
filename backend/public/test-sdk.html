@@ -124,13 +124,13 @@
 </head>
 <body>
   <div class="container">
-    <h1>🎯 PayAttn Publisher SDK Demo</h1>
+    <h1> PayAttn Publisher SDK Demo</h1>
     <p class="subtitle">
       This page demonstrates the PayAttn Publisher SDK integration.
     </p>
 
     <div class="info-box">
-      <h2>📋 What's Happening:</h2>
+      <h2> What's Happening:</h2>
       <ul>
         <li>The SDK requests an ad from your extension via postMessage</li>
         <li>Extension responds with ad creative (headline, body, CTA, destination)</li>
@@ -143,16 +143,16 @@
 
     <div class="warning-box">
       <p>
-        <strong>⚠️ Extension Required:</strong> Make sure you have the PayAttn extension installed 
+        <strong> Extension Required:</strong> Make sure you have the PayAttn extension installed 
         and updated with ad sync + content script updates. Without the extension, the SDK will show 
         a fallback message.
       </p>
     </div>
 
     <div class="section">
-      <h2>📰 Sample Content</h2>
+      <h2> Sample Content</h2>
       <p>
-        This is sample publisher content. The ad will appear below, seamlessly integrated with the page content.
+        This is sample publisher content. The ad will appear below, integrated with the page content.
         In a real scenario, the publisher would place the <code>#payattn-ad-slot</code> div wherever they want 
         ads to appear on their page.
       </p>
@@ -166,21 +166,21 @@
     <div id="payattn-ad-slot"></div>
 
     <div class="section">
-      <h2>📊 How It Works</h2>
+      <h2> How It Works</h2>
       <p>Open your browser console (F12) to see the SDK in action:</p>
       <div class="console-log">
 [PayAttn SDK] Initialized for publisher: 8k3m9x2p<br>
 [PayAttn SDK] Requesting ad...<br>
 [PayAttn SDK] Ad displayed: offer_abc123<br>
 [PayAttn SDK] Ad became visible, starting timer...<br>
-[PayAttn SDK] 🎯 Reporting impression: offer_abc123 (1234ms)<br>
-✅ [PayAttn SDK] Settlement completed!<br>
-💰 Transactions: [...3 Solana transactions...]
+[PayAttn SDK]  Reporting impression: offer_abc123 (1234ms)<br>
+ [PayAttn SDK] Settlement completed!<br>
+ Transactions: [...3 Solana transactions...]
       </div>
     </div>
 
     <div class="section">
-      <h2>🔍 Testing Steps</h2>
+      <h2> Testing Steps</h2>
       <ol style="margin-left: 20px; color: #4b5563;">
         <li style="margin-bottom: 8px;">Install/update the PayAttn extension</li>
         <li style="margin-bottom: 8px;">Make sure extension has synced ads (check background.js console)</li>
@@ -193,7 +193,7 @@
     </div>
 
     <div class="section">
-      <h2>💻 Integration Code</h2>
+      <h2> Integration Code</h2>
       <p>To add PayAttn ads to your website, just add these 2 lines:</p>
       <div class="console-log" style="color: #93c5fd; background: #1e293b;">
 &lt;script src="http://localhost:3000/publishers/v1/sdk.js" <br>
@@ -207,7 +207,7 @@
     </div>
 
     <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb; text-align: center; color: #9ca3af; font-size: 14px;">
-      PayAttn Demo • Privacy-Preserving Advertising on Solana
+      PayAttn Demo  Privacy-Preserving Advertising on Solana
     </div>
   </div>
 

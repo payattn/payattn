@@ -2,9 +2,9 @@
  * Test x402 Payment Required Flow
  * 
  * This script tests the complete x402 protocol implementation:
- * 1. Peggy accepts an offer → Backend sends 402 Payment Required
+ * 1. Peggy accepts an offer  Backend sends 402 Payment Required
  * 2. Peggy funds escrow on Solana
- * 3. Peggy submits payment proof → Backend verifies on-chain
+ * 3. Peggy submits payment proof  Backend verifies on-chain
  * 
  * Run: tsx solana/payattn_escrow/test-x402-flow.ts
  */
@@ -21,7 +21,7 @@ const advertiserKeypair = Keypair.fromSecretKey(
   Uint8Array.from(JSON.parse(fs.readFileSync(`${process.env.HOME}/.config/solana/advertiser.json`, 'utf-8')))
 );
 
-console.log('🧪 Testing x402 Payment Required Flow\n');
+console.log('[OK][OK] Testing x402 Payment Required Flow\n');
 console.log('='.repeat(60));
 console.log('Advertiser:', advertiserKeypair.publicKey.toBase58());
 console.log('='.repeat(60), '\n');
@@ -135,7 +135,7 @@ async function testX402Flow() {
     console.log('Resource URL:', verifyResult.resourceUrl);
     
   } catch (error) {
-    console.error('\n❌ Test Failed:', error);
+    console.error('\n[OK][OK][OK] Test Failed:', error);
     process.exit(1);
   }
 }

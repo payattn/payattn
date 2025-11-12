@@ -13,106 +13,106 @@ This document describes the complete flow of ZK-SNARK proofs in PayAttn, from us
 ## Flow Diagram
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                    PHASE 1: DATA ENTRY                          │
-│                   (User's Browser Only)                         │
-└─────────────────────────────────────────────────────────────────┘
-                            │
-                            ▼
+
+                    PHASE 1: DATA ENTRY                          
+                   (User's Browser Only)                         
+
+                            
+                            
                     User enters age: 35
-                            │
-                            ▼
+                            
+                            
             IndexedDB.put('userProfile', {age: 35})
-                            │
+                            
                 [Data NEVER leaves browser]
-                            │
-                            ▼
-┌─────────────────────────────────────────────────────────────────┐
-│               PHASE 2: PROOF GENERATION                         │
-│            (Extension, 1-3 seconds, all local)                  │
-└─────────────────────────────────────────────────────────────────┘
-                            │
+                            
+                            
+
+               PHASE 2: PROOF GENERATION                         
+            (Extension, 1-3 seconds, all local)                  
+
+                            
       User visits advertiser campaign
     "Show me proof: age 25-50"
-                            │
-                            ▼
+                            
+                            
         Extension detects requirement
-                            │
-                            ▼
+                            
+                            
     User clicks "Generate Proof" button
-                            │
-                            ▼
-    ┌────────────────────────────────────┐
-    │ Load Circuit Components            │
-    │ - circuit.wasm (50KB-80KB)        │
-    │ - circuit_final.zkey (2MB-5MB)    │
-    └────────────────────────────────────┘
-                            │
-                            ▼
-    ┌────────────────────────────────────┐
-    │ Prepare Circuit Inputs             │
-    │                                    │
-    │ Private inputs:                    │
-    │   value: 35                        │
-    │   min: 25                          │
-    │   max: 50                          │
-    │                                    │
-    │ Public inputs:                     │
-    │   (automatically derived)          │
-    └────────────────────────────────────┘
-                            │
-                            ▼
-    ┌────────────────────────────────────┐
-    │ Generate Witness                   │
-    │ (Evaluate circuit with inputs)     │
-    │                                    │
-    │ circuit(35, 25, 50) = {            │
-    │   isValid: 1,                      │
-    │   min: 25,                         │
-    │   max: 50                          │
-    │ }                                  │
-    └────────────────────────────────────┘
-                            │
-                            ▼
-    ┌────────────────────────────────────┐
-    │ Generate Groth16 Proof             │
-    │ (CPU-intensive, 1-3 seconds)       │
-    │                                    │
-    │ Uses:                              │
-    │ - Witness                          │
-    │ - Proving key (.zkey)              │
-    │ - BN128 curve operations           │
-    │                                    │
-    │ Output:                            │
-    │ - pi_a (2 field elements)          │
-    │ - pi_b (6 field elements)          │
-    │ - pi_c (2 field elements)          │
-    └────────────────────────────────────┘
-                            │
-                            ▼
-    ┌────────────────────────────────────┐
-    │ Proof Object Created               │
-    │ {                                  │
-    │   proof: {                         │
-    │     pi_a: [...],                   │
-    │     pi_b: [...],                   │
-    │     pi_c: [...],                   │
-    │     protocol: "groth16",           │
-    │     curve: "bn128"                 │
-    │   },                               │
-    │   publicSignals: ["1","25","50"]   │
-    │ }                                  │
-    │                                    │
-    │ Note: Age (35) NOT included!       │
-    └────────────────────────────────────┘
-                            │
-                            ▼
-┌─────────────────────────────────────────────────────────────────┐
-│               PHASE 3: TRANSMISSION                             │
-│            (Extension → Backend, HTTPS)                         │
-└─────────────────────────────────────────────────────────────────┘
-                            │
-                            ▼
+                            
+                            
+    
+     Load Circuit Components            
+     - circuit.wasm (50KB-80KB)        
+     - circuit_final.zkey (2MB-5MB)    
+    
+                            
+                            
+    
+     Prepare Circuit Inputs             
+                                        
+     Private inputs:                    
+       value: 35                        
+       min: 25                          
+       max: 50                          
+                                        
+     Public inputs:                     
+       (automatically derived)          
+    
+                            
+                            
+    
+     Generate Witness                   
+     (Evaluate circuit with inputs)     
+                                        
+     circuit(35, 25, 50) = {            
+       isValid: 1,                      
+       min: 25,                         
+       max: 50                          
+     }                                  
+    
+                            
+                            
+    
+     Generate Groth16 Proof             
+     (CPU-intensive, 1-3 seconds)       
+                                        
+     Uses:                              
+     - Witness                          
+     - Proving key (.zkey)              
+     - BN128 curve operations           
+                                        
+     Output:                            
+     - pi_a (2 field elements)          
+     - pi_b (6 field elements)          
+     - pi_c (2 field elements)          
+    
+                            
+                            
+    
+     Proof Object Created               
+     {                                  
+       proof: {                         
+         pi_a: [...],                   
+         pi_b: [...],                   
+         pi_c: [...],                   
+         protocol: "groth16",           
+         curve: "bn128"                 
+       },                               
+       publicSignals: ["1","25","50"]   
+     }                                  
+                                        
+     Note: Age (35) NOT included!       
+    
+                            
+                            
+
+               PHASE 3: TRANSMISSION                             
+            (Extension  Backend, HTTPS)                         
+
+                            
+                            
     POST /api/verify-proof
     Content-Type: application/json
     
@@ -123,126 +123,126 @@ This document describes the complete flow of ZK-SNARK proofs in PayAttn, from us
       "timestamp": 1762429784939,
       "version": "1.0"
     }
-                            │
+                            
         [Network transmission]
         [~1KB payload size]
-                            │
-                            ▼
-┌─────────────────────────────────────────────────────────────────┐
-│              PHASE 4: VERIFICATION                              │
-│         (Backend + Rapidsnark, 30-100ms)                        │
-└─────────────────────────────────────────────────────────────────┘
-                            │
-                            ▼
-    ┌────────────────────────────────────┐
-    │ Backend Receives Request           │
-    │ POST /api/verify-proof             │
-    └────────────────────────────────────┘
-                            │
-                            ▼
-    ┌────────────────────────────────────┐
-    │ Validate Request Format            │
-    │ - Check circuitName exists         │
-    │ - Validate proof structure         │
-    │ - Validate publicSignals format    │
-    └────────────────────────────────────┘
-                            │
-                            ▼
-    ┌────────────────────────────────────┐
-    │ Prepare Verification               │
-    │                                    │
-    │ 1. Create temp directory           │
-    │    /tmp/zk-verify-1762429784939/   │
-    │                                    │
-    │ 2. Write proof.json                │
-    │    {pi_a, pi_b, pi_c, ...}        │
-    │                                    │
-    │ 3. Write public.json               │
-    │    ["1", "25", "50"]              │
-    │                                    │
-    │ 4. Get verification key path       │
-    │    keys/range_check_vkey.json     │
-    └────────────────────────────────────┘
-                            │
-                            ▼
-    ┌────────────────────────────────────┐
-    │ Spawn Rapidsnark Verifier          │
-    │                                    │
-    │ Command:                           │
-    │ ./verifier \                       │
-    │   vkey.json \                      │
-    │   public.json \                    │
-    │   proof.json                       │
-    │                                    │
-    │ Timeout: 5 seconds                 │
-    └────────────────────────────────────┘
-                            │
-                            ▼
-    ┌────────────────────────────────────┐
-    │ Rapidsnark Execution               │
-    │ (C++ binary, 10-50ms)              │
-    │                                    │
-    │ 1. Load verification key           │
-    │ 2. Load proof + public signals     │
-    │ 3. Verify pairing equations:       │
-    │                                    │
-    │    e(pi_a, pi_b) =                │
-    │      e(alpha, beta) *              │
-    │      e(pub, gamma) *               │
-    │      e(pi_c, delta)                │
-    │                                    │
-    │ 4. Output to stderr:               │
-    │    "Result: Valid proof"           │
-    └────────────────────────────────────┘
-                            │
-                            ▼
-    ┌────────────────────────────────────┐
-    │ Parse Rapidsnark Output            │
-    │                                    │
-    │ const isValid = stderr.includes(   │
-    │   'Valid proof'                    │
-    │ );                                 │
-    │                                    │
-    │ isValid = true ✅                  │
-    └────────────────────────────────────┘
-                            │
-                            ▼
-    ┌────────────────────────────────────┐
-    │ Cleanup Temp Files                 │
-    │                                    │
-    │ fs.rmSync(tempDir, {               │
-    │   recursive: true,                 │
-    │   force: true                      │
-    │ });                                │
-    └────────────────────────────────────┘
-                            │
-                            ▼
-    ┌────────────────────────────────────┐
-    │ Return Verification Result         │
-    │                                    │
-    │ HTTP 200 OK                        │
-    │ {                                  │
-    │   "valid": true,                   │
-    │   "circuitName": "range_check",    │
-    │   "publicSignals": ["1","25","50"],│
-    │   "message": "Proof verified",     │
-    │   "verificationTime": 47           │
-    │ }                                  │
-    └────────────────────────────────────┘
-                            │
-                            ▼
-┌─────────────────────────────────────────────────────────────────┐
-│              PHASE 5: RESULT HANDLING                           │
-│            (Extension receives result)                          │
-└─────────────────────────────────────────────────────────────────┘
-                            │
-                            ▼
+                            
+                            
+
+              PHASE 4: VERIFICATION                              
+         (Backend + Rapidsnark, 30-100ms)                        
+
+                            
+                            
+    
+     Backend Receives Request           
+     POST /api/verify-proof             
+    
+                            
+                            
+    
+     Validate Request Format            
+     - Check circuitName exists         
+     - Validate proof structure         
+     - Validate publicSignals format    
+    
+                            
+                            
+    
+     Prepare Verification               
+                                        
+     1. Create temp directory           
+        /tmp/zk-verify-1762429784939/   
+                                        
+     2. Write proof.json                
+        {pi_a, pi_b, pi_c, ...}        
+                                        
+     3. Write public.json               
+        ["1", "25", "50"]              
+                                        
+     4. Get verification key path       
+        keys/range_check_vkey.json     
+    
+                            
+                            
+    
+     Spawn Rapidsnark Verifier          
+                                        
+     Command:                           
+     ./verifier \                       
+       vkey.json \                      
+       public.json \                    
+       proof.json                       
+                                        
+     Timeout: 5 seconds                 
+    
+                            
+                            
+    
+     Rapidsnark Execution               
+     (C++ binary, 10-50ms)              
+                                        
+     1. Load verification key           
+     2. Load proof + public signals     
+     3. Verify pairing equations:       
+                                        
+        e(pi_a, pi_b) =                
+          e(alpha, beta) *              
+          e(pub, gamma) *               
+          e(pi_c, delta)                
+                                        
+     4. Output to stderr:               
+        "Result: Valid proof"           
+    
+                            
+                            
+    
+     Parse Rapidsnark Output            
+                                        
+     const isValid = stderr.includes(   
+       'Valid proof'                    
+     );                                 
+                                        
+     isValid = true                   
+    
+                            
+                            
+    
+     Cleanup Temp Files                 
+                                        
+     fs.rmSync(tempDir, {               
+       recursive: true,                 
+       force: true                      
+     });                                
+    
+                            
+                            
+    
+     Return Verification Result         
+                                        
+     HTTP 200 OK                        
+     {                                  
+       "valid": true,                   
+       "circuitName": "range_check",    
+       "publicSignals": ["1","25","50"],
+       "message": "Proof verified",     
+       "verificationTime": 47           
+     }                                  
+    
+                            
+                            
+
+              PHASE 5: RESULT HANDLING                           
+            (Extension receives result)                          
+
+                            
+                            
     Extension receives: {valid: true}
-                            │
-                            ▼
+                            
+                            
     Show success message to user
-                            │
-                            ▼
+                            
+                            
     Advertiser knows: "User age is 25-50"
     (but NOT the actual age: 35)
 ```
@@ -377,7 +377,7 @@ component main = SetMembership();
 
 ---
 
-## 🔒 Privacy Analysis
+##  Privacy Analysis
 
 ### What Each Party Knows
 
@@ -435,15 +435,15 @@ Prepare inputs:            <1ms
 Generate witness:          50-100ms
 Generate proof:            800-2500ms (depends on circuit size)
 Format output:             <1ms
-────────────────────────────────────
+
 Total:                     1000-3000ms
 ```
 
 **Optimization opportunities:**
 - Circuit caching (implemented)
 - Web Worker offloading (implemented)
-- ⚠️ WASM optimization (potential 20% improvement)
-- ⚠️ Multi-threading (blocked by snarkjs limitation)
+-  WASM optimization (potential 20% improvement)
+-  Multi-threading (blocked by snarkjs limitation)
 
 ### Proof Verification (Backend)
 
@@ -456,13 +456,13 @@ Spawn Rapidsnark:          5-10ms
 Rapidsnark execution:      10-50ms
 Parse output:              <1ms
 Cleanup files:             5-10ms
-────────────────────────────────────
+
 Total:                     35-100ms
 ```
 
 **Comparison to alternatives:**
-- ⚡ Rapidsnark (C++): **35-100ms**
-- 🐌 Node.js snarkjs: **>8 minutes** (HANGS)
+-  Rapidsnark (C++): **35-100ms**
+-  Node.js snarkjs: **>8 minutes** (HANGS)
 - Cloudflare Workers: **Doesn't work**
 
 ---
@@ -594,7 +594,7 @@ Result: { valid: false }  // Public signals don't match proof
 ```javascript
 // User generates proof once
 // Tries to use same proof for different campaign
-Result: ✅ Actually works - but that's OK!
+Result:  Actually works - but that's OK!
        The proof is still valid for the same statement
        Advertisers can add nonces if needed
 ```
@@ -605,7 +605,7 @@ Result: ✅ Actually works - but that's OK!
 
 ### Extension Implementation
 
-**File: `/agent-dashboard/extension/crypto-utils.js`**
+**File: `/extension/crypto-utils.js`**
 ```javascript
 async function generateProof(circuitName, inputs) {
   // 1. Load circuit (cached)
@@ -625,7 +625,7 @@ async function generateProof(circuitName, inputs) {
 
 ### Backend Implementation
 
-**File: `/agent-dashboard/lib/zk/verifier.ts`**
+**File: `/backend/lib/zk/verifier.ts`**
 ```typescript
 export async function verifyProof(
   circuitName: string,
@@ -658,9 +658,9 @@ export async function verifyProof(
 
 ## Related Documents
 
+- [API.md](./API.md) - Complete API endpoint documentation
 - [ARCHITECTURE.md](./ARCHITECTURE.md) - System overview
 - [BACKEND_VERIFICATION.md](./BACKEND_VERIFICATION.md) - Rapidsnark details
-- [API.md](./API.md) - API reference
 - [TESTING.md](./TESTING.md) - Testing guide
 
 ---

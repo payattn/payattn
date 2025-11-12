@@ -34,11 +34,11 @@ This guide walks you through testing the complete ZK-SNARK proof verification fl
    - Min Value: `25000`
    - Max Value: `50000`
 4. Paste proof JSON into text area
-5. Click **✓ Verify Proof**
+5. Click ** Verify Proof**
 
 #### Expected Result
 
-✅ **Proof Verified!**
+ **Proof Verified!**
 - Circuit: `range_check`
 - Public Signals: `["1", "25000", "50000"]`
 - Message: "Proof verified successfully"
@@ -66,11 +66,11 @@ This guide walks you through testing the complete ZK-SNARK proof verification fl
 3. Set campaign requirements:
    - Allowed Values: `us,uk,ca`
 4. Paste proof JSON into text area
-5. Click **✓ Verify Proof**
+5. Click ** Verify Proof**
 
 #### Expected Result
 
-✅ **Proof Verified!**
+ **Proof Verified!**
 - Circuit: `set_membership`
 - Public Signals: `["1", "hash(us)", "hash(uk)", "hash(ca)", "0", "0", "0", "0", "0", "0", "0"]`
 - Message: "Proof verified successfully"
@@ -99,11 +99,11 @@ This guide walks you through testing the complete ZK-SNARK proof verification fl
    - Min Value: `18`
    - Max Value: `65`
 4. Paste proof JSON into text area
-5. Click **✓ Verify Proof**
+5. Click ** Verify Proof**
 
 #### Expected Result
 
-✅ **Proof Verified!**
+ **Proof Verified!**
 - Circuit: `age_range`
 - Public Signals: `["1", "18", "65"]`
 - Message: "Proof verified successfully"
@@ -116,7 +116,7 @@ This guide walks you through testing the complete ZK-SNARK proof verification fl
 
 If you need to verify that hashing works correctly:
 
-1. On the advertiser page, click **🔍 Hash a string**
+1. On the advertiser page, click ** Hash a string**
 2. Enter a value (e.g., "uk")
 3. Compare with extension console:
    ```javascript

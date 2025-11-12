@@ -70,7 +70,7 @@ export async function PUT(
       );
     }
 
-    console.log(`✅ [Publisher] Wallet updated for ${publisherId}`);
+    console.log(`[OK][OK][OK] [Publisher] Wallet updated for ${publisherId}`);
 
     return NextResponse.json({
       success: true,

@@ -247,8 +247,8 @@ const proof = await generateProofInServiceWorker('set_membership',
 ```javascript
 // Extension sends plain text (PRIVACY LEAK!)
 const proof = await generateProof({
-  value: "uk",  // ❌ WRONG - should be hashed
-  set: ["us", "uk", "ca"]  // ❌ WRONG - should be hashed
+  value: "uk",  //  WRONG - should be hashed
+  set: ["us", "uk", "ca"]  //  WRONG - should be hashed
 });
 ```
 
@@ -259,8 +259,8 @@ const userHash = await hashToField("uk");
 const setHashes = await hashStringsToField(["us", "uk", "ca"]);
 
 const proof = await generateProofInServiceWorker('set_membership', {
-  value: userHash,  // ✅ Hashed
-  set: setHashes   // ✅ Hashed
+  value: userHash,  //  Hashed
+  set: setHashes   //  Hashed
 });
 ```
 
@@ -270,8 +270,8 @@ const proof = await generateProofInServiceWorker('set_membership', {
 const hash1 = await hashToField("uk");  // SHA-256
 
 // Backend
-const hash2 = md5("uk");  // ❌ WRONG - different algorithm
-// hash1 !== hash2 → verification fails
+const hash2 = md5("uk");  //  WRONG - different algorithm
+// hash1 !== hash2  verification fails
 ```
 
 ###  DO: Use EXACT same algorithm everywhere
@@ -318,7 +318,7 @@ console.log("Field prime:", FIELD_PRIME.toString());
 - Initial implementation
 - SHA-256 mod FIELD_PRIME algorithm
 - Support for set_membership circuit
-- Comprehensive documentation and test vectors
+- Detailed documentation and test vectors
 
 ---
 

@@ -6,9 +6,9 @@ Fixed critical security vulnerability in the Key Derivation Service (KDS) endpoi
 
 ### Security Flow (Now)
 ```
-User → Signs message → authToken stored
-Extension → Calls KDS with X-Wallet + X-Auth-Token headers
-Server → Verifies signature → Returns key material (if valid)
+User  Signs message  authToken stored
+Extension  Calls KDS with X-Wallet + X-Auth-Token headers
+Server  Verifies signature  Returns key material (if valid)
 ```
 
 ## Quick Test
@@ -29,9 +29,9 @@ npm run dev
 ```
 
 Expected results:
-- Request without headers → 401 Unauthorized
-- Request with fake signature → 403 Forbidden
-- Extension with valid auth → Profile decrypts successfully
+- Request without headers  401 Unauthorized
+- Request with fake signature  403 Forbidden
+- Extension with valid auth  Profile decrypts successfully
 
 ## Key Files
 
@@ -73,18 +73,18 @@ authToken = base64(signature)
 
 ## Security Properties
 
-✅ **Defense in Depth**
+ **Defense in Depth**
 - Server-side signature verification
 - Deterministic keys for persistence
 - Client-side encryption
 - Separate key material storage
 
-❌ **Attack Prevention**
+ **Attack Prevention**
 - Attacker with wallet address: CANNOT access KDS
 - Attacker with keyHash: CANNOT access KDS
 - Attacker with encrypted data: CANNOT decrypt
 
-✅ **Valid User**
+ **Valid User**
 - Has wallet private key
 - Can sign messages
 - KDS verifies signature
@@ -99,7 +99,7 @@ authToken = base64(signature)
 - [ ] Create profile in extension
 - [ ] Verify profile decrypts
 - [ ] Run `./test-kds-auth.sh` to verify 401/403 errors
-- [ ] Disconnect and reconnect → profile should persist
+- [ ] Disconnect and reconnect  profile should persist
 
 ## Next Steps
 

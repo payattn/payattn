@@ -131,7 +131,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log(`✅ [CreateAd] Created ad_creative ${adCreativeId}`);
+    console.log(`[OK][OK][OK] [CreateAd] Created ad_creative ${adCreativeId}`);
     console.log(`[CreateAd] Targeting: age=${targeting.age?.min}-${targeting.age?.max}, interests=${targeting.interests?.length || 0}`);
 
     return NextResponse.json({

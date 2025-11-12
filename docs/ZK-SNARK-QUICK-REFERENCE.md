@@ -53,9 +53,9 @@ const { circuitName, proof, publicSignals } = await request.json();
 const result = await verifyProof(circuitName, proof, publicSignals);
 
 if (result.valid) {
-  console.log(`✅ User is eligible! Age range: ${publicSignals[1]}-${publicSignals[2]}`);
+  console.log(` User is eligible! Age range: ${publicSignals[1]}-${publicSignals[2]}`);
 } else {
-  console.log(`❌ Proof verification failed: ${result.message}`);
+  console.log(` Proof verification failed: ${result.message}`);
 }
 ```
 
@@ -151,9 +151,9 @@ const results = await verifyProofBatch([
 ]);
 
 if (allProofsValid(results)) {
-  console.log('✅ All criteria met');
+  console.log(' All criteria met');
 } else {
-  console.log('❌ Some criteria not met');
+  console.log(' Some criteria not met');
 }
 ```
 
@@ -181,40 +181,40 @@ if (allProofsValid(results)) {
 
 ```
 User (Browser/Extension)
-│
-├─ Private Input (age: 45)
-│  └─ NEVER sent to server ❌
-│
-├─ Public Input (minAge: 40, maxAge: 60)
-│  └─ Only in proof (hashed) ✅
-│
-├─ Generate Proof
-│  ├─ Load WASM from /circuits/age_range/age_range.wasm
-│  ├─ Load .zkey from /circuits/age_range/age_range_0000.zkey
-│  ├─ Calculate witness (using WASM)
-│  └─ Create Groth16 proof ✅
-│
-└─ Send to Backend
-   ├─ Proof object
-   ├─ Public signals
-   └─ Circuit name
-       │
-       ▼
+
+ Private Input (age: 45)
+   NEVER sent to server 
+
+ Public Input (minAge: 40, maxAge: 60)
+   Only in proof (hashed) 
+
+ Generate Proof
+   Load WASM from /circuits/age_range/age_range.wasm
+   Load .zkey from /circuits/age_range/age_range_0000.zkey
+   Calculate witness (using WASM)
+   Create Groth16 proof 
+
+ Send to Backend
+    Proof object
+    Public signals
+    Circuit name
+       
+       
    Backend /api/verify-proof
-   │
-   ├─ Load verification_key.json
-   ├─ Verify proof cryptographically ✅
-   │
-   └─ Response: { valid: true/false }
-       │
-       ▼
-   Advertiser: "User matches age criteria" ✓
+   
+    Load verification_key.json
+    Verify proof cryptographically 
+   
+    Response: { valid: true/false }
+       
+       
+   Advertiser: "User matches age criteria" 
    (Never knows actual age)
 ```
 
 ---
 
-## 🐛 Debugging Tips
+##  Debugging Tips
 
 ### Enable Verbose Logging
 
@@ -267,29 +267,29 @@ clearVerificationKeyCache();
 
 ```
 Circuit Artifacts:
-├── extension/circuits/age_range/
-│   ├── age_range.wasm            (WASM witness calculator)
-│   ├── witness_calculator.js      (JS wrapper)
-│   └── age_range_0000.zkey        (Proving key - secret!)
-│
-└── public/circuits/age_range/
-    └── verification_key.json      (Verification key - public)
+ extension/circuits/age_range/
+    age_range.wasm            (WASM witness calculator)
+    witness_calculator.js      (JS wrapper)
+    age_range_0000.zkey        (Proving key - secret!)
+
+ public/circuits/age_range/
+     verification_key.json      (Verification key - public)
 
 ZK Library:
-└── lib/zk/
-    ├── index.ts                   (Main exports)
-    ├── circuits-registry.ts       (Circuit metadata)
-    ├── witness.ts                 (WASM + witness generation)
-    ├── prover.ts                  (Proof generation)
-    └── verifier.ts                (Proof verification)
+ lib/zk/
+     index.ts                   (Main exports)
+     circuits-registry.ts       (Circuit metadata)
+     witness.ts                 (WASM + witness generation)
+     prover.ts                  (Proof generation)
+     verifier.ts                (Proof verification)
 
 API Endpoints:
-└── app/api/verify-proof/route.ts  (Proof verification endpoint)
+ app/api/verify-proof/route.ts  (Proof verification endpoint)
 
 Documentation:
-├── CIRCUITS-ARCHITECTURE.md       (Full architecture guide)
-├── WP02-PHASE1-COMPLETE.md        (Phase 1 completion report)
-└── ZK-SNARK-GUIDE.md              (This file!)
+ CIRCUITS-ARCHITECTURE.md       (Full architecture guide)
+ WP02-PHASE1-COMPLETE.md        (Phase 1 completion report)
+ ZK-SNARK-GUIDE.md              (This file!)
 ```
 
 ---
@@ -367,7 +367,7 @@ const proof = await generateIncomeProof(75000, 50000, 200000);
 
 ---
 
-## 🎓 Learn More
+##  Learn More
 
 - **Full Architecture:** `CIRCUITS-ARCHITECTURE.md`
 - **ZK Theory:** `ZK-SNARK-ANALYSIS.md`
@@ -377,7 +377,7 @@ const proof = await generateIncomeProof(75000, 50000, 200000);
 
 ---
 
-## 📞 Common Questions
+##  Common Questions
 
 **Q: Why do I need both WASM and witness_calculator.js?**  
 A: circom generates WASM for performance, and witness_calculator.js provides the proper interface for calling it.
@@ -400,4 +400,4 @@ A: Yes - proofs can't be forged. Use HTTPS for confidentiality of public signals
 ---
 
 Last updated: November 5, 2025  
-Phase: WP02 Phase 1 Complete ✅
+Phase: WP02 Phase 1 Complete 

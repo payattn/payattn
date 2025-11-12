@@ -43,7 +43,7 @@ export class LLMEvaluator {
     this.apiKey = process.env.VENICE_API_KEY || '';
     
     if (!this.apiKey || this.apiKey === 'your_venice_api_key_here') {
-      console.warn('⚠️  WARNING: Venice API key not configured');
+      console.warn('[OK][OK]  WARNING: Venice API key not configured');
       console.warn('   LLM evaluation will use fallback rules only');
     }
   }
@@ -126,7 +126,7 @@ EVALUATION CRITERIA:
    - Over budget? ${parseFloat(priceUSD) > parseFloat(maxCPM) ? 'YES - REJECT' : 'NO - OK'}
 
 2. Targeting Match: Does user meet targeting criteria?
-   ${proofValidation ? (proofValidation.isValid ? '- ZK proofs VALID - User meets requirements ✅' : '- ZK proofs INVALID - User does NOT meet requirements ❌') : '- No proof validation available'}
+   ${proofValidation ? (proofValidation.isValid ? '- ZK proofs VALID - User meets requirements ' : '- ZK proofs INVALID - User does NOT meet requirements ') : '- No proof validation available'}
 
 3. Strategic Value: Does this help campaign goals?
    - Campaign goal: ${campaignGoal}

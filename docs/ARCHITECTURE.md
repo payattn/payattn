@@ -55,8 +55,10 @@ PayAttn is a privacy-preserving platform that allows users to prove demographic 
 **Architecture:** Manifest V3 extension with:
 - **Popup UI** (`popup.html`): Quick status and navigation
 - **Profile Editor** (`profile.html`): Full-page demographic/interest editor
-- **Service Worker** (`sw-agent.js`): Autonomous background processing
-- **Venice AI Integration** (`venice-ai.js`): Direct AI API calls for ad evaluation
+- **Service Worker** (`background.js`): Autonomous background processing with Max agent
+- **Max Agent** (`lib/max-assessor.js`): AI-powered ad evaluation logic
+- **Venice AI Client** (`venice-ai.js`): Direct AI API calls (no PayAttn server intermediary)
+- **LLM Service** (`llm-service.js`): Supports Venice AI and local LM Studio
 
 **Key Features:**
 - Wallet authentication sync with website
@@ -73,17 +75,21 @@ PayAttn is a privacy-preserving platform that allows users to prove demographic 
 **Code Structure:**
 ```
 extension/
-├── manifest.json           # Extension manifest
-├── popup.html             # Quick access UI
-├── profile.html           # Full profile editor
-├── settings.html          # API key configuration
-├── sw-agent.js            # Background worker (minimal, isolated)
-├── venice-ai.js           # AI evaluation (client-side)
-├── circuits/              # ZK-SNARK artifacts
-│   ├── age_range/
-│   ├── set_membership/
-│   └── range_check/
-└── lib/                   # Utility functions
+ manifest.json           # Extension manifest
+ popup.html             # Quick access UI
+ profile.html           # Full profile editor
+ settings.html          # API key configuration
+ background.js          # Service worker with autonomous agent
+ venice-ai.js           # Venice AI client
+ llm-service.js         # LLM provider abstraction
+ circuits/              # ZK-SNARK artifacts
+    age_range/
+    set_membership/
+    range_check/
+ lib/                   # Utility functions
+    max-assessor.js     # Max's ad evaluation logic
+    zk-prover.js        # ZK proof generation
+    snarkjs-patched.js  # Patched snarkjs for service workers
 ```
 
 ### Backend (Next.js)
@@ -103,26 +109,36 @@ extension/
 
 **API Endpoints:**
 - `POST /api/verify-proof` - Verify ZK proofs
-- `POST /api/offers/{id}/submit` - Submit ad impressions
-- `GET /api/ads` - Fetch available ads
-- `POST /api/extension-sync` - Sync extension auth
+- `POST /api/user/offer` - Submit ad viewing offers
+- `GET /api/user/adstream` - Fetch available ads for Max
 - `POST /api/advertiser/assess` - Peggy automated assessment
-- `POST /api/advertiser/assess/single` - Peggy manual evaluation
+- `POST /api/advertiser/offers/{id}/accept` - Accept offer (x402 protocol)
+- `POST /api/advertiser/payments/verify` - Verify escrow funding
+- `POST /api/publisher/impressions` - Report impressions and trigger settlement
+- `GET /api/k/{hash}` - Key-derivation storage (KDS)
 
 **Code Structure:**
 ```
 backend/
-├── app/
-│   ├── api/               # API route handlers
-│   ├── wallet-auth/       # Authentication pages
-│   └── dashboard/         # User dashboard
-├── lib/
-│   ├── zk/                # ZK proof verification
-│   ├── peggy/             # Peggy AI agent
-│   ├── solana-escrow.ts   # Solana integration
-│   └── settlement-service.ts  # Payment processing
-├── db/                    # Database utilities
-└── components/            # React components
+ app/
+    api/               # API route handlers
+       user/           # User agent (Max) endpoints
+       advertiser/     # Advertiser agent (Peggy) endpoints
+       publisher/      # Publisher endpoints
+       k/              # Key-derivation storage
+       verify-proof/   # ZK proof verification
+    wallet-auth/       # Authentication pages
+    dashboard/         # User dashboard
+ lib/
+    zk/                # ZK proof verification
+    solana/            # Solana integration
+       escrow-funder.ts    # Peggy's escrow funding logic
+       settlement-service.ts  # Privacy-preserving settlement
+    peggy-evaluator.ts  # Peggy's LLM evaluation logic
+    extension-sync.ts   # Extension auth sync utilities
+ db/                    # Database utilities
+    schema.sql         # Database schema
+ components/            # React components
 ```
 
 ### Database (Supabase)
@@ -165,8 +181,8 @@ backend/
 
 **Components:**
 - `DatabaseClient` - Supabase integration
-- `LLMEvaluator` - Venice AI reasoning engine
-- `EscrowFunder` - Solana escrow funding
+- `LLMEvaluator` - Venice AI reasoning engine (`lib/peggy-evaluator.ts` in backend)
+- `EscrowFunder` - Solana escrow funding (`lib/solana/escrow-funder.ts`)
 - `SessionManager` - Assessment tracking
 
 **Trigger Modes:**
@@ -193,14 +209,17 @@ backend/
 
 **Instructions:**
 - `create_escrow` - Lock funds for an offer
-- `settle_user` - Pay user for viewing ad
-- `settle_publisher` - Pay publisher for hosting
-- `settle_platform` - Pay platform fee
+- `settle_user` - Pay user (70%)
+- `settle_publisher` - Pay publisher (25%)
+- `settle_platform` - Pay platform fee (5%)
+- `refund_escrow` - Return funds if ad not viewed (after 14 days)
 
 **Key Features:**
-- Funds locked until ad viewed (verified by proof)
-- Three-way split: user, publisher, platform
+- Funds locked until ad viewed (verified by impression report)
+- Three-way split: 70% user, 25% publisher, 5% platform
 - No trust required - math enforces rules
+- Privacy-preserving: 3 separate unlinkable transactions
+- 14-day expiry for refunds if ad not viewed
 - Transaction signatures stored for auditing
 
 ---
@@ -243,9 +262,9 @@ Circuit artifacts are pre-compiled and never re-compiled at runtime. The compila
 
 ### Proof Generation Flow
 
-1. User profile data + targeting criteria → Circuit inputs
+1. User profile data + targeting criteria  Circuit inputs
 2. WASM witness calculator computes witness (~100-500ms)
-3. Proving key + witness → Generate proof (~1-3 seconds)
+3. Proving key + witness  Generate proof (~1-3 seconds)
 4. Proof + public signals sent to backend
 5. Backend verifies with verification key (~10-50ms)
 
@@ -264,23 +283,23 @@ Circuit artifacts are pre-compiled and never re-compiled at runtime. The compila
 
 **1. Separation of Concerns**
 - **Main Application** (`payattn.org`): User interface, data entry, visualization
-- **Service Worker** (`sw-agent.js`): Autonomous background processing
+- **Service Worker** (`background.js`): Autonomous background processing with Max agent
 
 **2. Minimal Attack Surface**
-- Service Worker has **ZERO npm dependencies**
-- Only uses Web Crypto API (browser built-in)
-- ~200 lines of auditable code
+- Service Worker uses patched snarkjs (singleThread mode)
+- Imports: snarkjs-patched.js, llm-service.js, max-assessor.js
+- ~1200 lines of code in background.js
 - No DOM access, no user input processing
 
 **3. Data Flow Isolation**
 ```
-User Input → Main App → Encrypt → localStorage
+User Input → Main App → Encrypt → chrome.storage.local
                                       ↓
-Service Worker (background) ← Read encrypted data
+Service Worker (background) → Read encrypted data
      ↓
 Decrypt locally → Process → Generate proofs → Submit offers
      ↓
-Encrypt results → Write to localStorage
+Encrypt results → Write to chrome.storage.local
 ```
 
 ### Security Boundaries
@@ -288,26 +307,26 @@ Encrypt results → Write to localStorage
 ```
 ┌─────────────────────────────────────────┐
 │ Main App (payattn.org)                  │
-│ ├── Next.js, React, shadcn/ui          │
-│ ├── 1000+ npm packages                  │
-│ ├── Complex UI logic                    │
-│ └── Writes: ENCRYPTED data only         │
-└─────────────────────────────────────────┘
-         │ (encrypted blobs)
-         ↓
-    localStorage (origin: payattn.org)
-         ↓
+│  Next.js, React, shadcn/ui          │
+│  1000+ npm packages                  │
+│  Complex UI logic                    │
+│  Writes: ENCRYPTED data only         │
+└──────────────────────────────────────────┘
+          ↕ (encrypted blobs)
 ┌─────────────────────────────────────────┐
-│ Service Worker (sw-agent.js)            │
-│ ├── ZERO npm dependencies              │
-│ ├── Only Web Crypto API                 │
-│ ├── Only fetch API                      │
-│ ├── ~200 lines of code                  │
-│ └── Reads/Decrypts/Processes           │
+│    chrome.storage.local (extension)     │
+└─────────────────────────────────────────┘
+          ↕
+┌─────────────────────────────────────────┐
+│ Service Worker (background.js)           │
+│  Patched snarkjs (singleThread)     │
+│  LLMService + MaxAssessor modules    │
+│  ~1200 lines of code                 │
+│  Reads/Decrypts/Processes           │
 └─────────────────────────────────────────┘
 ```
 
-**Key Insight:** Even if main app is compromised, attacker must ALSO compromise the minimal SW code to access decrypted data autonomously.
+**Key Insight:** Service worker runs autonomously with Max's decision-making logic, using encrypted profile data fetched via Key-Derivation Storage (KDS) endpoint.
 
 ### Threat Model
 
@@ -315,11 +334,11 @@ Encrypt results → Write to localStorage
 - Supply chain attacks in main app dependencies
 - XSS in main application UI
 - Compromised third-party scripts (analytics, UI libraries)
-- Malicious browser extensions (origin-isolated)
-- Physical device theft (data encrypted at rest)
+- Malicious browser extensions (origin-isolated storage)
+- Physical device theft (data encrypted at rest with KDS)
 
 **NOT Protected Against:**
-- XSS in Service Worker itself (mitigated by minimal code)
+- XSS in Service Worker itself (mitigated by code review)
 - OS-level compromise (out of scope)
 - Compromised browser (out of scope)
 
@@ -341,16 +360,17 @@ Encrypt results → Write to localStorage
 ### Ad Matching Flow (Automated)
 
 ```
-1. Service worker wakes up (periodic alarm)
-2. Reads encrypted profile from chrome.storage.local
-3. Decrypts profile with wallet-derived key
-4. Fetches available ads from /api/ads
-5. For each ad:
-   a. Check targeting criteria
-   b. Generate ZK proof if match
-   c. Send proof to /api/offers/{id}/submit
-6. Encrypt and store results
-7. Update badge icon with earnings
+1. Service worker wakes up (periodic alarm, every 30 minutes)
+2. Reads keyHash from chrome.storage.local
+3. Fetches encryption key from backend /api/k/{keyHash}
+4. Decrypts profile data locally
+5. Fetches available ads from /api/user/adstream
+6. For each ad:
+   a. MaxAssessor evaluates with LLMService (Venice AI or LM Studio)
+   b. Generates ZK proof if match
+   c. Creates offer via /api/user/offer
+7. Encrypt and store results in chrome.storage.local
+8. Update popup badge with earnings
 ```
 
 ### Offer Evaluation Flow (Peggy)
@@ -380,14 +400,16 @@ Encrypt results → Write to localStorage
 ### Settlement Flow
 
 ```
-1. User views ad (verified by ZK proof)
-2. Offer marked as "viewed" in database
-3. Settlement service detects completed offer
-4. Calls Solana escrow smart contract:
-   - settle_user → Pay user
-   - settle_publisher → Pay publisher
-   - settle_platform → Pay platform fee
-5. Transaction signatures stored
+1. User views ad (verified by impression report)
+2. Publisher reports impression via /api/publisher/impressions
+3. Settlement service calls settleWithPrivacy():
+   a. settle_user → Pay user 70%
+   b. (random delay 0-5 seconds)
+   c. settle_publisher → Pay publisher 25%
+   d. (random delay 0-5 seconds)
+   e. settle_platform → Pay platform 5%
+4. Each transaction appears independent on-chain
+5. Transaction signatures stored in database
 6. Offer marked as "settled"
 7. User sees payment in wallet
 ```
@@ -417,9 +439,9 @@ Encrypt results → Write to localStorage
 ### Attack Surface Minimization
 
 **Service Worker:**
-- Zero npm dependencies
-- Only Web Crypto API + fetch
-- ~200 lines of auditable code
+- Patched snarkjs for singleThread mode
+- LLMService + MaxAssessor modules
+- ~1200 lines of code in background.js
 - No DOM access, no eval(), no dynamic code
 
 **Extension:**
@@ -559,16 +581,19 @@ anchor test
 
 ## API Reference
 
-### POST /api/verify-proof
+See [API.md](./API.md) for complete endpoint documentation.
 
-Verify a ZK-SNARK proof.
+### Key Endpoints
+
+#### `POST /api/verify-proof`
+Verify ZK-SNARK proofs.
 
 **Request:**
 ```json
 {
-  "circuitName": "age_range",
-  "proof": { "pi_a": [...], "pi_b": [...], "pi_c": [...] },
-  "publicSignals": ["18", "35"]
+  "proof": {...},
+  "publicSignals": [...],
+  "campaignId": "optional-uuid"
 }
 ```
 
@@ -576,69 +601,57 @@ Verify a ZK-SNARK proof.
 ```json
 {
   "valid": true,
-  "circuitName": "age_range",
-  "verificationTime": 42
+  "message": "Proof verified successfully"
 }
 ```
 
-### POST /api/offers/{id}/submit
-
+#### `POST /api/user/offer`
 Submit an ad viewing offer with ZK proof.
+
+**Headers:** `x-user-id` (user wallet public key)
 
 **Request:**
 ```json
 {
-  "offerId": "uuid",
-  "zkProofs": [
-    {
-      "circuitName": "age_range",
-      "proof": {...},
-      "publicSignals": [...]
-    }
-  ],
-  "userWallet": "solana_address"
+  "ad_id": "uuid",
+  "terms": {
+    "price": 0.05,
+    "placement": "sidebar"
+  },
+  "zk_proofs": {
+    "set_membership": {...},
+    "targeting": {...}
+  }
 }
 ```
 
 **Response:**
 ```json
 {
-  "success": true,
-  "offerId": "uuid",
-  "status": "pending"
+  "offer": {
+    "id": "uuid",
+    "status": "offer_made",
+    "created_at": "2025-11-12T..."
+  }
 }
 ```
 
-### POST /api/advertiser/assess
-
+#### `POST /api/advertiser/assess`
 Peggy automated assessment endpoint.
 
-**Headers:**
-- `x-advertiser-id`: Advertiser wallet address
+**Headers:** `x-advertiser-id` (advertiser wallet public key)
 
 **Response:**
 ```json
 {
-  "sessionId": "uuid",
-  "advertiserId": "wallet_address",
-  "results": [
+  "assessed": [
     {
-      "offerId": "uuid",
+      "offer_id": "uuid",
       "decision": "accept",
       "reasoning": "...",
-      "confidence": 0.85,
-      "funded": {
-        "success": true,
-        "txSignature": "..."
-      }
+      "escrow_funded": true
     }
-  ],
-  "stats": {
-    "totalOffers": 5,
-    "accepted": 3,
-    "rejected": 2,
-    "funded": 3
-  }
+  ]
 }
 ```
 
@@ -670,7 +683,7 @@ Peggy automated assessment endpoint.
 
 ## Further Reading
 
-- [ZK-SNARK Analysis](./ZK-SNARK-ANALYSIS.md) - Deep dive into circuit design
+- [API Reference](./API.md) - Complete API endpoint documentation
 - [Service Worker Implementation](./SERVICE_WORKER_IMPLEMENTATION.md) - Code walkthrough
 - [Solana Development Guide](./solana_dev.md) - Smart contract details
 - [Testing Guide](./TESTING.md) - How to test the system

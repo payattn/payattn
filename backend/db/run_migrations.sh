@@ -3,25 +3,25 @@
 # Run Database Migrations
 # This script applies migrations to Supabase database
 
-echo "🗄️  PayAttn Database Migration Script"
-echo "======================================"
+echo "PayAttn Database Migration Script"
+echo "=================================="
 echo ""
 
 # Load environment variables
 if [ -f .env.local ]; then
   export $(cat .env.local | grep -v '^#' | xargs)
-  echo "✅ Loaded .env.local"
+  echo "[OK] Loaded .env.local"
 else
-  echo "❌ Error: .env.local not found"
+  echo "[ERROR] .env.local not found"
   exit 1
 fi
 
 # Extract connection details from Supabase URL
 SUPABASE_PROJECT=$(echo $NEXT_PUBLIC_SUPABASE_URL | sed -E 's|https://([^.]+)\.supabase\.co|\1|')
-echo "📊 Supabase Project: $SUPABASE_PROJECT"
+echo "Supabase Project: $SUPABASE_PROJECT"
 echo ""
 
-echo "⚠️  MANUAL MIGRATION REQUIRED"
+echo "[WARN] MANUAL MIGRATION REQUIRED"
 echo ""
 echo "Since Supabase CLI is not installed, please run these migrations manually:"
 echo ""
@@ -42,7 +42,7 @@ echo "  supabase db push"
 echo ""
 
 # Display file paths for easy access
-echo "📁 Migration files created:"
+echo "Migration files created:"
 echo "  - $(pwd)/db/migrations/001_create_ad_creative_tables.sql"
 echo "  - $(pwd)/db/seed_ad_creatives.sql"
 echo ""
@@ -57,4 +57,4 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 fi
 
 echo ""
-echo "✨ Ready to migrate! Follow instructions above."
+echo "Ready to migrate! Follow instructions above."

@@ -1,101 +1,90 @@
 # PayAttn Documentation
 
-**Privacy-First Attention Verification Platform with Trustless Escrow**
+**Autonomous Agents for Privacy-Preserving Ad Negotiation**
 
-This directory contains all project documentation.
+This directory contains technical documentation for the PayAttn system - a platform where AI agents autonomously negotiate ad prices using zero-knowledge proofs for privacy.
 
 ---
 
-## Quick Navigation
+## Getting Started
 
-### Core System
-- **[ARCHITECTURE.md](./ARCHITECTURE.md)** - System overview and components
+- **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Agent negotiation system and architecture
 - **[API.md](./API.md)** - Backend API reference
-- **[solana_dev.md](./solana_dev.md)** - Solana escrow implementation guide
+- **[ZK_PROOF_FLOW.md](./ZK_PROOF_FLOW.md)** - Zero-knowledge proof system
 
-### Zero-Knowledge Proofs
-- **[ZK_PROOF_FLOW.md](./ZK_PROOF_FLOW.md)** - ZK-SNARK proof lifecycle
-- **[BACKEND_VERIFICATION.md](./BACKEND_VERIFICATION.md)** - Rapidsnark verification
-- **[ZK-SNARK-ANALYSIS.md](./ZK-SNARK-ANALYSIS.md)** - Circuit analysis
-- **[HASHING_SCHEME.md](./HASHING_SCHEME.md)** - Hashing implementation
+---
 
-### Implementation
-- **[PROJECT_ARCHITECTURE.md](./PROJECT_ARCHITECTURE.md)** - Project structure
-- **[IMPLEMENTATION_SUMMARY.md](./IMPLEMENTATION_SUMMARY.md)** - Implementation status
-- **[BACKEND_INTEGRATION_COMPLETE.md](./BACKEND_INTEGRATION_COMPLETE.md)** - Backend progress
-- **[TESTING.md](./TESTING.md)** - Testing procedures
+## Core Documentation
 
-### Extension
-- **[CIRCUIT_DEVELOPMENT_GUIDE.md](./CIRCUIT_DEVELOPMENT_GUIDE.md)** - Circuit development
-- **[SERVICE_WORKER_ARCHITECTURE.md](./SERVICE_WORKER_ARCHITECTURE.md)** - Service worker design
-- **[EXTENSION_SETUP_FLOW.md](./EXTENSION_SETUP_FLOW.md)** - Setup flow
+### Autonomous Agent System
+- **[prompt_max_tools.md](./prompt_max_tools.md)** - Max agent (user-side) prompt and capabilities
+- **[LLM_PROVIDER_ABSTRACTION.md](./LLM_PROVIDER_ABSTRACTION.md)** - LLM integration for agents
+- **[VENICE_AI_README.md](./VENICE_AI_README.md)** - Venice AI setup for Peggy agent
+- **[VENICE_AI_QUICK_REFERENCE.md](./VENICE_AI_QUICK_REFERENCE.md)** - Venice AI quick reference
+
+### Zero-Knowledge Privacy Layer
+- **[ZK_PROOF_FLOW.md](./ZK_PROOF_FLOW.md)** - ZK-SNARK proof lifecycle enabling private negotiation
+- **[BACKEND_VERIFICATION.md](./BACKEND_VERIFICATION.md)** - Rapidsnark verification implementation
+- **[CIRCUIT_DEVELOPMENT_GUIDE.md](./CIRCUIT_DEVELOPMENT_GUIDE.md)** - Building privacy-preserving circuits
+- **[SERVICE_WORKER_ZK_PROOF_GUIDE.md](./SERVICE_WORKER_ZK_PROOF_GUIDE.md)** - Service worker proof generation
+- **[HASHING_SCHEME.md](./HASHING_SCHEME.md)** - String hashing for ZK circuits
+- **[ZK-SNARK-QUICK-REFERENCE.md](./ZK-SNARK-QUICK-REFERENCE.md)** - Circuit usage and examples
+
+### Blockchain Settlement
+- **[solana_dev.md](./solana_dev.md)** - Solana escrow for automatic payment settlement and x402 protocol
 
 ### Authentication & Security
-- **[AUTH_SECURITY.md](./AUTH_SECURITY.md)** - Authentication security
-- **[WALLET_AUTH_README.md](./WALLET_AUTH_README.md)** - Wallet authentication
-- **[KDS_ARCHITECTURE.md](./KDS_ARCHITECTURE.md)** - Key derivation storage
+- **[AUTH_SECURITY.md](./AUTH_SECURITY.md)** - Authentication architecture
+- **[WALLET_AUTH_README.md](./WALLET_AUTH_README.md)** - Wallet-based authentication
+- **[ADVERTISER_WALLET_AUTH.md](./ADVERTISER_WALLET_AUTH.md)** - Advertiser authentication
+- **[STORAGE_AUTH_README.md](./STORAGE_AUTH_README.md)** - Storage and encryption
+- **[KDS_ARCHITECTURE.md](./KDS_ARCHITECTURE.md)** - Key derivation system
+- **[KDS_AUTH_QUICKSTART.md](./KDS_AUTH_QUICKSTART.md)** - KDS quick start
+- **[KDS_TESTING.md](./KDS_TESTING.md)** - KDS testing guide
 
-### Cloudflare Worker
-- **[DEPLOYMENT_CHECKLIST.md](./DEPLOYMENT_CHECKLIST.md)** - CF Worker deployment
-- **[QUICK_START.md](./QUICK_START.md)** - CF Worker quick start
+### SDK & Integration
+- **[SDK_ARCHITECTURE.md](./SDK_ARCHITECTURE.md)** - Publisher SDK architecture
 
-### Work Packages (Historical)
-- **[WP01_2_3_4_IMPLEMENTATION.md](./WP01_2_3_4_IMPLEMENTATION.md)** - WP01 implementation
-- **[WP02-PHASE1-COMPLETE.md](./WP02-PHASE1-COMPLETE.md)** - WP02 Phase 1
-- **[WP02_3A_CHECKLIST.md](./WP02_3A_CHECKLIST.md)** - WP02.3A checklist
-
-### Venice AI Integration
-- **[VENICE_AI_README.md](./VENICE_AI_README.md)** - Venice AI overview
-- **[VENICE_AI_SETUP.md](./VENICE_AI_SETUP.md)** - Setup guide
-- **[VENICE_AI_INTEGRATION_SUMMARY.md](./VENICE_AI_INTEGRATION_SUMMARY.md)** - Integration summary
+### Testing
+- **[TESTING.md](./TESTING.md)** - Testing procedures and guidelines
+- **[END_TO_END_TEST_GUIDE.md](./END_TO_END_TEST_GUIDE.md)** - End-to-end testing
 
 ---
 
-##  System Components
+## Architecture Overview
 
 | Component | Location | Purpose |
 |-----------|----------|---------|
-| **Backend** | `/backend/` | Next.js API server, Solana escrow verification |
-| **Extension** | `/extension/` | Chrome extension, ZK proof generation, Max agent |
-| **Smart Contract** | `/solana/payattn_escrow/` | Solana escrow program |
-| **CF Worker** | `/cf-worker/` | Cloudflare Worker (experimental) |
-| **Rapidsnark** | `/rapidsnark-server/` | Fast ZK verification |
+| **Max Agent** | `/extension/` | User-side autonomous agent, ZK proof generation |
+| **Peggy Agent** | `/advertiser-agent/` | Advertiser-side autonomous agent, offer evaluation |
+| **Backend** | `/backend/` | Next.js API server, proof verification, x402 protocol |
+| **Smart Contract** | `/solana/payattn_escrow/` | Trustless escrow for automatic settlement |
+| **Rapidsnark** | `/rapidsnark-server/` | C++ proof verification server |
 
 ---
 
-## Recent Updates
-
-### Solana Integration (November 2025)
-- Trustless escrow smart contract deployed
-- HTTP 402 "Payment Required" x402 protocol implementation
-- Backend escrow verification via RPC
-- Privacy-preserving settlement (3 unlinked transactions)
-
-### ZK-SNARK Proofs
-- 3 circuits working (age_range, location_check, interest_check)
-- Extension proof generation (1-3 seconds)
-- Backend Rapidsnark verification (10-50ms)
-
----
-
-## Key Documents
+## Quick Links by Role
 
 ### For New Developers
-1. Start with **[PROJECT_ARCHITECTURE.md](./PROJECT_ARCHITECTURE.md)**
-2. Read **[ARCHITECTURE.md](./ARCHITECTURE.md)** for system overview
-3. See **[solana_dev.md](./solana_dev.md)** for escrow implementation
+1. **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Understand agent negotiation architecture
+2. **[API.md](./API.md)** - Learn the API endpoints
+3. **[prompt_max_tools.md](./prompt_max_tools.md)** - Learn how Max agent works
 
-### For Backend Work
-- **[API.md](./API.md)** - API endpoints
+### For Agent Development
+- **[prompt_max_tools.md](./prompt_max_tools.md)** - Max agent configuration
+- **[VENICE_AI_README.md](./VENICE_AI_README.md)** - Peggy agent LLM setup
+- **[LLM_PROVIDER_ABSTRACTION.md](./LLM_PROVIDER_ABSTRACTION.md)** - LLM integration
+
+### For Privacy/ZK Development
+- **[ZK_PROOF_FLOW.md](./ZK_PROOF_FLOW.md)** - How privacy layer works
 - **[BACKEND_VERIFICATION.md](./BACKEND_VERIFICATION.md)** - Proof verification
-- **[KDS_ARCHITECTURE.md](./KDS_ARCHITECTURE.md)** - Key storage
+- **[CIRCUIT_DEVELOPMENT_GUIDE.md](./CIRCUIT_DEVELOPMENT_GUIDE.md)** - Circuit development
 
-### For Extension Work
-- **[CIRCUIT_DEVELOPMENT_GUIDE.md](./CIRCUIT_DEVELOPMENT.md)** - Circuit development
-- **[prompt_max.md](./prompt_max.md)** - Max agent prompt
-- **[SERVICE_WORKER_ZK_PROOF_GUIDE.md](./SERVICE_WORKER_ZK_PROOF_GUIDE.md)** - Service worker proofs
+### For Backend Development
+- **[API.md](./API.md)** - API endpoints and usage
+- **[solana_dev.md](./solana_dev.md)** - Blockchain integration and x402 protocol
+- **[AUTH_SECURITY.md](./AUTH_SECURITY.md)** - Authentication
 
 ---
 
-**Last Updated:** November 8, 2025
-**Version:** 2.0 (Solana escrow + ZK proofs)
+**Last Updated:** November 2025

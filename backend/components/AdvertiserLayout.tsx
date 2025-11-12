@@ -134,7 +134,7 @@ export default function AdvertiserLayout({ children }: AdvertiserLayoutProps) {
               <WalletMultiButton style={{ background: '#FFD100', color: '#000A30' }} />
             </div>
             <p className="text-sm mt-6" style={{ color: '#94a3b8' }}>
-              💡 Your wallet address is your advertiser ID
+               Your wallet address is your advertiser ID
             </p>
           </div>
         </div>

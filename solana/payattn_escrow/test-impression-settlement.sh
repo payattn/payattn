@@ -27,11 +27,11 @@ echo ""
 # Check if backend is running
 echo "1. Checking if backend is running..."
 if ! curl -s "$BACKEND_URL/api/debug-env" > /dev/null 2>&1; then
-    echo "❌ Backend not running on port 3001"
-    echo "   Start it with: cd ../../backend && npm run dev"
+    echo "[ERROR] Backend not running on port 3001"
+    echo "        Start it with: cd ../../backend && npm run dev"
     exit 1
 fi
-echo "✅ Backend is running"
+echo "[OK] Backend is running"
 echo ""
 
 # Report impression
@@ -54,12 +54,12 @@ echo ""
 SETTLED=$(echo "$RESPONSE" | jq -r '.settled // false' 2>/dev/null)
 
 if [ "$SETTLED" = "true" ]; then
-    echo "✅ Settlement succeeded!"
+    echo "[OK] Settlement succeeded!"
     echo ""
     echo "View transactions:"
     echo "$RESPONSE" | jq -r '.transactions[]? | "  \(.type): \(.explorerUrl // "pending")"' 2>/dev/null
 else
-    echo "⚠️  Settlement partially failed or pending"
+    echo "[WARN] Settlement partially failed or pending"
     echo ""
     echo "Check failed settlements:"
     echo "  curl $BACKEND_URL/api/admin/settlements/failed | jq"

@@ -191,11 +191,11 @@ async function loadStatus() {
         
         // Handle display text
         const adsText = totalAds > 0 
-          ? `${totalAds} new ads • ${offeredAds} offers • ${rejectedAds} rejected`
+          ? `${totalAds} new ads  ${offeredAds} offers  ${rejectedAds} rejected`
           : 'No new ads - check completed';
         
         div.innerHTML = `
-          <div><strong>✅ ${time}</strong> <span style="font-size: 10px; color: #86efac;">(${triggerLabel})</span></div>
+          <div><strong> ${time}</strong> <span style="font-size: 10px; color: #86efac;">(${triggerLabel})</span></div>
           <div style="font-size: 11px; margin-top: 4px; color: ${isEmpty ? '#94a3b8' : '#86efac'};">
             ${adsText}
           </div>
@@ -252,14 +252,14 @@ async function loadProfileData() {
     }
     
     // Show loading state
-    profileCardEl.innerHTML = '<span style="color: #94a3b8;">🔓 Decrypting profile...</span>';
+    profileCardEl.innerHTML = '<span style="color: #94a3b8;"> Decrypting profile...</span>';
     
     // Get authToken from storage
     const authResult = await chrome.storage.local.get(['payattn_authToken']);
     const authToken = authResult.payattn_authToken;
     
     if (!authToken) {
-      profileCardEl.innerHTML = '<span style="color: #f59e0b;">⚠️ Authentication required</span>';
+      profileCardEl.innerHTML = '<span style="color: #f59e0b;"> Authentication required</span>';
       return;
     }
     
@@ -287,7 +287,7 @@ async function loadProfileData() {
       
       if (isDecryptionError) {
         profileCardEl.innerHTML = `
-          <span style="color: #f59e0b;">⚠️ Profile encrypted with old key</span>
+          <span style="color: #f59e0b;"> Profile encrypted with old key</span>
           <div style="font-size: 11px; color: #94a3b8; margin-top: 4px;">
             Your profile was encrypted with a previous wallet signature. 
             <a href="#" id="recreateProfile" style="color: #0ea5e9; text-decoration: underline;">
@@ -336,24 +336,24 @@ function renderProfileCard(profile) {
       demo.age ? `${demo.age}yo` : null,
       demo.gender
     ].filter(Boolean).join(', ');
-    if (demoStr) parts.push(`👤 ${demoStr}`);
+    if (demoStr) parts.push(` ${demoStr}`);
   }
   
   // Interests
   if (profile.interests && profile.interests.length > 0) {
-    parts.push(`💭 ${profile.interests.join(', ')}`);
+    parts.push(` ${profile.interests.join(', ')}`);
   }
   
   // Location
   if (profile.location) {
     const loc = profile.location;
     const locStr = [loc.state, loc.country].filter(Boolean).join(', ');
-    if (locStr) parts.push(`📍 ${locStr}`);
+    if (locStr) parts.push(` ${locStr}`);
   }
   
   // Financial
   if (profile.financial?.incomeRange) {
-    parts.push(`💰 ${profile.financial.incomeRange}`);
+    parts.push(` ${profile.financial.incomeRange}`);
   }
   
   if (parts.length === 0) {
@@ -376,7 +376,7 @@ function renderProfileCard(profile) {
 async function handleRunNow() {
   const button = document.getElementById('runNow');
   button.disabled = true;
-  button.textContent = '⏳ Running...';
+  button.textContent = ' Running...';
   
   try {
     const response = await chrome.runtime.sendMessage({ type: 'MANUAL_SYNC' });
@@ -394,7 +394,7 @@ async function handleRunNow() {
     console.error('Failed to trigger sync:', error);
   } finally {
     button.disabled = false;
-    button.textContent = '🔄 Run Now';
+    button.textContent = ' Run Now';
   }
 }
 

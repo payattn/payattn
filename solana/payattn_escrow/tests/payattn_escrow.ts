@@ -236,7 +236,7 @@ describe("payattn_escrow", () => {
       
       assert.fail("Should have thrown error for double settlement");
     } catch (err) {
-      console.log("✓ Double settlement prevented:", err.message);
+      console.log("[OK][OK] Double settlement prevented:", err.message);
       assert.include(err.message.toLowerCase(), "already settled");
     }
   });
@@ -273,7 +273,7 @@ describe("payattn_escrow", () => {
       
       assert.fail("Should have thrown error for wrong user pubkey");
     } catch (err) {
-      console.log("✓ Wrong user pubkey prevented:", err.message);
+      console.log("[OK][OK] Wrong user pubkey prevented:", err.message);
       assert.include(err.message.toLowerCase(), "unauthorized");
     }
   });

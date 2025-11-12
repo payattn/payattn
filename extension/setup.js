@@ -130,7 +130,7 @@ function pollForAuth() {
       await chrome.storage.local.remove('payattn_auth_pending');
       
       log('Authentication completed!');
-      showStatus('Authentication successful! ✅', 'success');
+      showStatus('Authentication successful! ', 'success');
       
       // Show success step
       setTimeout(() => {

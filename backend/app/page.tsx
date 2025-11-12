@@ -99,7 +99,7 @@ export default function Home() {
                     </p>
                   </div>
                   <div className="text-sm p-3 rounded" style={{ background: '#064e3b', color: '#6ee7b7', border: '1px solid #065f46' }}>
-                    ✓ Successfully authenticated with wallet signature
+                     Successfully authenticated with wallet signature
                   </div>
                 </div>
               )}

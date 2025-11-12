@@ -6,34 +6,34 @@ Autonomous AI agent that evaluates user offers and funds Solana escrows using th
 
 Peggy is the advertiser-side agent in the Payattn ecosystem. She autonomously:
 
-1. 🔍 **Polls** the backend for pending offers (every 30s)
-2. 🤔 **Evaluates** each offer using Venice AI with campaign criteria
-3. ✅ **Accepts** matching offers (receives HTTP 402 response)
-4. 💰 **Funds** escrow on Solana (locks advertiser funds on-chain)
-5. 📝 **Submits** payment proof to backend
-6. 🎯 **Enables** user to queue ad for viewing
+1.  **Polls** the backend for pending offers (every 30s)
+2.  **Evaluates** each offer using Venice AI with campaign criteria
+3.  **Accepts** matching offers (receives HTTP 402 response)
+4.  **Funds** escrow on Solana (locks advertiser funds on-chain)
+5.  **Submits** payment proof to backend
+6.  **Enables** user to queue ad for viewing
 
 ## Architecture
 
 ```
-┌─────────────┐
-│   Peggy     │  (This agent)
-│ (Advertiser)│
-└──────┬──────┘
-       │
-       │ 1. Poll for offers
-       ▼
-┌─────────────┐
-│   Backend   │  (x402 facilitator)
-│  (Next.js)  │
-└──────┬──────┘
-       │
-       │ 2. HTTP 402 Payment Required
-       ▼
-┌─────────────┐
-│   Solana    │  (Escrow smart contract)
-│   Devnet    │
-└─────────────┘
+
+   Peggy       (This agent)
+ (Advertiser)
+
+       
+        1. Poll for offers
+       
+
+   Backend     (x402 facilitator)
+  (Next.js)  
+
+       
+        2. HTTP 402 Payment Required
+       
+
+   Solana      (Escrow smart contract)
+   Devnet    
+
 ```
 
 ## Setup
@@ -113,18 +113,18 @@ npm run seed
 
 Expected output:
 ```
-✅ ACCEPT | offer_peggy_test_001
+ ACCEPT | offer_peggy_test_001
    Match: 5/5 | Price: 0.025 SOL ($0.025) | Rep: 92%
-✅ ACCEPT | offer_peggy_test_002
+ ACCEPT | offer_peggy_test_002
    Match: 4/5 | Price: 0.020 SOL ($0.020) | Rep: 88%
-❌ REJECT | offer_peggy_test_003
+ REJECT | offer_peggy_test_003
    Match: 3/5 | Price: 0.035 SOL ($0.035) | Rep: 75%
-✅ ACCEPT | offer_peggy_test_004
+ ACCEPT | offer_peggy_test_004
    Match: 5/5 | Price: 0.015 SOL ($0.015) | Rep: 95%
-❌ REJECT | offer_peggy_test_005
+ REJECT | offer_peggy_test_005
    Match: 2/5 | Price: 0.050 SOL ($0.050) | Rep: 65%
 
-🚀 Ready to test Peggy! Run: npm start
+ Ready to test Peggy! Run: npm start
 ```
 
 ### Run Peggy
@@ -163,7 +163,7 @@ npm start       # Start Peggy
 ### Watch Peggy Work
 
 ```
-🤖 Peggy starting up...
+ Peggy starting up...
 =========================================
 
 Advertiser: Nike Golf Championship Campaign
@@ -171,72 +171,72 @@ Advertiser ID: adv_001
 Wallet: AE6uwbubDn9WyXrpzvqU58jfirvqZAxWCZCfDDwW5MMb
 Balance: 4.4623 SOL
 
-✅ Peggy initialized successfully!
+ Peggy initialized successfully!
 Polling for offers every 30s...
 =========================================
 
-[14:32:15] 📋 Found 2 pending offer(s)
+[14:32:15]  Found 2 pending offer(s)
 
-─────────────────────────────────────────
-📋 Evaluating offer offer_peggy_test_001
+
+ Evaluating offer offer_peggy_test_001
    User: user_test_001
    Price: 0.0250 SOL ($0.025)
    User Wallet: 9kXHUnoYjB7eVUafsKFibrdHJWiYiX26vP7p7QX77nux
 
-💭 Peggy thinking...
+ Peggy thinking...
 
-✅ Decision: ACCEPT
+ Decision: ACCEPT
    Reasoning: Excellent match (5/5 criteria), price is fair ($0.025 
               vs $0.030 max CPM), user has strong reputation (92%) 
               and high historical CTR (15.2%). This is exactly our 
               target audience.
    Confidence: 95%
 
-📤 Accepting offer offer_peggy_test_001...
+ Accepting offer offer_peggy_test_001...
 
-💰 Received HTTP 402 Payment Required:
+ Received HTTP 402 Payment Required:
    Chain: solana (devnet)
    Escrow PDA: B6a1aL5g4oP9iAqCU1egBszdB1CBcYBmEBaUBeVQoeKo
    Amount: 25000000 lamports (0.0250 SOL)
    User: 9kXHUnoYjB7eVUafsKFibrdHJWiYiX26vP7p7QX77nux
    Platform: G6Lbdq9JyQ3QR5YvKqpVC9KjPqAd9hSwWtHv3bPDrWTY
 
-💰 Funding escrow for offer offer_peggy_test_001...
+ Funding escrow for offer offer_peggy_test_001...
    Amount: 25000000 lamports (0.0250 SOL)
    Escrow PDA: B6a1aL5g4oP9iAqCU1egBszdB1CBcYBmEBaUBeVQoeKo
-   ✅ PDA verified (bump: 254)
-   📤 Submitting transaction...
-   ✅ Transaction submitted!
+    PDA verified (bump: 254)
+    Submitting transaction...
+    Transaction submitted!
    Signature: 5tx1m2...
    Explorer: https://explorer.solana.com/tx/5tx1m2...?cluster=devnet
-   ⏳ Waiting for confirmation...
-   ✅ Transaction confirmed!
+    Waiting for confirmation...
+    Transaction confirmed!
 
-📝 Submitting payment proof...
+ Submitting payment proof...
 
-✅ Offer offer_peggy_test_001 fully funded!
+ Offer offer_peggy_test_001 fully funded!
    Status: funded
    Escrow PDA: B6a1aL5g4oP9iAqCU1egBszdB1CBcYBmEBaUBeVQoeKo
    User can now queue ad for viewing
    Resource: /api/user/offers/offer_peggy_test_001
-─────────────────────────────────────────
+
 ```
 
 ## Project Structure
 
 ```
 advertiser-agent/
-├── peggy.js              # Main agent (orchestrates everything)
-├── config.js             # Environment configuration
-├── seed-test-data.js     # Database seeding script
-├── lib/
-│   ├── llm.js           # Venice AI integration
-│   ├── api.js           # Backend API client (x402 flow)
-│   ├── escrow.js        # Solana escrow funding
-│   └── database.js      # Supabase queries
-├── package.json
-├── .env                 # Environment variables (git ignored)
-└── README.md           # This file
+ peggy.js              # Main agent (orchestrates everything)
+ config.js             # Environment configuration
+ seed-test-data.js     # Database seeding script
+ lib/
+    llm.js           # Venice AI integration
+    api.js           # Backend API client (x402 flow)
+    escrow.js        # Solana escrow funding
+    database.js      # Supabase queries
+ package.json
+ .env                 # Environment variables (git ignored)
+ README.md           # This file
 ```
 
 ## How It Works
@@ -256,13 +256,13 @@ The LLM provides:
 ### 2. x402 Protocol Flow
 
 ```
-Peggy → POST /api/advertiser/offers/:id/accept
-Backend → HTTP 402 Payment Required
+Peggy  POST /api/advertiser/offers/:id/accept
+Backend  HTTP 402 Payment Required
           Headers: X-Escrow-PDA, X-Payment-Amount, etc.
-Peggy → Fund escrow on Solana
-Peggy → POST /api/advertiser/payments/verify
-Backend → Verify escrow on-chain
-Backend → Mark offer as "funded"
+Peggy  Fund escrow on Solana
+Peggy  POST /api/advertiser/payments/verify
+Backend  Verify escrow on-chain
+Backend  Mark offer as "funded"
 ```
 
 ### 3. Escrow Funding (Solana)
@@ -338,7 +338,7 @@ After Peggy funds an escrow:
 2. Max (user agent) can query funded offers
 3. Max validates escrow on-chain
 4. Max queues ad locally for user to view
-5. User views ad → Publisher reports impression
+5. User views ad  Publisher reports impression
 6. Backend settles escrow (3 separate txs for privacy)
 
 ## Development

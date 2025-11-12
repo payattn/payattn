@@ -38,7 +38,7 @@ export async function validateOfferProofs(
       isValid: true, // Accept without proofs for demo
       validProofs: [],
       invalidProofs: [],
-      summary: '⚠️ No ZK proofs provided (accepted for demo)',
+      summary: ' No ZK proofs provided (accepted for demo)',
       details: []
     };
   }
@@ -73,7 +73,7 @@ export async function validateOfferProofs(
       isValid: true, // Accept without proofs for demo
       validProofs: [],
       invalidProofs: [],
-      summary: '⚠️ No ZK proofs to validate (accepted for demo)',
+      summary: ' No ZK proofs to validate (accepted for demo)',
       details: []
     };
   }
@@ -116,11 +116,11 @@ export async function validateOfferProofs(
   let summary = '';
   
   if (isValid) {
-    summary = `✅ ${validProofs.length} valid proof${validProofs.length > 1 ? 's' : ''}: ${validProofs.join(', ')} - User meets targeting requirements`;
+    summary = ` ${validProofs.length} valid proof${validProofs.length > 1 ? 's' : ''}: ${validProofs.join(', ')} - User meets targeting requirements`;
   } else if (validProofs.length > 0) {
-    summary = `⚠️ Partial validation: ${validProofs.length} valid (${validProofs.join(', ')}), ${invalidProofs.length} invalid (${invalidProofs.join(', ')})`;
+    summary = ` Partial validation: ${validProofs.length} valid (${validProofs.join(', ')}), ${invalidProofs.length} invalid (${invalidProofs.join(', ')})`;
   } else {
-    summary = `❌ All proofs invalid: ${invalidProofs.join(', ')} - User does NOT meet targeting requirements`;
+    summary = ` All proofs invalid: ${invalidProofs.join(', ')} - User does NOT meet targeting requirements`;
   }
   
   return {
@@ -137,8 +137,8 @@ export async function validateOfferProofs(
  * Uses proofType (what) over circuit name (how)
  * 
  * Examples:
- * - proofType='age', circuit='range_check' → 'Age (range proof)'
- * - proofType='location', circuit='set_membership' → 'Location (set membership)'
+ * - proofType='age', circuit='range_check'  'Age (range proof)'
+ * - proofType='location', circuit='set_membership'  'Location (set membership)'
  */
 function getProofDisplayName(zkProof: ZKProof): string {
   // If we know what's being proven, use that

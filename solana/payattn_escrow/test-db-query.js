@@ -7,9 +7,9 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseKey) {
-  console.error('❌ Missing required environment variables:');
-  console.error('  NEXT_PUBLIC_SUPABASE_URL:', supabaseUrl ? '✓' : '✗');
-  console.error('  NEXT_PUBLIC_SUPABASE_ANON_KEY:', supabaseKey ? '✓' : '✗');
+  console.error('[OK][OK][OK] Missing required environment variables:');
+  console.error('  NEXT_PUBLIC_SUPABASE_URL:', supabaseUrl ? '[OK][OK]' : '[OK][OK]');
+  console.error('  NEXT_PUBLIC_SUPABASE_ANON_KEY:', supabaseKey ? '[OK][OK]' : '[OK][OK]');
   console.error('\nLoad from .env.local: source <(grep -v "^#" ../../backend/.env.local | sed \'s/^/export /\')');
   process.exit(1);
 }
@@ -28,11 +28,11 @@ async function testQuery() {
     .single();
   
   if (error) {
-    console.error('❌ Query error:', error);
+    console.error('[OK][OK][OK] Query error:', error);
   } else if (!offer) {
-    console.log('❌ No offer found');
+    console.log('[OK][OK][OK] No offer found');
   } else {
-    console.log('✅ Offer found:', JSON.stringify(offer, null, 2));
+    console.log('[OK][OK][OK] Offer found:', JSON.stringify(offer, null, 2));
   }
   
   // Also try listing all offers
@@ -42,7 +42,7 @@ async function testQuery() {
     .select('offer_id, status, amount_lamports');
   
   if (listError) {
-    console.error('❌ List error:', listError);
+    console.error('[OK][OK][OK] List error:', listError);
   } else {
     console.log(`Found ${allOffers.length} offers:`);
     allOffers.forEach(o => {

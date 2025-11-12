@@ -170,11 +170,11 @@ await EncryptedStorage.deleteAllData(); // Optional: clear profile
 
 ## Testing Checklist
 
-- [x] ✅ Encrypt/decrypt profile data successfully
-- [x] ✅ Data persists across page reloads
-- [x] ✅ Session expires after 24 hours (via timestamp validation)
-- [x] ✅ `deleteAllData()` removes all traces
-- [ ] ⏳ Manual testing in Chrome, Firefox, Safari required
+- [x]  Encrypt/decrypt profile data successfully
+- [x]  Data persists across page reloads
+- [x]  Session expires after 24 hours (via timestamp validation)
+- [x]  `deleteAllData()` removes all traces
+- [ ]  Manual testing in Chrome, Firefox, Safari required
 
 ## Browser Compatibility
 
@@ -196,10 +196,10 @@ No external dependencies required for encryption/JWT functionality.
 
 ```
 agent-dashboard/
-├── lib/
-│   ├── auth.ts           # JWT token management + existing auth
-│   └── storage.ts        # NEW: Encrypted storage wrapper
-└── STORAGE_AUTH_README.md # This file
+ lib/
+    auth.ts           # JWT token management + existing auth
+    storage.ts        # NEW: Encrypted storage wrapper
+ STORAGE_AUTH_README.md # This file
 ```
 
 ## Next Steps
@@ -219,15 +219,15 @@ For production deployment, consider:
 - Client-side encryption (data never transmitted in plaintext)
 - AES-256-GCM (authenticated encryption)
 - Random IV per encryption
-- ⚠️ Deterministic key derivation (acceptable for MVP)
-- ⚠️ Unsigned JWT tokens (acceptable for MVP)
+-  Deterministic key derivation (acceptable for MVP)
+-  Unsigned JWT tokens (acceptable for MVP)
 
 ### Production Requirements
-- 🔒 User passphrase for key derivation
-- 🔒 Signed JWT tokens with server verification
-- 🔒 Secure key storage (consider Web Crypto non-extractable keys)
-- 🔒 Rate limiting on decryption attempts
-- 🔒 Audit logging for security events
+-  User passphrase for key derivation
+-  Signed JWT tokens with server verification
+-  Secure key storage (consider Web Crypto non-extractable keys)
+-  Rate limiting on decryption attempts
+-  Audit logging for security events
 
 ---
 
@@ -253,7 +253,7 @@ The Chrome extension uses a different storage format than the web dashboard due 
 
 ### Critical Implementation Details
 
-⚠️ **IMPORTANT:** The `encryptedData` field contains the complete base64 string that includes both IV and ciphertext concatenated together. This is the output from `encryptDataWithMaterial()`.
+ **IMPORTANT:** The `encryptedData` field contains the complete base64 string that includes both IV and ciphertext concatenated together. This is the output from `encryptDataWithMaterial()`.
 
 **File:** `extension/crypto.js`
 
@@ -272,7 +272,7 @@ const encrypted = await encryptDataWithMaterial(
 
 const profileData = {
   walletAddress: walletAddress,
-  encryptedData: encrypted,  // ← Store the complete base64 string
+  encryptedData: encrypted,  //  Store the complete base64 string
   version: 1,
   timestamp: Date.now()
 };
@@ -285,14 +285,14 @@ await chrome.storage.local.set({
 #### Decryption (Loading Profile)
 
 ```javascript
-// WRONG ❌ - Don't pass the entire object
+// WRONG  - Don't pass the entire object
 const profileData = await decryptDataWithMaterial(
   encryptedProfile,           // This is an object!
   keyMaterial,
   walletAddress
 );
 
-// CORRECT ✅ - Extract encryptedData string first
+// CORRECT  - Extract encryptedData string first
 const encryptedDataString = encryptedProfile.encryptedData;  // Just the base64 string
 const decryptedJson = await decryptDataWithMaterial(
   encryptedDataString,        // Pass only the base64 string
@@ -305,12 +305,12 @@ const profileData = JSON.parse(decryptedJson);  // Parse JSON string to object
 ### Common Mistakes
 
 1. **Passing entire object to decrypt function**
-   - ❌ `decryptDataWithMaterial(encryptedProfile, ...)`
-   - ✅ `decryptDataWithMaterial(encryptedProfile.encryptedData, ...)`
+   -  `decryptDataWithMaterial(encryptedProfile, ...)`
+   -  `decryptDataWithMaterial(encryptedProfile.encryptedData, ...)`
 
 2. **Forgetting to parse JSON after decryption**
-   - ❌ `const profile = await decryptDataWithMaterial(...)`
-   - ✅ `const json = await decryptDataWithMaterial(...); const profile = JSON.parse(json);`
+   -  `const profile = await decryptDataWithMaterial(...)`
+   -  `const json = await decryptDataWithMaterial(...); const profile = JSON.parse(json);`
 
 3. **Mixing up storage formats**
    - Dashboard uses: `{encryptedData, iv}` as separate fields
@@ -337,7 +337,7 @@ The `decryptDataWithMaterial()` function expects this exact format:
 ```javascript
 async function decryptDataWithMaterial(encryptedData, keyMaterial, walletAddress) {
   const key = await deriveKeyFromMaterial(keyMaterial, walletAddress);
-  const combined = base64ToArrayBuffer(encryptedData);  // ← Expects base64 string
+  const combined = base64ToArrayBuffer(encryptedData);  //  Expects base64 string
   const iv = combined.slice(0, CRYPTO_CONSTANTS.IV_LENGTH);
   const ciphertext = combined.slice(CRYPTO_CONSTANTS.IV_LENGTH);
   
@@ -348,7 +348,7 @@ async function decryptDataWithMaterial(encryptedData, keyMaterial, walletAddress
   );
   
   const decoder = new TextDecoder();
-  return decoder.decode(decrypted);  // ← Returns JSON string, not object
+  return decoder.decode(decrypted);  //  Returns JSON string, not object
 }
 ```
 

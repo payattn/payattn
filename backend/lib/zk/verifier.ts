@@ -5,9 +5,9 @@
  * Receives proofs from extension, verifies them using Rapidsnark CLI
  * 
  * Data Flow:
- *   Extension (proof generation) → private data stays here ✅
- *   Extension sends proof → /api/verify-proof → Rapidsnark verifier (CLI) → backend ✅
- *   Backend receives verified result → advertiser is notified ✅
+ *   Extension (proof generation)  private data stays here 
+ *   Extension sends proof  /api/verify-proof  Rapidsnark verifier (CLI)  backend 
+ *   Backend receives verified result  advertiser is notified 
  * 
  * Uses Rapidsnark C++ verifier CLI for fast, reliable verification.
  */
@@ -107,7 +107,7 @@ export async function verifyProof(
       
       console.log('[Verifier] Verification completed in', verificationTime, 'ms');
       console.log('[Verifier] Total time:', Date.now() - startTime, 'ms');
-      console.log('[Verifier] Result:', isValid ? 'VALID ✅' : 'INVALID ❌');
+      console.log('[Verifier] Result:', isValid ? 'VALID [OK][OK][OK]' : 'INVALID [OK][OK][OK]');
 
       return {
         valid: isValid,
@@ -143,7 +143,7 @@ export async function verifyProof(
       
       console.log('[Verifier] Verification completed in', verificationTime, 'ms');
       console.log('[Verifier] Total time:', Date.now() - startTime, 'ms');
-      console.log('[Verifier] Result: INVALID ❌');
+      console.log('[Verifier] Result: INVALID [OK][OK][OK]');
       
       return {
         valid: false,

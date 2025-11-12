@@ -33,7 +33,7 @@ document.getElementById('refreshModels').addEventListener('click', async (e) => 
   
   try {
     const originalText = refreshBtn.textContent;
-    refreshBtn.textContent = '⏳ Loading...';
+    refreshBtn.textContent = ' Loading...';
     refreshBtn.style.pointerEvents = 'none';
     
     const url = urlInput.value.trim();
@@ -67,7 +67,7 @@ document.getElementById('refreshModels').addEventListener('click', async (e) => 
       });
       
       statusMsg.className = 'status-message success';
-      statusMsg.textContent = `✅ Loaded ${data.data.length} model(s)`;
+      statusMsg.textContent = ` Loaded ${data.data.length} model(s)`;
       statusMsg.style.display = 'block';
       
       setTimeout(() => {
@@ -80,10 +80,10 @@ document.getElementById('refreshModels').addEventListener('click', async (e) => 
   } catch (error) {
     console.error('[Settings] Error fetching models:', error);
     statusMsg.className = 'status-message error';
-    statusMsg.textContent = `❌ Failed to load models: ${error.message}`;
+    statusMsg.textContent = ` Failed to load models: ${error.message}`;
     statusMsg.style.display = 'block';
   } finally {
-    refreshBtn.textContent = '🔄 Refresh models';
+    refreshBtn.textContent = ' Refresh models';
     refreshBtn.style.pointerEvents = 'auto';
   }
 });
@@ -156,7 +156,7 @@ function updateStatus(config) {
         <strong>Provider:</strong> Venice AI (Cloud)
       </div>
       <div style="font-size: 13px;">
-        <strong>Status:</strong> ${hasKey ? '✅ Configured' : '❌ Not configured'}
+        <strong>Status:</strong> ${hasKey ? ' Configured' : ' Not configured'}
       </div>
     `;
   } else if (config.provider === 'local') {
@@ -173,7 +173,7 @@ function updateStatus(config) {
         <strong>Model:</strong> ${config.localModelName || 'Not set'}
       </div>
       <div style="font-size: 13px;">
-        <strong>Status:</strong> ${hasUrl && hasModel ? '⚠️ Configured (test connection)' : '❌ Not configured'}
+        <strong>Status:</strong> ${hasUrl && hasModel ? ' Configured (test connection)' : ' Not configured'}
       </div>
     `;
   }
@@ -212,14 +212,14 @@ document.getElementById('saveProvider').addEventListener('click', async () => {
     await window.LLMService.setLLMConfig(config);
     
     statusMsg.className = 'status-message success';
-    statusMsg.textContent = '✅ Configuration saved successfully!';
+    statusMsg.textContent = ' Configuration saved successfully!';
     statusMsg.style.display = 'block';
     
     await loadConfiguration();
     
   } catch (error) {
     statusMsg.className = 'status-message error';
-    statusMsg.textContent = `❌ ${error.message}`;
+    statusMsg.textContent = ` ${error.message}`;
     statusMsg.style.display = 'block';
   } finally {
     saveBtn.disabled = false;
@@ -242,7 +242,7 @@ document.getElementById('testConnection').addEventListener('click', async () => 
     
     statusMsg.className = 'status-message';
     statusMsg.style.display = 'block';
-    statusMsg.textContent = '🔄 Testing connection...';
+    statusMsg.textContent = ' Testing connection...';
     
     const response = await window.LLMService.callLLM(
       [{ role: 'user', content: 'Say "OK" if you can hear me.' }],
@@ -253,7 +253,7 @@ document.getElementById('testConnection').addEventListener('click', async () => 
     
     if (response.success) {
       statusMsg.className = 'status-message success';
-      statusMsg.textContent = `✅ Connection successful! Response: "${response.content.substring(0, 50)}..."`;
+      statusMsg.textContent = ` Connection successful! Response: "${response.content.substring(0, 50)}..."`;
       
       // Update the configuration status display
       const config = await window.LLMService.getLLMConfig();
@@ -265,7 +265,7 @@ document.getElementById('testConnection').addEventListener('click', async () => 
             <strong>Provider:</strong> Venice AI (Cloud)
           </div>
           <div style="font-size: 13px;">
-            <strong>Status:</strong> ✅ Working
+            <strong>Status:</strong>  Working
           </div>
         `;
       } else if (config.provider === 'local') {
@@ -280,7 +280,7 @@ document.getElementById('testConnection').addEventListener('click', async () => 
             <strong>Model:</strong> ${config.localModelName || 'Not set'}
           </div>
           <div style="font-size: 13px;">
-            <strong>Status:</strong> ✅ Working
+            <strong>Status:</strong>  Working
           </div>
         `;
       }
@@ -290,7 +290,7 @@ document.getElementById('testConnection').addEventListener('click', async () => 
     
   } catch (error) {
     statusMsg.className = 'status-message error';
-    statusMsg.textContent = `❌ Connection failed: ${error.message}`;
+    statusMsg.textContent = ` Connection failed: ${error.message}`;
   } finally {
     testBtn.disabled = false;
     testBtn.textContent = 'Test Connection';
