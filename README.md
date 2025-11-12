@@ -1,11 +1,11 @@
 # PayAttn
 
 **Privacy-First Ad Marketplace**
+PayAttn is a privacy-first ad marketplace where autonomous agents negotiate prices using ZK proofs so users get paid for their attention without giving up their data or being tracked.
 
-Pay Attention allows users to prove demographic attributes (age, preferences, etc.) to advertisers **without revealing the actual data**, using Zero-Knowledge Succinct Non-Interactive Arguments of Knowledge (ZK-SNARKs).
+### If there was a marketing guy, this is what he'd say:
+Online advertising is broken. The current model doesn't work for users or publishers. Of course it works for ad networks that have built empires on a business model of mass surveillance and harvesting your data. I've built PayAttn (Pay Attention) to solve that problem and shift power so that you can take back control of your data...while still giving advertisers and publishers a fair deal.
 
-### What the marketing guy would say:
-PayAttn is a privacy-first ad marketplace where autonomous agents negotiate prices using ZK proofs so users get paid for their attention without giving up their data.
 
 ---
 
