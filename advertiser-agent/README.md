@@ -42,11 +42,14 @@ Peggy is the advertiser-side agent in the Payattn ecosystem. She autonomously:
 
 1. **Advertiser Wallet** (devnet SOL)
    ```bash
-   # Check balance
-   solana balance AE6uwbubDn9WyXrpzvqU58jfirvqZAxWCZCfDDwW5MMb --url devnet
+   # Create a new wallet or use existing
+   solana-keygen new -o ~/.config/solana/advertiser.json
+   
+   # Check balance (replace with your actual wallet address)
+   solana balance YOUR_WALLET_ADDRESS --url devnet
    
    # Request airdrop if needed
-   solana airdrop 1 AE6uwbubDn9WyXrpzvqU58jfirvqZAxWCZCfDDwW5MMb --url devnet
+   solana airdrop 1 YOUR_WALLET_ADDRESS --url devnet
    ```
 
 2. **Backend Running**
@@ -85,14 +88,14 @@ VENICE_API_KEY=your_actual_api_key_here
 API_URL=http://localhost:3000
 ADVERTISER_ID=adv_001
 
-# Supabase (already configured)
-NEXT_PUBLIC_SUPABASE_URL=https://uytcohrqiqmtfdopdrpe.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_mWIMx0kiZ8VGqdaRrbMoRA_e0C5oe61
+# Supabase (copy from backend/.env.local)
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url_here
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key_here
 
-# Solana (already configured)
+# Solana (configure for your deployment)
 SOLANA_RPC_URL=https://api.devnet.solana.com
-SOLANA_PROGRAM_ID=6ZEekbTJZ6D6KrfSGDY2ByoWENWfe8RzhvpBS4KtPdZr
-ADVERTISER_KEYPAIR_PATH=/Users/jmd/.config/solana/advertiser.json
+SOLANA_PROGRAM_ID=your_program_id_here
+ADVERTISER_KEYPAIR_PATH=~/.config/solana/advertiser.json
 
 # Agent behavior
 POLL_INTERVAL=30000  # 30 seconds

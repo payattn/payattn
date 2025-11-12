@@ -6,8 +6,21 @@ Pay Attention allows users to prove demographic attributes (age, preferences, et
 
 ---
 
-## 🎯 Quick Links
+## � Key Technical Achievements
 
+- **Real ZK-SNARKs:** Groth16 proofs with Circom circuits (not a mock/simulation)
+- **10-50ms Verification:** Rapidsnark C++ verifier (426KB binary, production-ready)
+- **Privacy-Preserving Architecture:** User data never leaves browser, cryptographically guaranteed
+- **Multi-Chain Integration:** Solana smart contracts for trustless escrow settlement
+- **Autonomous AI Agent:** Venice AI-powered offer evaluation system (Peggy)
+- **x402 Protocol:** Novel "Payment Required" HTTP status for blockchain payment coordination
+- **Complete End-to-End Flow:** Chrome extension → ZK proof → Backend verification → Solana escrow → Settlement
+
+---
+
+##  Quick Links
+
+- **[🏆 Hackathon Demo Guide](/HACKATHON_DEMO.md)** - Quick 3-minute demo flow for judges
 - **[📚 Documentation](/docs)** - Complete system documentation
 - **[🏗️ Architecture](/docs/ARCHITECTURE.md)** - System overview and components
 - **[🔐 ZK Proof Flow](/docs/ZK_PROOF_FLOW.md)** - How proofs work
@@ -17,7 +30,50 @@ Pay Attention allows users to prove demographic attributes (age, preferences, et
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Quick Start (Hackathon Judges)
+
+### One-Command Setup
+```bash
+# Clone and setup (installs all dependencies)
+git clone https://github.com/payattn/payattn.git
+cd payattn
+./setup.sh
+```
+
+### Configure Environment Variables
+```bash
+# 1. Backend configuration
+cp backend/.env.example backend/.env.local
+# Edit backend/.env.local with your Supabase and Solana credentials
+
+# 2. Advertiser agent configuration (optional)
+cp advertiser-agent/.env.example advertiser-agent/.env
+# Edit advertiser-agent/.env with your Venice AI key
+```
+
+### Start the System
+```bash
+# Terminal 1: Start backend server
+cd backend
+npm run dev
+# Server runs at http://localhost:3000
+
+# Terminal 2 (optional): Start advertiser agent
+cd advertiser-agent
+npm start
+```
+
+### Load Chrome Extension
+1. Open Chrome → `chrome://extensions/`
+2. Enable "Developer mode"
+3. Click "Load unpacked"
+4. Select `extension/` directory
+
+**That's it!** The extension will guide you through generating ZK proofs.
+
+---
+
+## 🚀 Quick Start (Development)
 
 ### Prerequisites
 - Node.js 18+
@@ -93,29 +149,35 @@ payattn/
 │       ├── age_range.circom
 │       └── set_membership.circom
 │
+├── advertiser-agent/              # 🤖 Autonomous AI agent (Peggy)
+│   ├── peggy.js                   # Main agent orchestrator
+│   └── lib/                       # Agent utilities
+│       ├── llm.js                 # Venice AI integration
+│       ├── api.js                 # x402 protocol client
+│       └── escrow.js              # Solana escrow funding
+│
 ├── solana/                        # 🔗 Solana smart contracts
 │   └── payattn_escrow/           # Trustless escrow program
 │       ├── programs/              # Anchor program
 │       ├── tests/                 # Integration tests
 │       └── schema.sql             # Database schema
 │
-├── rapidsnark-server/             # ⚡ C++ verification server
-│   ├── rapidsnark/                # Compiled Rapidsnark binary
-│   │   └── package_macos_arm64/
-│   │       └── bin/verifier       # CLI verifier (426KB)
-│   ├── keys/                      # Verification keys (JSON)
-│   │   ├── range_check_verification_key.json
-│   │   ├── age_range_verification_key.json
-│   │   └── set_membership_verification_key.json
-│   └── README.md                  # Rapidsnark setup guide
-│
-└── cf-worker/                     # ❌ ABANDONED (Cloudflare Worker)
-    └── README.md                  # Why it failed
+└── rapidsnark-server/             # ⚡ C++ verification server
+    ├── rapidsnark/                # Compiled Rapidsnark binary
+    │   └── package_macos_arm64/
+    │       └── bin/verifier       # CLI verifier (426KB)
+    ├── keys/                      # Verification keys (JSON)
+    │   ├── range_check_verification_key.json
+    │   ├── age_range_verification_key.json
+    │   └── set_membership_verification_key.json
+    └── README.md                  # Rapidsnark setup guide
 ```
 
 ---
 
 ## 🔐 How It Works
+
+![PayAttn system flow](docs/payattn_system_flow01.png)
 
 ### 1. User Privacy (Extension)
 ```
@@ -214,7 +276,7 @@ All documentation is in the [`/docs`](/docs) directory:
 
 ## 📝 License
 
-TBD
+MIT License - see [LICENSE](LICENSE) file for details
 
 ---
 

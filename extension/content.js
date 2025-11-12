@@ -14,7 +14,7 @@ if (document.readyState === 'loading') {
 function injectExtensionId() {
   // Inject extension ID into the page (via DOM attribute)
   document.documentElement.setAttribute('data-payattn-extension-id', chrome.runtime.id);
-  console.log('[PayAttn Extension] Set extension ID:', chrome.runtime.id);
+  // console.log('[PayAttn Extension] Set extension ID:', chrome.runtime.id);  // Debug only
 }
 
 // Listen for messages from the page (website)

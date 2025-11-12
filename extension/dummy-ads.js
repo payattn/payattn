@@ -20,7 +20,7 @@ function generateUUID() {
  * Randomly selects 5-15 ads from a pool of 25
  */
 function generateDummyAds() {
-  console.log('[Dummy Ads] Generating ads from expanded pool...');
+  // console.log('[Dummy Ads] Generating ads from expanded pool...');  // Debug only
   // Temporarily return empty array - full implementation in next command
   return [];
 }
