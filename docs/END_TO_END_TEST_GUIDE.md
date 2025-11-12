@@ -1,16 +1,16 @@
 # End-to-End Testing Guide
 
-## 🎯 Overview
+## Overview
 
 This guide walks you through testing the complete ZK-SNARK proof verification flow from extension to backend.
 
-## ✅ Prerequisites
+## Prerequisites
 
-- ✅ Extension loaded with circuits installed
-- ✅ Backend running at `http://localhost:3000`
-- ✅ Verification keys deployed to backend
+- Extension loaded with circuits installed
+- Backend running at `http://localhost:3000`
+- Verification keys deployed to backend
 
-## 📋 Test Scenarios
+##  Test Scenarios
 
 ### Test 1: Range Check (Income Proof)
 
@@ -110,7 +110,7 @@ This guide walks you through testing the complete ZK-SNARK proof verification fl
 
 ---
 
-## 🔍 Debugging
+## Debugging
 
 ### Hash Verification
 
@@ -144,7 +144,7 @@ Both should produce the same hash.
 
 ---
 
-## 📊 API Testing
+## API Testing
 
 You can also test the API directly using curl:
 
@@ -181,18 +181,18 @@ curl -X POST http://localhost:3000/api/verify-proof \
 
 ---
 
-## ✅ Success Criteria
+## Success Criteria
 
 All tests should pass with:
-- ✅ Cryptographic proof verification succeeds
-- ✅ Public signals match campaign requirements
-- ✅ UI shows green success message
-- ✅ No errors in browser console
-- ✅ No errors in Next.js terminal
+- Cryptographic proof verification succeeds
+- Public signals match campaign requirements
+- UI shows green success message
+- No errors in browser console
+- No errors in Next.js terminal
 
 ---
 
-## 🚀 Next Steps
+## Next Steps
 
 After successful testing:
 

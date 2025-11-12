@@ -2,7 +2,7 @@
 
 ## Changes Made
 
-### ✅ Created New Files
+###  Created New Files
 
 **`test-proof.html`** (12KB)
 - Renamed and updated from `age-proof-test.html`
@@ -18,7 +18,7 @@
   - `generateRangeCheckProof()` - Prove any numeric value in range
   - `generateSetMembershipProof()` - Prove value in set
 
-### ✅ Updated Existing Files
+###  Updated Existing Files
 
 **`popup.html`**
 - Changed test link from `age-proof-test.html` → `test-proof.html`

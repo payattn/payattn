@@ -137,7 +137,7 @@ This guide walks through testing the complete Key Derivation Service (KDS) flow.
 
 ## Expected Outcomes
 
-### ✅ Success Indicators
+###  Success Indicators
 
 - [ ] Wallet authentication works (signature prompt)
 - [ ] Profile saves without errors
@@ -149,7 +149,7 @@ This guide walks through testing the complete Key Derivation Service (KDS) flow.
 - [ ] Website and extension see same data
 - [ ] Cache works (second fetch faster)
 
-### ❌ Common Issues
+###  Common Issues
 
 **Issue:** `400 Bad Request` on `/api/k/[hash]`
 - **Cause:** Hash format invalid

@@ -13,14 +13,14 @@
 - Works for age, income, credit score, etc.
 - Inputs: `value` (private), `min` (public), `max` (public)
 - Constraints: ~5 (very fast)
-- ✅ Compiled, tested, and verified locally
+- Compiled, tested, and verified locally
 
 **`set_membership.circom`**
 - Proves a value exists in a set without revealing which one
 - Works with hashed strings (countries, interests, etc.)
 - Inputs: `value` (private hash), `set[10]` (public hashes)
 - Constraints: ~42 (still fast)
-- ✅ Compiled, tested with hashed country codes, verified locally
+- Compiled, tested with hashed country codes, verified locally
 
 ### 2. Extension Integration
 
@@ -260,14 +260,14 @@ const proof = await generateProofInServiceWorker('set_membership',
 
 ## Security Notes
 
-### ✅ What's Secure
+###  What's Secure
 
 - Proofs are cryptographically sound (Groth16 with BN128)
 - Private inputs never leave the extension
 - Can't fake a proof (computationally infeasible)
 - Can't determine which set element matched (privacy-preserving)
 
-### ⚠️ Limitations
+###  Limitations
 
 - Small search spaces can be brute-forced (e.g., 200 countries)
   - Acceptable: The proof still doesn't reveal WHICH value matched
@@ -287,10 +287,10 @@ const proof = await generateProofInServiceWorker('set_membership',
 ## Next Steps
 
 ### Ready for Production
-- ✅ Circuits compiled and integrated
-- ✅ Test functions available
-- ✅ Backend documentation complete
-- ✅ Hashing scheme documented
+- Circuits compiled and integrated
+- Test functions available
+- Backend documentation complete
+- Hashing scheme documented
 
 ### Remaining Work
 - ⏳ Deploy verification keys to backend

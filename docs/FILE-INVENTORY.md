@@ -4,7 +4,7 @@
 
 ---
 
-## 📋 New Files Created
+##  New Files Created
 
 ### 1. ZK Library Modules (5 files)
 
@@ -68,14 +68,14 @@
 - Proving key (secret material)
 - Groth16 setup outputs
 - Used for proof generation
-- ❌ Not in Git (too large)
+- Not in Git (too large)
 
 #### Backend Verification Keys
 
 **`public/circuits/age_range/verification_key.json`** (3.2 KB)
 - Verification key (public)
 - Used to verify proofs
-- ✅ In Git (small, needed)
+- In Git (small, needed)
 
 ---
 
@@ -129,7 +129,7 @@
 
 ---
 
-## 📝 Modified Files
+## Modified Files
 
 ### `package.json`
 **Change:** Added snarkjs dependency
@@ -144,7 +144,7 @@
 
 ---
 
-## 📊 Summary by Category
+## Summary by Category
 
 ### Code Files (6 files)
 ```
@@ -193,7 +193,7 @@ public/circuits/.gitignore
 
 ---
 
-## 🔍 File Dependency Map
+## File Dependency Map
 
 ```
 ┌─ lib/zk/index.ts (central export)
@@ -213,9 +213,9 @@ public/circuits/.gitignore
 
 ---
 
-## 📦 Git Staging Guide
+## Git Staging Guide
 
-### ✅ COMMIT These Files
+###  COMMIT These Files
 
 ```bash
 # Library code (production-ready)
@@ -242,7 +242,7 @@ git add ZK-SNARK-QUICK-REFERENCE.md
 git add package.json
 ```
 
-### ❌ DON'T COMMIT These Files
+###  DON'T COMMIT These Files
 
 ```
 extension/circuits/age_range/age_range_0000.zkey  (4.1 MB - covered by .gitignore)
@@ -253,7 +253,7 @@ node_modules/                                      (dependencies)
 
 ---
 
-## 🚀 Deployment Checklist
+## Deployment Checklist
 
 - [ ] `npm install` (installs snarkjs)
 - [ ] `npm run build` (TypeScript compilation)
@@ -264,7 +264,7 @@ node_modules/                                      (dependencies)
 
 ---
 
-## 📚 Related Documentation
+## Related Documentation
 
 **In this project:**
 - `ZK-SNARK-ANALYSIS.md` - Theory and approach
@@ -277,7 +277,7 @@ node_modules/                                      (dependencies)
 
 ---
 
-## 🔄 Next Phase: WP02.3
+## Next Phase: WP02.3
 
 **Files to create:**
 - `extension/components/AgeProofGenerator.tsx` - UI component
@@ -289,7 +289,7 @@ node_modules/                                      (dependencies)
 
 ---
 
-## ✨ Quality Metrics
+## Quality Metrics
 
 - **Type Safety:** 100% TypeScript strict mode
 - **Documentation:** JSDoc comments on all exports

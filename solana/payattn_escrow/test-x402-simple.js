@@ -20,7 +20,7 @@ console.log('='.repeat(60), '\n');
 async function testX402Flow() {
   try {
     // Step 1: Accept offer (get 402 response)
-    console.log('📋 Step 1: Accepting offer...');
+    console.log('[STEP 1] Accepting offer...');
     
     const acceptResponse = await fetch(`${BACKEND_URL}/api/advertiser/offers/${offerId}/accept`, {
       method: 'POST',
@@ -52,19 +52,19 @@ async function testX402Flow() {
     
     const body = await acceptResponse.json();
     
-    console.log('✅ Received 402 Payment Required');
+    console.log('[OK] Received 402 Payment Required');
     console.log('Response Body:', JSON.stringify(body, null, 2));
     console.log('x402 Headers:', JSON.stringify(x402Headers, null, 2), '\n');
     
     // Step 2 & 3 would require Solana wallet to fund escrow
-    console.log('📝 Next steps (manual):');
+    console.log('*** Next steps (manual):');
     console.log('  1. Fund escrow at PDA:', x402Headers.escrowPda);
     console.log('  2. Amount:', x402Headers.paymentAmount, 'lamports');
     console.log('  3. Use advertiser wallet to call createEscrow()');
     console.log('  4. Submit tx signature to:', x402Headers.verificationEndpoint);
     
     console.log('\n='.repeat(60));
-    console.log('🎉 x402 Response Test PASSED!');
+    console.log('*** x402 Response Test PASSED!');
     console.log('='.repeat(60));
     
   } catch (error) {

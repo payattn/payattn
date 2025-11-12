@@ -157,15 +157,15 @@ wrangler tail
 ## Security
 
 ### DO NOT commit:
-- ❌ `wrangler.toml` (contains account_id)
-- ❌ `.dev.vars` (contains secrets)
-- ❌ Any API keys or tokens
+- `wrangler.toml` (contains account_id)
+- `.dev.vars` (contains secrets)
+- Any API keys or tokens
 
 ### DO commit:
-- ✅ `wrangler.toml.example` (template)
-- ✅ `.dev.vars.example` (template)
-- ✅ `worker.js` (code)
-- ✅ Verification keys (public by design)
+- `wrangler.toml.example` (template)
+- `.dev.vars.example` (template)
+- `worker.js` (code)
+- Verification keys (public by design)
 
 ## Next Steps After Deployment
 

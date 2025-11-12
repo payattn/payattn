@@ -3,9 +3,9 @@
 ## Architecture Overview
 
 We've implemented a **messaging-based architecture** where:
-- ✅ Background service worker (`background.js`) requests proof generation
-- ✅ Helper page (`age-proof-test.html`) actually generates proofs (has snarkjs loaded)
-- ✅ Results are sent back to service worker via chrome.runtime.sendMessage()
+- Background service worker (`background.js`) requests proof generation
+- Helper page (`age-proof-test.html`) actually generates proofs (has snarkjs loaded)
+- Results are sent back to service worker via chrome.runtime.sendMessage()
 
 This works around the Manifest V3 limitation that service workers can't load large UMD libraries like snarkjs directly.
 

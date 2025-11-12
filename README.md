@@ -32,7 +32,7 @@ Online advertising is broken. The current model doesn't work for users or publis
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### One-Command Setup
 ```bash
@@ -75,7 +75,7 @@ npm start
 
 ---
 
-## 🚀 Quick Start (Development)
+## Quick Start (Development)
 
 ### Prerequisites
 - Node.js 18+
@@ -115,7 +115,7 @@ npm run dev
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 payattn/
@@ -177,7 +177,7 @@ payattn/
 
 ---
 
-## 🔐 How It Works
+## How It Works
 
 ![PayAttn system flow](docs/payattn_system_flow01.png)
 
@@ -208,14 +208,14 @@ Backend returns result (does NOT learn actual age)
 ```
 
 ### 3. Privacy Guarantee
-- ✅ User's age (35) **never leaves the browser**
-- ✅ Backend only sees: "Someone proved their age is 25-50"
-- ✅ Cryptographically impossible to extract actual age from proof
-- ✅ No tracking, no cookies, no data harvesting
+- User's age (35) **never leaves the browser**
+- Backend only sees: "Someone proved their age is 25-50"
+- Cryptographically impossible to extract actual age from proof
+- No tracking, no cookies, no data harvesting
 
 ---
 
-## 🛠️ Technology Stack
+##  Technology Stack
 
 | Component | Technology |
 |-----------|-----------|
@@ -228,7 +228,7 @@ Backend returns result (does NOT learn actual age)
 
 ---
 
-## 📊 Current Status
+## Current Status
 
 ✅ **Extension:** 3 circuits working, 1-3 second proof generation  
 ✅ **Backend:** Rapidsnark verification, 10-50ms per proof  
@@ -237,7 +237,7 @@ Backend returns result (does NOT learn actual age)
 
 ---
 
-## 🧪 Testing
+## Testing
 
 See [docs/TESTING.md](/docs/TESTING.md) for complete testing guide.
 
@@ -254,7 +254,7 @@ curl -X POST http://localhost:3000/api/verify-proof \
 
 ---
 
-## 📖 Documentation
+## Documentation
 
 All documentation is in the [`/docs`](/docs) directory:
 
@@ -267,7 +267,7 @@ All documentation is in the [`/docs`](/docs) directory:
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 1. Read [docs/ARCHITECTURE.md](/docs/ARCHITECTURE.md) to understand the system
 2. Check [docs/ZK_PROOF_FLOW.md](/docs/ZK_PROOF_FLOW.md) for ZK-SNARK details
@@ -276,13 +276,13 @@ All documentation is in the [`/docs`](/docs) directory:
 
 ---
 
-## 📝 License
+## License
 
 MIT License - see [LICENSE](LICENSE) file for details
 
 ---
 
-## 🔗 Links
+## Links
 
 - **Documentation:** [/docs](/docs)
 - **Extension:** [/extension](/extension)

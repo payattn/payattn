@@ -98,7 +98,7 @@ curl -X POST http://localhost:3000/api/verify-proof \
 **Expected timing:**
 - ⚡ **10-50ms:** Excellent (typical)
 - ⚠️ **50-200ms:** Acceptable (may include file I/O overhead)
-- ❌ **>500ms:** Problem (investigate)
+- **>500ms:** Problem (investigate)
 
 ---
 
@@ -191,7 +191,7 @@ top -l 1 | grep -E "^CPU|^PhysMem"
 
 ## Manual CLI Test
 
-Want to test the verifier directly without the backend? Here's how:
+Want to test the verifier directly without the backend? Follow these steps:
 
 ### 1. Create Test Files
 
@@ -302,11 +302,11 @@ const isValid = stdout.includes('Valid proof');
 ```
 
 **Why this works:**
-- ✅ No JavaScript runtime issues (native C++)
-- ✅ No Worker/WASM API dependencies
-- ✅ Fast (~10-50ms vs 8+ minute hangs)
-- ✅ Production-proven (Polygon ID, iden3)
-- ✅ Simple integration (standard child_process)
+- No JavaScript runtime issues (native C++)
+- No Worker/WASM API dependencies
+- Fast (~10-50ms vs 8+ minute hangs)
+- Production-proven (Polygon ID, iden3)
+- Simple integration (standard child_process)
 
 ---
 

@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
         }
         
         // ====== X402 PAYMENT REQUEST ======
-        console.log('\n🔷 X402 Payment Request:');
+        console.log('\n[X402] Payment Request:');
         console.log('   Protocol: x402 (Solana escrow-based payment)');
         console.log(`   Offer ID: ${offer.offer_id}`);
         console.log(`   Amount: ${offer.amount_lamports} lamports (${(offer.amount_lamports / 1e9).toFixed(6)} SOL)`);
@@ -121,7 +121,7 @@ export async function POST(request: NextRequest) {
         
         // ====== X402 PAYMENT SUCCESSFUL ======
         if (fundResult.success) {
-          console.log('\n✅ X402 Payment Successful!');
+          console.log('\n*** X402 Payment Successful!');
           console.log('   Protocol: x402 (Solana escrow)');
           console.log(`   Offer ID: ${offer.offer_id}`);
           console.log(`   Escrow PDA: ${fundResult.escrowPda}`);

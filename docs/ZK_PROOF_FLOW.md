@@ -4,13 +4,13 @@
 
 ---
 
-## 🎯 Overview
+## Overview
 
 This document describes the complete flow of ZK-SNARK proofs in PayAttn, from user data entry through proof generation, transmission, and verification.
 
 ---
 
-## 📊 Flow Diagram
+## Flow Diagram
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -249,7 +249,7 @@ This document describes the complete flow of ZK-SNARK proofs in PayAttn, from us
 
 ---
 
-## 🔬 Circuit Details
+## Circuit Details
 
 ### Circuit: `range_check.circom`
 
@@ -382,23 +382,23 @@ component main = SetMembership();
 ### What Each Party Knows
 
 **User (Extension):**
-- ✅ Own private data (age: 35)
-- ✅ Proof requirements (25-50)
-- ✅ Generated proof
-- ✅ Verification result
+- Own private data (age: 35)
+- Proof requirements (25-50)
+- Generated proof
+- Verification result
 
 **Backend/Advertiser:**
-- ✅ Proof is valid or invalid
-- ✅ Public signals (range: 25-50, isValid: 1)
-- ✅ Circuit used (range_check)
-- ❌ Actual age (35) - **NEVER revealed**
-- ❌ Any other private data
+- Proof is valid or invalid
+- Public signals (range: 25-50, isValid: 1)
+- Circuit used (range_check)
+- Actual age (35) - **NEVER revealed**
+- Any other private data
 
 **Network Observer (MITM):**
-- ✅ Encrypted HTTPS traffic
-- ✅ Request/response sizes (~1KB)
-- ❌ Cannot decrypt without TLS keys
-- ❌ Cannot fake proofs (cryptographically secure)
+- Encrypted HTTPS traffic
+- Request/response sizes (~1KB)
+- Cannot decrypt without TLS keys
+- Cannot fake proofs (cryptographically secure)
 
 ### Information Leakage Analysis
 
@@ -417,14 +417,14 @@ component main = SetMembership();
    - **Note:** This is by design - advertisers need to know the range
 
 **What CANNOT be inferred:**
-- ❌ Actual private values (cryptographically impossible)
-- ❌ Other user attributes
-- ❌ User identity (unless combined with other data)
-- ❌ Previous proofs (stateless verification)
+- Actual private values (cryptographically impossible)
+- Other user attributes
+- User identity (unless combined with other data)
+- Previous proofs (stateless verification)
 
 ---
 
-## ⚡ Performance Analysis
+## Performance Analysis
 
 ### Proof Generation (Extension)
 
@@ -440,8 +440,8 @@ Total:                     1000-3000ms
 ```
 
 **Optimization opportunities:**
-- ✅ Circuit caching (implemented)
-- ✅ Web Worker offloading (implemented)
+- Circuit caching (implemented)
+- Web Worker offloading (implemented)
 - ⚠️ WASM optimization (potential 20% improvement)
 - ⚠️ Multi-threading (blocked by snarkjs limitation)
 
@@ -463,11 +463,11 @@ Total:                     35-100ms
 **Comparison to alternatives:**
 - ⚡ Rapidsnark (C++): **35-100ms**
 - 🐌 Node.js snarkjs: **>8 minutes** (HANGS)
-- ❌ Cloudflare Workers: **Doesn't work**
+- Cloudflare Workers: **Doesn't work**
 
 ---
 
-## 🔧 Error Handling
+## Error Handling
 
 ### Extension Errors
 
@@ -528,7 +528,7 @@ This is **not an error** - it's the correct behavior when someone tries to prove
 
 ---
 
-## 🧪 Testing Scenarios
+## Testing Scenarios
 
 ### Happy Path
 
@@ -601,7 +601,7 @@ Result: ✅ Actually works - but that's OK!
 
 ---
 
-## 📝 Implementation Notes
+## Implementation Notes
 
 ### Extension Implementation
 
@@ -656,7 +656,7 @@ export async function verifyProof(
 
 ---
 
-## 🔗 Related Documents
+## Related Documents
 
 - [ARCHITECTURE.md](./ARCHITECTURE.md) - System overview
 - [BACKEND_VERIFICATION.md](./BACKEND_VERIFICATION.md) - Rapidsnark details

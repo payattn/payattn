@@ -37,7 +37,7 @@ async function createTestOffer() {
     process.exit(1);
   }
   
-  console.log('✅ Test offer created:', data);
+  console.log('[OK] Test offer created:', data);
 }
 
 createTestOffer();

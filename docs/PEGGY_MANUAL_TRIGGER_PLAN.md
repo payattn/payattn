@@ -6,15 +6,15 @@
 
 ---
 
-## 🎯 Executive Summary
+## Executive Summary
 
 ### Current State
 Peggy is **fully implemented and operational** as an autonomous polling agent:
-- ✅ Polls database every 30 seconds for `status='offer_made'` offers
-- ✅ Evaluates offers using Venice AI with campaign criteria
-- ✅ Funds escrows on Solana for accepted offers
-- ✅ Submits payment proofs to backend
-- ✅ Runs continuously via `npm start`
+- Polls database every 30 seconds for `status='offer_made'` offers
+- Evaluates offers using Venice AI with campaign criteria
+- Funds escrows on Solana for accepted offers
+- Submits payment proofs to backend
+- Runs continuously via `npm start`
 
 ### What We Want
 A **Max-like user experience** for Peggy where:
@@ -36,7 +36,7 @@ You mentioned "Peggy lives on the server (for now)" so **Option A (CLI)** seems 
 
 ---
 
-## 📊 Current Architecture Analysis
+## Current Architecture Analysis
 
 ### Peggy's Structure (All Complete)
 ```
@@ -92,7 +92,7 @@ handleFetchAndAssess() called
 
 ---
 
-## 🎨 Proposed Solution: Manual Trigger CLI
+## Proposed Solution: Manual Trigger CLI
 
 ### Design Goals
 1. **Mimic Max's UX** but for server-side (CLI instead of web UI)
@@ -119,7 +119,7 @@ Create a new script `peggy-assess.js` that:
 
 ---
 
-## 📋 Implementation Plan
+##  Implementation Plan
 
 ### Phase 1: Create Manual Assessment Script (2 hours)
 
@@ -276,7 +276,7 @@ npm run assess -- --help
 
 ---
 
-## 🎨 Example Usage & Output
+## Example Usage & Output
 
 ### Command: Assess Offers (Preview Mode)
 ```bash
@@ -362,7 +362,7 @@ Session saved: /advertiser-agent/sessions/session_20251110_143000.json
 
 ---
 
-## 🔄 Alternative Approaches Considered
+## Alternative Approaches Considered
 
 ### Alternative 1: Web UI in Backend
 **Pros:**
@@ -405,7 +405,7 @@ Session saved: /advertiser-agent/sessions/session_20251110_143000.json
 
 ---
 
-## ⏱️ Time Estimate
+## ⏱ Time Estimate
 
 | Phase | Tasks | Estimated Time |
 |-------|-------|----------------|
@@ -420,7 +420,7 @@ Session saved: /advertiser-agent/sessions/session_20251110_143000.json
 
 ---
 
-## 📦 Deliverables
+## Deliverables
 
 ### New Files
 1. `/advertiser-agent/peggy-assess.js` - Manual assessment CLI tool
@@ -441,14 +441,14 @@ Session saved: /advertiser-agent/sessions/session_20251110_143000.json
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites (Already Have)
-- ✅ Peggy fully implemented (`peggy.js` + lib modules)
-- ✅ Database connection working (Supabase)
-- ✅ Venice AI integration working
-- ✅ Solana escrow funding working
-- ✅ Test data seed script working
+- Peggy fully implemented (`peggy.js` + lib modules)
+- Database connection working (Supabase)
+- Venice AI integration working
+- Solana escrow funding working
+- Test data seed script working
 
 ### Step 1: Install New Dependencies
 ```bash
@@ -485,7 +485,7 @@ Begin with Phase 1, Task 1.1 (create `peggy-assess.js`)
 
 ---
 
-## 📋 Next Steps
+##  Next Steps
 
 1. **Review this plan** - Confirm approach makes sense for your use case
 2. **Clarify questions** - Answer the 6 questions above
@@ -494,7 +494,7 @@ Begin with Phase 1, Task 1.1 (create `peggy-assess.js`)
 
 ---
 
-## 🎯 Success Criteria
+## Success Criteria
 
 Peggy manual trigger is complete when:
 - [ ] User can run `npm run assess` to see all pending offers

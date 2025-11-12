@@ -304,7 +304,7 @@ async function seedTestAds() {
     }
     
     // Clear existing test ads
-    console.log('🗑️  Clearing existing test ads...');
+    console.log('[CLEAN] Clearing existing test ads...');
     const { error: deleteError } = await supabase
       .from('test_ad_creative')
       .delete()
@@ -315,7 +315,7 @@ async function seedTestAds() {
     }
     
     // Insert test ads
-    console.log(`📝 Inserting ${TEST_ADS.length} test ads...\n`);
+    console.log(`[INSERT] Inserting ${TEST_ADS.length} test ads...\n`);
     
     let successCount = 0;
     let failCount = 0;
@@ -330,7 +330,7 @@ async function seedTestAds() {
         console.error(`❌ Failed to insert ${ad.ad_creative_id}:`, error.message);
         failCount++;
       } else {
-        console.log(`✅ Inserted ${ad.ad_creative_id} (${ad.headline})`);
+        console.log(`[OK] Inserted ${ad.ad_creative_id} (${ad.headline})`);
         successCount++;
       }
     }

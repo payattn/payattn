@@ -271,7 +271,7 @@ const isValid = await verifyLocationProof(
 
 ## Security Considerations
 
-### ✅ DO
+###  DO
 
 - Always verify proofs cryptographically
 - Check public signals match your expectations
@@ -280,7 +280,7 @@ const isValid = await verifyLocationProof(
 - Rate-limit verification endpoints
 - Log verification attempts for fraud detection
 
-### ❌ DON'T
+###  DON'T
 
 - Trust unverified user claims
 - Accept proofs for wrong circuits

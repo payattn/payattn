@@ -29,9 +29,9 @@ npm run dev
 ```
 
 Expected results:
-- ✅ Request without headers → 401 Unauthorized
-- ✅ Request with fake signature → 403 Forbidden
-- ✅ Extension with valid auth → Profile decrypts successfully
+- Request without headers → 401 Unauthorized
+- Request with fake signature → 403 Forbidden
+- Extension with valid auth → Profile decrypts successfully
 
 ## Key Files
 

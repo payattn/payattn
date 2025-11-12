@@ -256,8 +256,8 @@ console.log('[Venice] Test message');
 
 ## Security Notes
 
-- ✅ API key stored on backend server only
-- ✅ Extension calls backend endpoint (no direct Venice calls)
-- ✅ Messages not logged to disk
-- ✅ Consider rate limiting for production
+- API key stored on backend server only
+- Extension calls backend endpoint (no direct Venice calls)
+- Messages not logged to disk
+- Consider rate limiting for production
 - ⚠️ Remember to update manifest with production domains when deploying

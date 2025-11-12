@@ -57,12 +57,12 @@ Then we need to move proof generation to the service worker (background.js).
 
 ## Next Steps Based on Results
 
-### If it works ✅
+### If it works 
 - Great! Proof generation works in extension pages
 - We can proceed with WP02.3b testing
 - The service worker can also use the same approach
 
-### If it fails ❌
+### If it fails 
 - Move proof generation logic to `background.js` service worker
 - Service workers have different CSP context and might allow workers
 - Use chrome.runtime.sendMessage() to communicate between pages and service worker

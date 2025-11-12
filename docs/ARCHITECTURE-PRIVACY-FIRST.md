@@ -63,7 +63,7 @@ ADVERTISER'S SERVER
 
 ---
 
-## 📁 Correct File Organization
+## Correct File Organization
 
 ### Extension (Proof Generation)
 
@@ -130,7 +130,7 @@ public/circuits/
 
 ---
 
-## 🔄 Data Flow: Age Proof Example
+## Data Flow: Age Proof Example
 
 ### Step 1: Extension Generates Proof
 ```javascript
@@ -215,40 +215,40 @@ Only the fact that they're in the range was proven.
 
 ---
 
-## ✅ Verification Checklist
+## Verification Checklist
 
 ### Privacy (Core Requirement)
-- ✅ Private inputs processed only in extension
-- ✅ Private inputs never sent to backend
-- ✅ Only proofs transmitted
-- ✅ Backend never sees raw data
-- ✅ Cryptographic guarantee of privacy
+- Private inputs processed only in extension
+- Private inputs never sent to backend
+- Only proofs transmitted
+- Backend never sees raw data
+- Cryptographic guarantee of privacy
 
 ### Generic Circuits (Production Pattern)
-- ✅ `age_range` - Initial validation circuit (test/reference)
-- ✅ `range_proof` - Generic circuit for ANY numeric range (production)
+- `age_range` - Initial validation circuit (test/reference)
+- `range_proof` - Generic circuit for ANY numeric range (production)
   - Use for: age, income, score, etc.
-- ✅ `set_membership` - Generic circuit for ANY category set (production)
+- `set_membership` - Generic circuit for ANY category set (production)
   - Use for: location, interests, categories, etc.
 
 ### Extension Autonomy
-- ✅ Extension self-contained (no server dependency for proof generation)
-- ✅ Service worker can call proof generation anytime
-- ✅ All WASM and proving keys bundled
-- ✅ Proof generation doesn't require network calls
+- Extension self-contained (no server dependency for proof generation)
+- Service worker can call proof generation anytime
+- All WASM and proving keys bundled
+- Proof generation doesn't require network calls
 
 ---
 
-## 📋 Implementation Tasks
+##  Implementation Tasks
 
-### Task 1: Extension Proof Generation ✅
+### Task 1: Extension Proof Generation 
 **File:** `extension/lib/zk-prover.js` (NEW)
 - Loads WASM witness calculators
 - Loads proving keys from bundled circuits
 - Generates proofs from private data
 - Returns proof (no private data)
 
-### Task 2: Backend Verification Only ✅
+### Task 2: Backend Verification Only 
 **File:** `lib/zk/verifier.ts` (KEPT)
 - Loads verification keys
 - Verifies proofs from extension
@@ -269,7 +269,7 @@ Only the fact that they're in the range was proven.
 
 ---
 
-## 🚀 Service Worker Use Case (Future)
+## Service Worker Use Case (Future)
 
 This architecture enables autonomous proof generation:
 
@@ -307,7 +307,7 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
 
 ---
 
-## 🔐 Security Guarantees
+## Security Guarantees
 
 | Requirement | Before (❌) | After (✅) |
 |------------|-----------|---------|
@@ -320,7 +320,7 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
 
 ---
 
-## 📚 Code Examples
+## Code Examples
 
 ### Extension Usage
 ```javascript
@@ -363,7 +363,7 @@ if (result.valid) {
 
 ---
 
-## ✨ Why This Architecture Works
+## Why This Architecture Works
 
 1. **Privacy-First:** Private data never leaves extension
 2. **Autonomous:** Extension doesn't need server to generate proofs
@@ -374,7 +374,7 @@ if (result.valid) {
 
 ---
 
-## 🎯 Next: WP02.3
+## Next: WP02.3
 
 With this architecture confirmed:
 1. Build age proof UI in extension

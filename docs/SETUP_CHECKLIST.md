@@ -1,6 +1,6 @@
 # ✅ Venice AI Privacy-First Integration - Setup Checklist
 
-## Completed ✅
+## Completed 
 
 ### Files Created
 - [x] `extension/venice-ai.js` - Main utility for direct Venice AI calls
@@ -34,20 +34,20 @@
 
 ## Your Setup Todo
 
-### Step 1: Get Venice AI API Key ⏱️ 2 minutes
+### Step 1: Get Venice AI API Key ⏱ 2 minutes
 - [ ] Visit https://docs.venice.ai/overview/getting-started
 - [ ] Sign up for account (free tier available)
 - [ ] Create API key
 - [ ] Copy key (should start with `sk_`)
 
-### Step 2: Load Extension ⏱️ 3 minutes
+### Step 2: Load Extension ⏱ 3 minutes
 - [ ] Open `chrome://extensions/`
 - [ ] Toggle "Developer mode" (top-right)
 - [ ] Click "Load unpacked"
 - [ ] Select `agent-dashboard/extension` folder
 - [ ] Note your Extension ID (you'll need it for URLs)
 
-### Step 3: Configure API Key ⏱️ 2 minutes
+### Step 3: Configure API Key ⏱ 2 minutes
 - [ ] Click PayAttn extension icon
 - [ ] Click "🎯 Ad Management"
 - [ ] In new tab, navigate to: `chrome-extension://YOUR_ID/settings.html`
@@ -55,13 +55,13 @@
 - [ ] Click "💾 Save API Key"
 - [ ] Click "🧪 Test Connection" (should succeed)
 
-### Step 4: Test Functionality ⏱️ 5 minutes
+### Step 4: Test Functionality ⏱ 5 minutes
 - [ ] Navigate to: `chrome-extension://YOUR_ID/venice-test.html`
 - [ ] Try "💬 Simple Chat" tab with a template
 - [ ] Try "🎯 Ad Matching" tab with sample data
 - [ ] Verify responses come back correctly
 
-### Step 5: Read Documentation ⏱️ 10 minutes
+### Step 5: Read Documentation ⏱ 10 minutes
 - [ ] Read `VENICE_AI_QUICK_REFERENCE.md`
 - [ ] Read `VENICE_AI_INTEGRATION_SUMMARY.md`
 - [ ] Understand the architecture & functions
@@ -72,7 +72,7 @@
 - [ ] Store results in IndexedDB
 - [ ] Display in your UI
 
-## 🎯 Main Feature: Ad Matching
+## Main Feature: Ad Matching
 
 Here's what you can do now:
 
@@ -92,7 +92,7 @@ const result = await window.VeniceAI.analyzeAdMatch(
 // Result: { matches: true, matchScore: 92, reasoning: "..." }
 ```
 
-## 📁 Quick File Reference
+## Quick File Reference
 
 | What | Where | Extension ID Needed? |
 |------|-------|---------------------|
@@ -101,7 +101,7 @@ const result = await window.VeniceAI.analyzeAdMatch(
 | Main Code | `extension/venice-ai.js` | - |
 | Utility Functions | `window.VeniceAI.*` | - |
 
-## 🔍 How to Find Your Extension ID
+## How to Find Your Extension ID
 
 ```
 1. Go to chrome://extensions/
@@ -129,7 +129,7 @@ const result = await window.VeniceAI.analyzeAdMatch(
 
 **Total time: ~15 minutes to get everything working!**
 
-## 📚 Documentation Files (Read in Order)
+## Documentation Files (Read in Order)
 
 1. **VENICE_AI_README.md** (THIS IS GOOD - Start here)
 2. **VENICE_AI_QUICK_REFERENCE.md** (Function cheat sheet)
@@ -144,7 +144,7 @@ const result = await window.VeniceAI.analyzeAdMatch(
 - **Privacy**: PayAttn servers never see sensitive data
 - **Smart Matching**: LLM understands context (46 matches 45-50 range)
 
-## ✨ What's Different From Typical Approaches
+## What's Different From Typical Approaches
 
 ✅ **Your Way** (Privacy-First)
 - API key stored on user's device
@@ -160,17 +160,17 @@ const result = await window.VeniceAI.analyzeAdMatch(
 - Potential privacy issues
 - Backend processes everything
 
-**You chose the right architecture!** 🎉
+**You chose the right architecture!**
 
-## 🚀 Next Time You Open The Code
+## Next Time You Open The Code
 
-Simply remember:
+Key references:
 - `window.VeniceAI.analyzeAdMatch(adData, userProfile)` - Your main function
 - `extension/settings.html` - Where users configure their key
 - `extension/venice-test.html` - Where you test things
 - All docs in root folder
 
-## 🔐 Security Checklist
+## Security Checklist
 
 - [x] API key in chrome.storage.local ✓
 - [x] No backend involvement ✓

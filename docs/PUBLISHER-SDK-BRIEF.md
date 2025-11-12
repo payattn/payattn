@@ -8,7 +8,7 @@
 
 ---
 
-## 🎯 Executive Summary
+## Executive Summary
 
 Build a **Publisher SDK** that enables publishers to report ad impressions and trigger settlement via the Payattn backend. This is the **missing link** to demonstrate the complete x402 flow from advertiser funding escrow → user viewing ad → settlement execution.
 
@@ -20,14 +20,14 @@ Build a **Publisher SDK** that enables publishers to report ad impressions and t
 5. Integrates into demo dashboard for testing
 
 **Why This Matters:**
-- ✅ **Completes the demo flow:** Campaign → Offer → Escrow → Ad view → Settlement
-- ✅ **Proves trustless settlement:** Shows how escrow funds automatically distribute (70/25/5)
-- ✅ **Minimal implementation:** Backend already built, just need SDK wrapper
-- ✅ **Demo-ready:** Simple enough to test with funded escrows from Peggy
+- **Completes the demo flow:** Campaign → Offer → Escrow → Ad view → Settlement
+- **Proves trustless settlement:** Shows how escrow funds automatically distribute (70/25/5)
+- **Minimal implementation:** Backend already built, just need SDK wrapper
+- **Demo-ready:** Simple enough to test with funded escrows from Peggy
 
 ---
 
-## 🏗️ Architecture Context
+##  Architecture Context
 
 ### Current State (Working)
 
@@ -73,7 +73,7 @@ Funds Distributed: 70% user / 25% publisher / 5% platform ✅
 
 ---
 
-## 📋 Detailed Requirements
+##  Detailed Requirements
 
 ### SDK.1: Core SDK Structure (1 hour)
 
@@ -473,7 +473,7 @@ JavaScript/TypeScript SDK for publishers to report ad impressions and trigger se
 - ⚡ **Privacy-preserving** (3 unlinked Solana transactions)
 - 🔗 **Solana integration** (automatic Explorer links)
 - 📊 **Balance checking** (query publisher wallet)
-- ✅ **TypeScript support** (full type definitions)
+- **TypeScript support** (full type definitions)
 
 ## Installation
 
@@ -677,10 +677,10 @@ try {
 
 This SDK requires the Payattn backend with:
 
-- ✅ `POST /api/publisher/impressions` endpoint
-- ✅ `settleWithPrivacy()` function
-- ✅ Solana smart contract deployed
-- ✅ Publisher wallet registered in database
+- `POST /api/publisher/impressions` endpoint
+- `settleWithPrivacy()` function
+- Solana smart contract deployed
+- Publisher wallet registered in database
 
 See [backend documentation](../backend/README.md) for setup.
 
@@ -738,7 +738,7 @@ MIT
 
 ---
 
-## 🔧 Technical Details
+## Technical Details
 
 ### Backend Integration
 
@@ -838,7 +838,7 @@ async function settleWithPrivacy(params: {
 
 ---
 
-## 🎯 Design Decisions
+## Design Decisions
 
 ### Why These Choices?
 
@@ -869,7 +869,7 @@ async function settleWithPrivacy(params: {
 
 ---
 
-## 📚 Reference Materials
+## Reference Materials
 
 ### Backend Endpoints
 - Implementation: `/backend/app/api/publisher/impressions/route.ts`
@@ -944,34 +944,34 @@ const sdk = new PayattnPublisherSDK({
 
 ---
 
-## 📊 Success Metrics
+## Success Metrics
 
 ### Functional Requirements
-- ✅ SDK reports impressions successfully
-- ✅ Backend triggers 3-transaction settlement
-- ✅ All transactions confirmed on Solana
-- ✅ Explorer links work and show correct amounts
-- ✅ Publisher balance increases by 25%
-- ✅ User receives 70%, platform 5%
-- ✅ Error handling works for invalid inputs
+- SDK reports impressions successfully
+- Backend triggers 3-transaction settlement
+- All transactions confirmed on Solana
+- Explorer links work and show correct amounts
+- Publisher balance increases by 25%
+- User receives 70%, platform 5%
+- Error handling works for invalid inputs
 
 ### Demo Quality
-- ✅ Clear console output with emojis
-- ✅ Shows all 3 transaction signatures
-- ✅ Displays Solana Explorer links
-- ✅ README explains setup clearly
-- ✅ Demo script works with Peggy's funded escrows
+- Clear console output with emojis
+- Shows all 3 transaction signatures
+- Displays Solana Explorer links
+- README explains setup clearly
+- Demo script works with Peggy's funded escrows
 
 ### Code Quality
-- ✅ TypeScript with full type definitions
-- ✅ Error handling at all boundaries
-- ✅ Comments explaining logic
-- ✅ Modular structure
-- ✅ Professional package.json
+- TypeScript with full type definitions
+- Error handling at all boundaries
+- Comments explaining logic
+- Modular structure
+- Professional package.json
 
 ---
 
-## 🎬 Demo Script for Judges
+## Demo Script for Judges
 
 **Terminal 1: Backend**
 ```bash
@@ -1011,7 +1011,7 @@ npm test
 
 ---
 
-## ⏱️ Time Breakdown
+## ⏱ Time Breakdown
 
 | Task | Estimated Time |
 |------|----------------|
@@ -1056,7 +1056,7 @@ npm test
 
 ---
 
-## ✅ Definition of Done
+## Definition of Done
 
 Publisher SDK is complete when:
 1. TypeScript compiles without errors
@@ -1072,13 +1072,13 @@ Publisher SDK is complete when:
 
 ---
 
-## 🚀 Go Build!
+## Go Build!
 
 You have everything you need:
-- ✅ Backend endpoint already implemented
-- ✅ Settlement service already working
-- ✅ Peggy has funded 3 escrows for testing
-- ✅ All infrastructure in place
+- Backend endpoint already implemented
+- Settlement service already working
+- Peggy has funded 3 escrows for testing
+- All infrastructure in place
 
 **Just need:** A simple SDK wrapper to complete the demo flow!
 

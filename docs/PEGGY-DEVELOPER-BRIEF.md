@@ -8,7 +8,7 @@
 
 ---
 
-## 🎯 Executive Summary
+## Executive Summary
 
 Build **Peggy**, an autonomous advertiser agent that evaluates user offers and funds escrows on Solana using the x402 "Payment Required" protocol. Peggy mirrors Max (the user agent) but operates from the advertiser's perspective.
 
@@ -20,23 +20,23 @@ Build **Peggy**, an autonomous advertiser agent that evaluates user offers and f
 5. Submits payment proof → Offer marked as "funded"
 
 **Why Peggy Matters:**
-- ✅ Completes x402 protocol (DIY facilitator with agents on both sides)
-- ✅ Demonstrates agent-to-agent economy (core hackathon theme)
-- ✅ Shows trustless escrow workflow (advertiser funds locked on Solana)
-- ✅ Much more impressive than manual `curl` commands
+- Completes x402 protocol (DIY facilitator with agents on both sides)
+- Demonstrates agent-to-agent economy (core hackathon theme)
+- Shows trustless escrow workflow (advertiser funds locked on Solana)
+- Much more impressive than manual `curl` commands
 
 ---
 
-## 🏗️ Architecture Context
+##  Architecture Context
 
 ### Current State (Working)
-- ✅ **Max (user agent):** Evaluates campaigns, makes offers, generates ZK-SNARKs
-- ✅ **Backend (x402 facilitator):** HTTP 402 responses, payment verification
-- ✅ **Smart contract:** Escrow deployed on Solana (3-tx privacy-preserving settlement)
-- ✅ **Settlement service:** Automatic payouts after user views ad
+- **Max (user agent):** Evaluates campaigns, makes offers, generates ZK-SNARKs
+- **Backend (x402 facilitator):** HTTP 402 responses, payment verification
+- **Smart contract:** Escrow deployed on Solana (3-tx privacy-preserving settlement)
+- **Settlement service:** Automatic payouts after user views ad
 
 ### What's Missing
-- ❌ **Peggy (advertiser agent):** Nobody is accepting offers and funding escrows
+- **Peggy (advertiser agent):** Nobody is accepting offers and funding escrows
 
 ### Project Structure
 ```
@@ -57,7 +57,7 @@ Build **Peggy**, an autonomous advertiser agent that evaluates user offers and f
 
 ---
 
-## 📋 Detailed Requirements
+##  Detailed Requirements
 
 ### WP06.1: Core Structure (2 hours)
 
@@ -715,7 +715,7 @@ Peggy logs all decisions with reasoning:
 
 ---
 
-## 🔧 Technical Constraints
+## Technical Constraints
 
 ### Solana Smart Contract
 - **Program ID:** `6ZEekbTJZ6D6KrfSGDY2ByoWENWfe8RzhvpBS4KtPdZr`
@@ -752,7 +752,7 @@ Peggy logs all decisions with reasoning:
 
 ---
 
-## 🎯 Design Decisions
+## Design Decisions
 
 ### Why These Choices?
 
@@ -783,7 +783,7 @@ Peggy logs all decisions with reasoning:
 
 ---
 
-## 📚 Reference Materials
+## Reference Materials
 
 ### Max Agent (Similar Pattern)
 - Location: `/extension/max-agent.js` (if exists)
@@ -858,34 +858,34 @@ this.processedOffers.add(offerId);
 
 ---
 
-## 📊 Success Metrics
+## Success Metrics
 
 ### Functional Requirements
-- ✅ Peggy polls backend every 30s
-- ✅ Evaluates offers with LLM reasoning
-- ✅ Accepts offers matching campaign criteria
-- ✅ Funds escrows on Solana successfully
-- ✅ Submits payment proofs to backend
-- ✅ Runs autonomously for 5+ minutes
-- ✅ Handles errors gracefully (no crashes)
+- Peggy polls backend every 30s
+- Evaluates offers with LLM reasoning
+- Accepts offers matching campaign criteria
+- Funds escrows on Solana successfully
+- Submits payment proofs to backend
+- Runs autonomously for 5+ minutes
+- Handles errors gracefully (no crashes)
 
 ### Demo Quality
-- ✅ Clear console logging with emojis
-- ✅ Shows Peggy's reasoning for each decision
-- ✅ Displays Solana Explorer links
-- ✅ Easy to start/stop (`npm start`)
-- ✅ README explains setup clearly
+- Clear console logging with emojis
+- Shows Peggy's reasoning for each decision
+- Displays Solana Explorer links
+- Easy to start/stop (`npm start`)
+- README explains setup clearly
 
 ### Code Quality
-- ✅ Modular structure (lib/ for reusable code)
-- ✅ Error handling at all API boundaries
-- ✅ Environment configuration via .env
-- ✅ Comments explaining complex logic
-- ✅ Consistent with Max agent patterns
+- Modular structure (lib/ for reusable code)
+- Error handling at all API boundaries
+- Environment configuration via .env
+- Comments explaining complex logic
+- Consistent with Max agent patterns
 
 ---
 
-## 🎬 Demo Script for Judges
+## Demo Script for Judges
 
 **Terminal 1: Backend**
 ```bash
@@ -949,7 +949,7 @@ Transaction: https://explorer.solana.com/tx/5tx1m...?cluster=devnet
 
 ---
 
-## ⏱️ Time Breakdown
+## ⏱ Time Breakdown
 
 | Task | Estimated Time |
 |------|----------------|
@@ -994,7 +994,7 @@ Transaction: https://explorer.solana.com/tx/5tx1m...?cluster=devnet
 
 ---
 
-## ✅ Definition of Done
+## Definition of Done
 
 Peggy is complete when:
 1. Can be started with `npm start`
@@ -1010,7 +1010,7 @@ Peggy is complete when:
 
 ---
 
-## 🚀 Go Build!
+## Go Build!
 
 You have everything you need. The backend is ready, the smart contract is deployed, and Max is making offers. Now build Peggy to complete the x402 agent economy!
 

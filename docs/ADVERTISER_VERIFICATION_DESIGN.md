@@ -34,11 +34,11 @@ Extension (Browser)                    Backend Server (Node.js)
 ## Hard Constraints (Non-Negotiable)
 
 ### 1. **Server-Side Verification ONLY**
-- ❌ **CANNOT** use browser
-- ❌ **CANNOT** use client-side JavaScript
-- ❌ **CANNOT** rely on user interaction
-- ✅ **MUST** work in Node.js server environment
-- ✅ **MUST** work in automated cron job
+- **CANNOT** use browser
+- **CANNOT** use client-side JavaScript
+- **CANNOT** rely on user interaction
+- **MUST** work in Node.js server environment
+- **MUST** work in automated cron job
 
 ### 2. **Automated Process**
 - Runs on schedule (e.g., every 30 minutes)
@@ -56,14 +56,14 @@ Extension (Browser)                    Backend Server (Node.js)
 
 ## What We Have
 
-### ✅ Working: Extension (Client-Side)
+###  Working: Extension (Client-Side)
 - **Location:** Chrome extension service worker
 - **Library:** `snarkjs-patched.js` (6.6MB, browser-optimized)
 - **Function:** Proof generation
 - **Performance:** 1-3 seconds per proof
 - **Status:** **PERFECT** - Do not modify!
 
-### ❌ Broken: Backend (Server-Side)
+###  Broken: Backend (Server-Side)
 - **Location:** Next.js API routes (Node.js)
 - **Attempted Libraries:**
   1. npm `snarkjs` - **HANGS** at verification (BN128 curve issue)

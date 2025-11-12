@@ -1,6 +1,6 @@
 # WP02.3a - Implementation Checklist
 
-## ✅ What Was Built
+## What Was Built
 
 ### Files Created
 - [x] `extension/age-proof-test.html` - Full-featured UI with dark theme
@@ -9,7 +9,7 @@
 
 ### Features Implemented
 
-#### Profile Loading ✅
+#### Profile Loading 
 - [x] Load auth credentials from chrome.storage
 - [x] Decrypt profile using keyHash + authToken
 - [x] Extract user age
@@ -17,7 +17,7 @@
 - [x] Error handling with clear messages
 - [x] Reload button for manual refresh
 
-#### Proof Generation ✅
+#### Proof Generation 
 - [x] Accept advertiser min/max age criteria
 - [x] Call `generateAgeProof(userAge, minAge, maxAge)`
 - [x] Display proof details
@@ -26,14 +26,14 @@
 - [x] Progress bar during generation
 - [x] Copy proof to clipboard
 
-#### Backend Verification ✅
+#### Backend Verification 
 - [x] Send proof to `/api/verify-proof`
 - [x] POST with correct payload (proof, publicSignals, circuitName)
 - [x] Display verification result
 - [x] Show ✅ or ❌ result clearly
 - [x] Error handling for backend failures
 
-#### Debug Console ✅
+#### Debug Console 
 - [x] Color-coded log levels (info, success, error, warn, log)
 - [x] Timestamps for each entry
 - [x] Auto-scroll to bottom
@@ -41,7 +41,7 @@
 - [x] Full flow documented
 - [x] Helpful messages for troubleshooting
 
-#### UI/UX ✅
+#### UI/UX 
 - [x] Matches ad-queue.html dark theme
 - [x] Responsive grid layout
 - [x] Status boxes with clear states
@@ -49,7 +49,7 @@
 - [x] Proper button states (disabled during operations)
 - [x] Clear visual feedback
 
-## 🧪 What You Can Test Now
+## What You Can Test Now
 
 ### Test Locally
 
@@ -76,7 +76,7 @@
    - It should NOT appear after initial load
    - Only [minAge, maxAge] should be in proof
 
-## 🚀 How to Use
+## How to Use
 
 ### Step 1: Open Test Page
 ```
@@ -135,7 +135,7 @@ Expected console output:
 ═══════════════════════
 ```
 
-## 🔍 Critical Verification Points
+## Critical Verification Points
 
 ### Privacy Check
 ```
@@ -164,37 +164,37 @@ Expected console output:
 ✅ Can reload and retry without issues
 ```
 
-## 📋 Test Scenarios
+##  Test Scenarios
 
-### ✅ Scenario 1: Normal Match
+###  Scenario 1: Normal Match
 ```
 User age: 35
 Range: 25-65
 Expected: ✅ Proof Valid
 ```
 
-### ✅ Scenario 2: Edge Case (Minimum)
+###  Scenario 2: Edge Case (Minimum)
 ```
 User age: 25
 Range: 25-65
 Expected: ✅ Proof Valid
 ```
 
-### ✅ Scenario 3: Edge Case (Maximum)
+###  Scenario 3: Edge Case (Maximum)
 ```
 User age: 65
 Range: 25-65
 Expected: ✅ Proof Valid
 ```
 
-### ⚠️ Scenario 4: Below Range
+###  Scenario 4: Below Range
 ```
 User age: 20
 Range: 25-65
 Expected: ❌ Proof Invalid (fraud attempt blocked)
 ```
 
-### ⚠️ Scenario 5: Above Range
+###  Scenario 5: Above Range
 ```
 User age: 70
 Range: 25-65
@@ -233,7 +233,7 @@ Expected: ❌ Proof Invalid (fraud attempt blocked)
 5. Check CORS if cross-origin
 ```
 
-## 📊 Success Criteria
+## Success Criteria
 
 When you see ✅ for ALL of these, WP02.3a is complete:
 
@@ -248,7 +248,7 @@ When you see ✅ for ALL of these, WP02.3a is complete:
 - [x] UI matches design system (dark theme)
 - [x] Documentation is complete
 
-## 🎯 What's Ready For Next
+## What's Ready For Next
 
 Once this test page works perfectly:
 
@@ -267,7 +267,7 @@ Once this test page works perfectly:
 - Build set_membership (category membership)
 - Support income, location, interests, etc.
 
-## 📝 Notes
+## Notes
 
 ### Architecture Validated
 This test page validates the entire privacy-first architecture:
@@ -293,7 +293,7 @@ This test page validates the entire privacy-first architecture:
 
 ---
 
-## Status: ✅ COMPLETE
+## Status:  COMPLETE
 
 **WP02.3a: Age Proof UI Component** - DONE
 - Standalone test page created

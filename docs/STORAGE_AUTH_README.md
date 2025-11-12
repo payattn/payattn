@@ -179,10 +179,10 @@ await EncryptedStorage.deleteAllData(); // Optional: clear profile
 ## Browser Compatibility
 
 All features use standard Web Crypto API supported in:
-- ✅ Chrome 37+
-- ✅ Firefox 34+
-- ✅ Safari 11+
-- ✅ Edge 79+
+- Chrome 37+
+- Firefox 34+
+- Safari 11+
+- Edge 79+
 
 No external dependencies required for encryption/JWT functionality.
 
@@ -216,9 +216,9 @@ For production deployment, consider:
 ## Security Considerations
 
 ### Current MVP Approach
-- ✅ Client-side encryption (data never transmitted in plaintext)
-- ✅ AES-256-GCM (authenticated encryption)
-- ✅ Random IV per encryption
+- Client-side encryption (data never transmitted in plaintext)
+- AES-256-GCM (authenticated encryption)
+- Random IV per encryption
 - ⚠️ Deterministic key derivation (acceptable for MVP)
 - ⚠️ Unsigned JWT tokens (acceptable for MVP)
 

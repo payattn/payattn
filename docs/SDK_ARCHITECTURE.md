@@ -6,7 +6,7 @@
 
 ---
 
-## 🎯 Core Concept
+## Core Concept
 
 **The Atomic Unit:** `ad_creative` (NOT campaigns)
 
@@ -18,7 +18,7 @@ Flow: Advertiser → ad_creative → Max evaluates → Offer → Peggy funds →
 
 ---
 
-## 🗄️ Database Tables
+##  Database Tables
 
 ### 1. ad_creative (CORE)
 - Contains: headline, body, CTA, destination URL
@@ -39,7 +39,7 @@ Flow: Advertiser → ad_creative → Max evaluates → Offer → Peggy funds →
 
 ---
 
-## 🔄 Complete Flow
+## Complete Flow
 
 ### 1. Advertiser Creates Ad
 ```
@@ -88,7 +88,7 @@ POST /api/publisher/impressions
 
 ---
 
-## 🔌 Key Endpoints
+## Key Endpoints
 
 | Endpoint | Purpose | Who Calls | Status |
 |----------|---------|-----------|--------|

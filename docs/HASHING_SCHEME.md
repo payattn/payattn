@@ -243,7 +243,7 @@ const proof = await generateProofInServiceWorker('set_membership',
 
 ## Common Pitfalls
 
-### ❌ DON'T: Hash on backend only
+###  DON'T: Hash on backend only
 ```javascript
 // Extension sends plain text (PRIVACY LEAK!)
 const proof = await generateProof({
@@ -252,7 +252,7 @@ const proof = await generateProof({
 });
 ```
 
-### ✅ DO: Hash on extension before proof generation
+###  DO: Hash on extension before proof generation
 ```javascript
 // Hash first, then generate proof
 const userHash = await hashToField("uk");
@@ -264,7 +264,7 @@ const proof = await generateProofInServiceWorker('set_membership', {
 });
 ```
 
-### ❌ DON'T: Use different hashing algorithms
+###  DON'T: Use different hashing algorithms
 ```javascript
 // Extension
 const hash1 = await hashToField("uk");  // SHA-256
@@ -274,7 +274,7 @@ const hash2 = md5("uk");  // ❌ WRONG - different algorithm
 // hash1 !== hash2 → verification fails
 ```
 
-### ✅ DO: Use EXACT same algorithm everywhere
+###  DO: Use EXACT same algorithm everywhere
 ```javascript
 // Both extension and backend use SHA-256 mod FIELD_PRIME
 ```

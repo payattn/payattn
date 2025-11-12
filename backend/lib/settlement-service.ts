@@ -174,11 +174,11 @@ export async function settleWithPrivacy(
         // Demo-friendly logging
         const amountSOL = (amount / 1e9).toFixed(6);
         if (type === 'user') {
-          console.log(`✅ 💰 USER HAS BEEN PAID: ${amountSOL} SOL (${amount} lamports)`);
+          console.log(`[PAID] USER HAS BEEN PAID: ${amountSOL} SOL (${amount} lamports)`);
         } else if (type === 'publisher') {
-          console.log(`✅ 💰 PUBLISHER HAS BEEN PAID: ${amountSOL} SOL (${amount} lamports)`);
+          console.log(`[PAID] PUBLISHER HAS BEEN PAID: ${amountSOL} SOL (${amount} lamports)`);
         } else if (type === 'platform') {
-          console.log(`✅ 💰 PLATFORM HAS BEEN PAID: ${amountSOL} SOL (${amount} lamports)`);
+          console.log(`[PAID] PLATFORM HAS BEEN PAID: ${amountSOL} SOL (${amount} lamports)`);
         }
         console.log(`   Transaction: ${result.txSignature}`);
         console.log(`   Explorer: https://explorer.solana.com/tx/${result.txSignature}?cluster=devnet`);
@@ -215,7 +215,7 @@ export async function settleWithPrivacy(
       })
       .eq('offer_id', offerId);
     
-    console.log(`\n🎉 ✅ ALL PAYMENTS COMPLETE FOR ${offerId}`);
+    console.log(`\n*** ALL PAYMENTS COMPLETE FOR ${offerId}`);
     console.log(`   ✓ User paid (70%)`);
     console.log(`   ✓ Publisher paid (25%)`);
     console.log(`   ✓ Platform paid (5%)`);

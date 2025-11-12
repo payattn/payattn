@@ -2,7 +2,7 @@
 
 ## What You Now Have
 
-### 🏗️ Architecture (Privacy First)
+### 🏗 Architecture (Privacy First)
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -38,7 +38,7 @@
 PayAttn Servers → ❌ ZERO ACCESS TO USER DATA OR API KEYS
 ```
 
-## 📋 Files You're Getting
+##  Files You're Getting
 
 | File | Purpose | Location |
 |------|---------|----------|
@@ -50,15 +50,15 @@ PayAttn Servers → ❌ ZERO ACCESS TO USER DATA OR API KEYS
 | `VENICE_AI_INTEGRATION_SUMMARY.md` | Full architecture & examples | Root |
 | `VENICE_AI_DIRECT_SETUP.md` | Complete setup guide & API reference | Root |
 
-## 🚀 Getting Started (5 Steps)
+## Getting Started (5 Steps)
 
-### 1️⃣ Get Venice API Key
+### 1⃣ Get Venice API Key
 ```
 Visit: https://docs.venice.ai/overview/getting-started
 Sign up → Create API key → Copy (format: sk_...)
 ```
 
-### 2️⃣ Load Extension
+### 2⃣ Load Extension
 ```
 1. Open chrome://extensions/
 2. Toggle "Developer mode" (top-right)
@@ -66,7 +66,7 @@ Sign up → Create API key → Copy (format: sk_...)
 4. Select: agent-dashboard/extension folder
 ```
 
-### 3️⃣ Configure API Key
+### 3⃣ Configure API Key
 ```
 1. Click PayAttn extension icon
 2. See popup → Click "🎯 Ad Management"
@@ -77,13 +77,13 @@ Sign up → Create API key → Copy (format: sk_...)
 6. Click "🧪 Test Connection" to verify
 ```
 
-### 4️⃣ Test Basic Functionality
+### 4⃣ Test Basic Functionality
 ```
 Navigate to extension/venice-test.html
 Try "Simple Chat" tab first with a template
 ```
 
-### 5️⃣ Test Ad Matching (Your Main Feature!)
+### 5⃣ Test Ad Matching (Your Main Feature!)
 ```
 In venetest.html → "🎯 Ad Matching" tab
 Enter user profile JSON (age 46, interests, etc.)
@@ -92,7 +92,7 @@ Click "Analyze Match"
 See: Match score, reasoning, matched criteria
 ```
 
-## 💡 Your Main Feature: Ad Matching
+## Your Main Feature: Ad Matching
 
 The key function that does what you wanted:
 
@@ -126,19 +126,19 @@ const result = await window.VeniceAI.analyzeAdMatch(
 // }
 ```
 
-## 🔐 Security & Privacy
+## Security & Privacy
 
 ### API Key Protection
-- ✅ Stored in `chrome.storage.local` (browser sandbox)
-- ✅ Never transmitted to PayAttn
-- ✅ Never logged or cached anywhere else
-- ✅ Deleted automatically when extension uninstalls
+- Stored in `chrome.storage.local` (browser sandbox)
+- Never transmitted to PayAttn
+- Never logged or cached anywhere else
+- Deleted automatically when extension uninstalls
 
 ### User Data Protection
-- ✅ Profiles stored in IndexedDB (local device only)
-- ✅ Only sent to Venice AI when you call analyzeAdMatch()
-- ✅ PayAttn servers **never see** user data
-- ✅ No data transmitted without your explicit call
+- Profiles stored in IndexedDB (local device only)
+- Only sent to Venice AI when you call analyzeAdMatch()
+- PayAttn servers **never see** user data
+- No data transmitted without your explicit call
 
 ### Network Traffic
 ```
@@ -146,7 +146,7 @@ Only traffic: Your Extension ←→ Venice AI API
 Nothing goes through PayAttn servers
 ```
 
-## 🎯 Use Cases
+## Use Cases
 
 ### 1. Match User to Incoming Ad
 ```javascript
@@ -173,7 +173,7 @@ const response = await window.VeniceAI.sendMessage(
 // Flexible for any use case
 ```
 
-## 📖 Documentation
+## Documentation
 
 All three docs are in your agent-dashboard folder:
 
@@ -214,7 +214,7 @@ A: Only when you explicitly call analyzeAdMatch() - then it sees what you send. 
 **Q: Why Venice AI over other LLM providers?**
 A: They're privacy-respecting, uncensored models, OpenAI-compatible, and don't log requests.
 
-## 🔧 Integration Into Your Code
+## Integration Into Your Code
 
 ```javascript
 // In your background.js or wherever you handle ads:
@@ -252,7 +252,7 @@ async function analyzeWithVenice(ad, userProfile) {
 }
 ```
 
-## ✨ What Makes This Special
+## What Makes This Special
 
 1. **Privacy by Design** - No backend involvement, data stays local
 2. **Intelligent Matching** - LLM understands user context (46 matches 45-50 range)
@@ -271,14 +271,14 @@ async function analyzeWithVenice(ad, userProfile) {
 7. ✅ Store results locally in IndexedDB
 8. ✅ Display match scores/reasoning in your UI
 
-## 🎉 You're All Set!
+## You're All Set!
 
 Your extension now has:
-- ✅ Direct Venice AI integration
-- ✅ Secure local API key storage
-- ✅ Intelligent ad matching with full user context
-- ✅ Complete privacy protection
-- ✅ Zero PayAttn backend involvement
+- Direct Venice AI integration
+- Secure local API key storage
+- Intelligent ad matching with full user context
+- Complete privacy protection
+- Zero PayAttn backend involvement
 
 The architecture perfectly matches your privacy-first philosophy. All user data stays on the device, only Venice AI processes it when you explicitly call it, and PayAttn servers see nothing.
 

@@ -224,7 +224,7 @@ User dashboard (HTML page).
 
 ---
 
-## 🔐 Authentication Details
+## Authentication Details
 
 ### Solana Wallet Authentication
 
@@ -258,7 +258,7 @@ const verified = nacl.sign.detached.verify(
 
 ---
 
-## 📊 Response Codes
+## Response Codes
 
 | Code | Meaning |
 |------|---------|
@@ -306,7 +306,7 @@ const verified = nacl.sign.detached.verify(
 
 ---
 
-## 🔧 Request Examples
+## Request Examples
 
 ### cURL Examples
 
@@ -362,7 +362,7 @@ console.log('Proof valid:', result.valid);
 
 ---
 
-## 🔍 Implementation Details
+## Implementation Details
 
 ### Backend Code Structure
 
@@ -439,7 +439,7 @@ export async function verifyProof(
 
 ---
 
-## 🧪 Testing
+## Testing
 
 See [TESTING.md](./TESTING.md) for detailed testing procedures.
 
@@ -453,7 +453,7 @@ curl -X POST http://localhost:3000/api/verify-proof \
 
 ---
 
-## 📝 Notes
+## Notes
 
 ### Why POST for Verification?
 
@@ -469,7 +469,7 @@ Key-derivation based storage allows privacy-preserving data retrieval without tr
 
 ---
 
-## 🔗 Related Documents
+## Related Documents
 
 - [ARCHITECTURE.md](./ARCHITECTURE.md) - System overview
 - [ZK_PROOF_FLOW.md](./ZK_PROOF_FLOW.md) - Proof lifecycle

@@ -6,7 +6,7 @@
 
 ---
 
-## 🎯 Overview
+## Overview
 
 **What We're Building:**
 - Web UI: `/backend/app/advertisers/offer-queue/page.tsx`
@@ -18,11 +18,11 @@
 🚨 **NO DUPLICATION!** Move Peggy's working modules from `/advertiser-agent/lib/` to `/backend/lib/peggy/` instead of rewriting them. Both manual UI and autonomous agent can import from same location.
 
 **Key Requirements:**
-- ✅ Use DATABASE_MODE env var to switch between `test_ad_creative` and `ad_creative`
-- ✅ Move (don't duplicate!) Peggy's LLM, escrow, and database logic
-- ✅ Use existing `/backend/lib/zk/verifier.ts` for proof validation
-- ✅ Auto-fund accepted offers (Peggy is autonomous)
-- ✅ Clone Max's UI pattern from `extension/ad-queue.html`
+- Use DATABASE_MODE env var to switch between `test_ad_creative` and `ad_creative`
+- Move (don't duplicate!) Peggy's LLM, escrow, and database logic
+- Use existing `/backend/lib/zk/verifier.ts` for proof validation
+- Auto-fund accepted offers (Peggy is autonomous)
+- Clone Max's UI pattern from `extension/ad-queue.html`
 
 ---
 
@@ -219,7 +219,7 @@
 
 ---
 
-## 📊 Summary
+## Summary
 
 ### Simplified File Structure
 ```
@@ -268,4 +268,4 @@
 
 ---
 
-## 🚀 Ready to Start!
+## Ready to Start!

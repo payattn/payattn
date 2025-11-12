@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    console.log(`\n🤖 Peggy starting assessment for advertiser: ${advertiserId}`);
+    console.log(`\n[PEGGY] Starting assessment for advertiser: ${advertiserId}`);
     console.log('=========================================\n');
     
     // Initialize Peggy modules
@@ -55,24 +55,24 @@ export async function POST(request: NextRequest) {
       });
     }
     
-    console.log(`📋 Found ${offers.length} pending offer(s)\n`);
+    console.log(`[INFO] Found ${offers.length} pending offer(s)\n`);
     
     // Process each offer
     const results: AssessmentResult[] = [];
     
     for (const offer of offers) {
       console.log(`─────────────────────────────────────────`);
-      console.log(`📋 Processing offer ${offer.offer_id}`);
+      console.log(`[PROCESS] Offer ${offer.offer_id}`);
       
       try {
         // Validate ZK proofs
-        console.log(`   🔐 Validating ZK proofs...`);
+        console.log(`   [VERIFY] Validating ZK proofs...`);
         const proofValidation = await validateOfferProofs(offer.zk_proofs);
         console.log(`   ${proofValidation.summary}`);
         
         // Check if ad creative exists
         if (!offer.ad_creative) {
-          console.log(`   ❌ No ad creative found for ad_id: ${offer.ad_id}`);
+          console.log(`   [ERROR] No ad creative found for ad_id: ${offer.ad_id}`);
           results.push({
             offerId: offer.offer_id,
             adId: offer.ad_id,
@@ -94,7 +94,7 @@ export async function POST(request: NextRequest) {
         }
         
         // Evaluate offer with LLM
-        console.log(`   💭 Peggy thinking...`);
+        console.log(`   [AI] Peggy thinking...`);
         const evaluation = await llm.evaluateOffer(offer, offer.ad_creative, {
           isValid: proofValidation.isValid,
           summary: proofValidation.summary
@@ -127,7 +127,7 @@ export async function POST(request: NextRequest) {
         
         // If accepted, fund escrow
         if (evaluation.decision === 'accept') {
-          console.log(`   💰 Funding escrow...`);
+          console.log(`   [FUND] Funding escrow...`);
           
           try {
             // Call existing accept endpoint to get x402 response
@@ -168,7 +168,7 @@ export async function POST(request: NextRequest) {
               );
               
               if (verifyResponse.ok) {
-                console.log(`   ✅ Escrow funded successfully!`);
+                console.log(`   [OK] Escrow funded successfully!`);
                 console.log(`   TX: ${fundingResult.txSignature}`);
               }
             }
@@ -191,7 +191,7 @@ export async function POST(request: NextRequest) {
         try {
           const newStatus = evaluation.decision === 'accept' ? 'accepted' : 'rejected';
           await db.updateOfferStatus(offer.offer_id, newStatus);
-          console.log(`   📝 Updated offer status to: ${newStatus}`);
+          console.log(`   [DB] Updated offer status to: ${newStatus}`);
         } catch (statusError) {
           console.error(`   ⚠️  Failed to update offer status:`, statusError);
         }
@@ -226,7 +226,7 @@ export async function POST(request: NextRequest) {
     const session = sessionManager.saveSession(advertiserId, results);
     
     const duration = ((Date.now() - startTime) / 1000).toFixed(1);
-    console.log(`✅ Assessment complete in ${duration}s`);
+    console.log(`*** Assessment complete in ${duration}s`);
     console.log(`   Total: ${session.stats.totalOffers}`);
     console.log(`   Accepted: ${session.stats.accepted}`);
     console.log(`   Rejected: ${session.stats.rejected}`);

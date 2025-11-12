@@ -44,10 +44,10 @@ Extension redirects to website for authentication, then syncs credentials back.
 
 ## Security
 
-- ✅ keyHash only stored in chrome.storage.local (not IndexedDB)
-- ✅ Website can write to extension storage (via externally_connectable)
-- ✅ Malicious websites cannot access extension storage
-- ✅ Only whitelisted origins (localhost:3000, *.payattn.org) can communicate
+- keyHash only stored in chrome.storage.local (not IndexedDB)
+- Website can write to extension storage (via externally_connectable)
+- Malicious websites cannot access extension storage
+- Only whitelisted origins (localhost:3000, *.payattn.org) can communicate
 
 ## Testing
 

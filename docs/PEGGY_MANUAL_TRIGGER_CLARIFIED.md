@@ -5,7 +5,7 @@
 
 ---
 
-## ✅ Confirmed Understanding
+## Confirmed Understanding
 
 ### Architecture Decision: Web UI (Not CLI)
 **Location:** `/backend/app/advertisers/offer-queue/page.tsx` (Next.js page)
@@ -14,7 +14,7 @@
 
 ---
 
-## 📊 Offer Status Flow (CRITICAL)
+## Offer Status Flow (CRITICAL)
 
 ### Status Lifecycle
 ```
@@ -49,9 +49,9 @@
 
 ---
 
-## 🎯 What Peggy Evaluates
+## What Peggy Evaluates
 
-### NOT "Campaign Criteria" (Old Terminology) ❌
+### NOT "Campaign Criteria" (Old Terminology) 
 The old implementation used hardcoded "campaign criteria":
 ```javascript
 // OLD (in current peggy.js)
@@ -65,7 +65,7 @@ getCampaignCriteria() {
 }
 ```
 
-### NEW: Full Ad Creative Context ✅
+### NEW: Full Ad Creative Context 
 Peggy should evaluate based on the **actual ad** from `ad_creative` table:
 
 **Data Available in Offer:**
@@ -132,7 +132,7 @@ Peggy's LLM should receive:
 
 ---
 
-## 🗂️ Session Storage
+## 🗂 Session Storage
 
 ### Location
 ```
@@ -188,7 +188,7 @@ Peggy's LLM should receive:
 
 ---
 
-## 🎨 UI Requirements
+## UI Requirements
 
 ### Clone Extension Pattern
 **Source:** `/extension/ad-queue.html` + `/extension/ad-queue.js`  
@@ -250,7 +250,7 @@ Peggy's LLM should receive:
 
 ---
 
-## 🔧 Technical Implementation
+## Technical Implementation
 
 ### Architecture
 
@@ -306,7 +306,7 @@ Peggy's LLM should receive:
 
 ---
 
-## ✅ Confirmed Requirements
+## Confirmed Requirements
 
 ### 1. Offer Status Flow
 **Confirmed:**
@@ -359,7 +359,7 @@ WHERE offers.advertiser_id = 'AE6uwbubDn9WyXrpzvqU58jfirvqZAxWCZCfDDwW5MMb'
 
 ---
 
-## 📝 UI Adjustments for Offers (vs Ads)
+## UI Adjustments for Offers (vs Ads)
 
 **Important:** Peggy assesses **OFFERS**, not ads directly
 
@@ -395,7 +395,7 @@ WHERE offers.advertiser_id = 'AE6uwbubDn9WyXrpzvqU58jfirvqZAxWCZCfDDwW5MMb'
 
 ---
 
-## 🧪 Test Data
+## Test Data
 
 **Seed Script Created:** `/backend/db/seed-test-offers.js`
 
@@ -418,7 +418,7 @@ node db/seed-test-offers.js --clean
 
 ---
 
-## 🎯 Next Steps
+## Next Steps
 
 1. **✅ Requirements confirmed** (All 6 questions answered)
 2. **✅ Test data script created**
@@ -434,22 +434,22 @@ node db/seed-test-offers.js --clean
 
 ---
 
-## ✅ Ready to Build!
+## Ready to Build!
 
 All requirements confirmed and clarified:
-- ✅ Web UI location: `/backend/app/advertisers/offer-queue/page.tsx`
-- ✅ Session storage: `/backend/advertiser-sessions/[advertiser-id]/sessionX.json`
-- ✅ Offer status flow understood
-- ✅ Ad creative evaluation context clear
-- ✅ Auto-fund behavior confirmed
-- ✅ UI adjustments for offers vs ads documented
-- ✅ Test data seed script created
-- ✅ Venice AI + keypair storage confirmed
-- ✅ Simple wait UX (like Max)
-- ✅ Session pagination planned
+- Web UI location: `/backend/app/advertisers/offer-queue/page.tsx`
+- Session storage: `/backend/advertiser-sessions/[advertiser-id]/sessionX.json`
+- Offer status flow understood
+- Ad creative evaluation context clear
+- Auto-fund behavior confirmed
+- UI adjustments for offers vs ads documented
+- Test data seed script created
+- Venice AI + keypair storage confirmed
+- Simple wait UX (like Max)
+- Session pagination planned
 
 **Implementation plan ready in original document:**
 `/docs/PEGGY_MANUAL_TRIGGER_PLAN.md`
 
-**Let's start building the manual trigger UI for Peggy!** 🚀
+**Ready to build the manual trigger UI for Peggy.**
 

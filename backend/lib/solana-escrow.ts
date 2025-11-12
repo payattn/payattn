@@ -37,7 +37,7 @@ let platformWallet: Keypair;
 try {
   const keypairData = JSON.parse(fs.readFileSync(PLATFORM_KEYPAIR_PATH, 'utf-8'));
   platformWallet = Keypair.fromSecretKey(Uint8Array.from(keypairData));
-  console.log('✅ Platform wallet loaded:', platformWallet.publicKey.toBase58());
+  console.log('[OK] Platform wallet loaded:', platformWallet.publicKey.toBase58());
 } catch (err) {
   console.error('❌ Failed to load platform wallet:', err);
   throw new Error('Platform wallet not configured');
@@ -123,7 +123,7 @@ export async function verifyEscrow(
       };
     }
     
-    console.log('✅ Escrow verification passed');
+    console.log('[OK] Escrow verification passed');
     return {
       valid: true,
       escrowPda: escrowPda.toBase58()
@@ -168,7 +168,7 @@ export async function settleUser(
       .accounts(accounts)
       .rpc();
     
-    console.log(`✅ User settlement tx:`, txSignature);
+    console.log(`[OK] User settlement tx:`, txSignature);
     await connection.confirmTransaction(txSignature, 'confirmed');
     
     return { success: true, txSignature };
@@ -208,7 +208,7 @@ export async function settlePublisher(
       .accounts(accounts)
       .rpc();
     
-    console.log(`✅ Publisher settlement tx:`, txSignature);
+    console.log(`[OK] Publisher settlement tx:`, txSignature);
     await connection.confirmTransaction(txSignature, 'confirmed');
     
     return { success: true, txSignature };
@@ -249,7 +249,7 @@ export async function settlePlatform(
       .accounts(accounts)
       .rpc();
     
-    console.log(`✅ Platform settlement tx:`, txSignature);
+    console.log(`[OK] Platform settlement tx:`, txSignature);
     await connection.confirmTransaction(txSignature, 'confirmed');
     
     return { success: true, txSignature };

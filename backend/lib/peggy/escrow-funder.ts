@@ -111,7 +111,7 @@ export class EscrowFunder {
   async fundEscrow(x402Data: X402PaymentDetails): Promise<FundingResult> {
     const { offerId, escrowPda, paymentAmount, userPubkey, platformPubkey } = x402Data;
     
-    console.log(`\n💰 Funding escrow for offer ${offerId}...`);
+    console.log(`\n[FUND] Funding escrow for offer ${offerId}...`);
     console.log(`   Amount: ${paymentAmount} lamports (${(paymentAmount / 1e9).toFixed(4)} SOL)`);
     console.log(`   Escrow PDA: ${escrowPda}`);
     
@@ -128,7 +128,7 @@ export class EscrowFunder {
         );
       }
       
-      console.log(`   ✅ PDA verified (bump: ${bump})`);
+      console.log(`   [OK] PDA verified (bump: ${bump})`);
       
       // Check if escrow already exists
       console.log(`   🔍 Checking if escrow already exists...`);
@@ -136,7 +136,7 @@ export class EscrowFunder {
         const existingEscrow = await (this.program.account as any).escrow.fetch(new PublicKey(escrowPda));
         
         // Escrow already exists - verify it matches our parameters
-        console.log(`   ℹ️  Escrow already exists!`);
+        console.log(`   [INFO] Escrow already exists!`);
         console.log(`   Existing escrow details:`);
         console.log(`      Offer ID: ${existingEscrow.offerId}`);
         console.log(`      Amount: ${existingEscrow.amount.toString()} lamports`);
@@ -157,7 +157,7 @@ export class EscrowFunder {
           throw new Error(`Escrow exists but user mismatch: ${existingEscrow.user.toBase58()} vs ${userPubkey}`);
         }
         
-        console.log(`   ✅ Escrow already funded with correct parameters - no action needed`);
+        console.log(`   [OK] Escrow already funded with correct parameters - no action needed`);
         return {
           success: true,
           txSignature: undefined, // No new transaction
@@ -168,7 +168,7 @@ export class EscrowFunder {
         // If account doesn't exist, we'll create it (expected path for new escrows)
         if (fetchError.message?.includes('Account does not exist') || 
             fetchError.toString().includes('Account does not exist')) {
-          console.log(`   ✅ Escrow does not exist yet - proceeding with creation`);
+          console.log(`   [OK] Escrow does not exist yet - proceeding with creation`);
         } else {
           // Re-throw if it's a different error
           throw fetchError;
@@ -187,7 +187,7 @@ export class EscrowFunder {
       }
       
       // Call createEscrow instruction
-      console.log(`   📤 Submitting transaction...`);
+      console.log(`   [TX] Submitting transaction...`);
       
       const tx = await (this.program.methods as any)
         .createEscrow(
@@ -203,14 +203,14 @@ export class EscrowFunder {
         })
         .rpc();
       
-      console.log(`   ✅ Transaction submitted!`);
+      console.log(`   [OK] Transaction submitted!`);
       console.log(`   Signature: ${tx}`);
       console.log(`   Explorer: https://explorer.solana.com/tx/${tx}?cluster=devnet`);
       
       // Wait for confirmation
       console.log(`   ⏳ Waiting for confirmation...`);
       await this.connection.confirmTransaction(tx, 'confirmed');
-      console.log(`   ✅ Transaction confirmed!`);
+      console.log(`   [OK] Transaction confirmed!`);
       
       return {
         success: true,

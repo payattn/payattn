@@ -6,7 +6,7 @@ This directory contains all project documentation.
 
 ---
 
-## 📚 Quick Navigation
+## Quick Navigation
 
 ### Core System
 - **[ARCHITECTURE.md](./ARCHITECTURE.md)** - System overview and components
@@ -51,7 +51,7 @@ This directory contains all project documentation.
 
 ---
 
-## 🏗️ System Components
+##  System Components
 
 | Component | Location | Purpose |
 |-----------|----------|---------|
@@ -63,22 +63,22 @@ This directory contains all project documentation.
 
 ---
 
-## 🎯 Recent Updates
+## Recent Updates
 
 ### Solana Integration (November 2025)
-- ✅ Trustless escrow smart contract deployed
-- ✅ HTTP 402 "Payment Required" x402 protocol implementation
-- ✅ Backend escrow verification via RPC
-- ✅ Privacy-preserving settlement (3 unlinked transactions)
+- Trustless escrow smart contract deployed
+- HTTP 402 "Payment Required" x402 protocol implementation
+- Backend escrow verification via RPC
+- Privacy-preserving settlement (3 unlinked transactions)
 
 ### ZK-SNARK Proofs
-- ✅ 3 circuits working (age_range, location_check, interest_check)
-- ✅ Extension proof generation (1-3 seconds)
-- ✅ Backend Rapidsnark verification (10-50ms)
+- 3 circuits working (age_range, location_check, interest_check)
+- Extension proof generation (1-3 seconds)
+- Backend Rapidsnark verification (10-50ms)
 
 ---
 
-## 📖 Key Documents
+## Key Documents
 
 ### For New Developers
 1. Start with **[PROJECT_ARCHITECTURE.md](./PROJECT_ARCHITECTURE.md)**

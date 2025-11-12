@@ -4,7 +4,7 @@
 
 ---
 
-## 🚀 Quick Start: Generate & Verify an Age Proof
+## Quick Start: Generate & Verify an Age Proof
 
 ### Client-Side (Extension/Browser)
 
@@ -61,7 +61,7 @@ if (result.valid) {
 
 ---
 
-## 📚 Common Imports
+## Common Imports
 
 ```typescript
 // Get all ZK utilities
@@ -76,7 +76,7 @@ import { generateWitness, loadWitnessCalculator } from '@/lib/zk/witness';
 
 ---
 
-## 🎯 Common Tasks
+## Common Tasks
 
 ### 1. Generate a Proof
 
@@ -159,16 +159,16 @@ if (allProofsValid(results)) {
 
 ---
 
-## 🔐 Security Considerations
+## Security Considerations
 
-### ✅ DO:
+###  DO:
 - Keep private inputs on the client side
 - Only send proofs and public signals to backend
 - Verify proofs on backend (don't trust client verification)
 - Cache verification keys (small, public)
 - Use proving keys only on client side
 
-### ❌ DON'T:
+###  DON'T:
 - Send private inputs to the backend
 - Expose proving keys (`.zkey` files)
 - Trust client-side verification alone
@@ -177,7 +177,7 @@ if (allProofsValid(results)) {
 
 ---
 
-## 📊 Data Flow Diagram
+## Data Flow Diagram
 
 ```
 User (Browser/Extension)
@@ -263,7 +263,7 @@ clearVerificationKeyCache();
 
 ---
 
-## 📁 File Locations Quick Reference
+## File Locations Quick Reference
 
 ```
 Circuit Artifacts:
@@ -294,7 +294,7 @@ Documentation:
 
 ---
 
-## 🔄 Workflow: Adding a New Criterion Type
+## Workflow: Adding a New Criterion Type
 
 ### Step 1: Create Circuit (in test repo)
 ```bash

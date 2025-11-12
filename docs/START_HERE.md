@@ -2,7 +2,7 @@
 
 ## What You've Got
 
-### 🏗️ Architecture
+### 🏗 Architecture
 ```
 Your Device (Chrome Extension)
 ├─ User Profile (IndexedDB) → Local Only
@@ -35,7 +35,7 @@ agent-dashboard/
 └── SETUP_CHECKLIST.md                   ← Your setup todo list
 ```
 
-## 🚀 Quick Start (15 minutes total)
+## Quick Start (15 minutes total)
 
 ```
 1. Get Venice API Key (2 min)
@@ -57,7 +57,7 @@ agent-dashboard/
    → VENICE_AI_QUICK_REFERENCE.md
 ```
 
-## 💡 Main Feature: Ad Matching
+## Main Feature: Ad Matching
 
 ```javascript
 // This is what you wanted - matching users to ads with full context
@@ -89,7 +89,7 @@ const result = await window.VeniceAI.analyzeAdMatch(
 }
 ```
 
-## 🔐 Security
+## Security
 
 | What | Where | Security |
 |------|-------|----------|
@@ -97,9 +97,9 @@ const result = await window.VeniceAI.analyzeAdMatch(
 | User Profile | IndexedDB | Local device only ✅ |
 | Ad Data | Temporary in memory | Never stored ✅ |
 | Network | Extension → Venice AI | Direct HTTPS only ✅ |
-| PayAttn | — | Zero access ✅ |
+| PayAttn | - | Zero access ✅ |
 
-## ✨ What Makes This Work
+## What Makes This Work
 
 ```
 ✅ Direct API Calls
@@ -123,7 +123,7 @@ const result = await window.VeniceAI.analyzeAdMatch(
    Full profile considered in decisions
 ```
 
-## 🎯 Your Next Steps
+## Your Next Steps
 
 1. **Get Venice API key** from https://docs.venice.ai
 2. **Load extension** in Chrome
@@ -132,7 +132,7 @@ const result = await window.VeniceAI.analyzeAdMatch(
 5. **Read** VENICE_AI_QUICK_REFERENCE.md for all functions
 6. **Integrate** analyzeAdMatch() into your background script
 
-## 📊 Function Reference
+## Function Reference
 
 ```javascript
 // Configuration
@@ -180,22 +180,22 @@ async function processIncomingAd(ad, userProfile) {
 }
 ```
 
-## 🔗 Quick Links
+## Quick Links
 
 - **Venice AI Docs:** https://docs.venice.ai
 - **Setup Guide:** VENICE_AI_DIRECT_SETUP.md
 - **Quick Reference:** VENICE_AI_QUICK_REFERENCE.md
 - **Architecture:** VENICE_AI_INTEGRATION_SUMMARY.md
 
-## 🎉 You're All Set!
+## You're All Set!
 
 Your extension now has:
-- ✅ Privacy-first LLM integration
-- ✅ Direct Venice AI calls (no backend)
-- ✅ Intelligent ad matching
-- ✅ Secure API key storage
-- ✅ Zero PayAttn backend involvement
-- ✅ Complete documentation
+- Privacy-first LLM integration
+- Direct Venice AI calls (no backend)
+- Intelligent ad matching
+- Secure API key storage
+- Zero PayAttn backend involvement
+- Complete documentation
 
 **Perfect alignment with your privacy-first philosophy!**
 

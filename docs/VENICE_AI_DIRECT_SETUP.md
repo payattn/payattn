@@ -11,11 +11,11 @@ Your Device (User Profile) → Extension (LLM Processing) → Venice AI
          PayAttn Servers: Zero access to your data or API key
 ```
 
-- ✅ API key stored **only in your browser** (chrome.storage.local)
-- ✅ User profiles stay **local on your device**
-- ✅ Only profile + ad data sent to **privacy-respecting Venice AI**
-- ✅ PayAttn servers never see sensitive data
-- ✅ No backend dependency
+- API key stored **only in your browser** (chrome.storage.local)
+- User profiles stay **local on your device**
+- Only profile + ad data sent to **privacy-respecting Venice AI**
+- PayAttn servers never see sensitive data
+- No backend dependency
 
 ## Setup
 
@@ -201,16 +201,16 @@ const response = await window.VeniceAI.generatePreferencesFromProfile({
 ## Security
 
 ### API Key Protection
-- ✅ Stored in `chrome.storage.local` (browser sandbox)
-- ✅ Never transmitted to PayAttn servers
-- ✅ Only accessible by extension
-- ✅ Deleted when extension is uninstalled
+- Stored in `chrome.storage.local` (browser sandbox)
+- Never transmitted to PayAttn servers
+- Only accessible by extension
+- Deleted when extension is uninstalled
 
 ### Data Privacy
-- ✅ All user profiles stay on local device
-- ✅ Only sent to Venice AI for processing
-- ✅ Venice AI doesn't log requests (privacy-first service)
-- ✅ PayAttn never sees sensitive data
+- All user profiles stay on local device
+- Only sent to Venice AI for processing
+- Venice AI doesn't log requests (privacy-first service)
+- PayAttn never sees sensitive data
 
 ### Message Format
 When calling Venice AI, messages are sent directly:

@@ -4,14 +4,14 @@ This project implements **WP01.2.1** (Wallet Connection) and **WP01.2.2** (First
 
 ## Features Implemented
 
-### ✅ WP01.2.1: Wallet Connection
+###  WP01.2.1: Wallet Connection
 - **Solana Wallet Adapters**: Full support for Phantom and Solflare wallets
 - **Wallet Provider Context**: App-wide wallet state management via React context
 - **Connection UI**: Custom wallet button using Shadcn UI components
 - **Session Persistence**: Wallet connection state maintained during browser session
 - **Clean Disconnect Flow**: Proper cleanup on wallet disconnect
 
-### ✅ WP01.2.2: First-Party Authentication
+###  WP01.2.2: First-Party Authentication
 - **Challenge Generation**: Creates unique authentication challenges with timestamp + nonce
 - **Wallet Signature**: Requests wallet to sign authentication message
 - **Signature Verification**: Client-side verification using tweetnacl
@@ -156,11 +156,11 @@ Visit `http://localhost:3000` to see the app.
 ## Security Considerations
 
 ### Current Implementation (Hackathon/Demo)
-- ✅ Client-side signature verification
-- ✅ Challenge-response authentication
-- ✅ Session timeout (24 hours)
-- ✅ Nonce prevents replay attacks
-- ✅ Timestamp prevents stale challenges
+- Client-side signature verification
+- Challenge-response authentication
+- Session timeout (24 hours)
+- Nonce prevents replay attacks
+- Timestamp prevents stale challenges
 
 ### Production Considerations (Future)
 - 🔄 Move verification to backend (WP01.2.4)
@@ -272,17 +272,17 @@ const SESSION_DURATION = 24 * 60 * 60 * 1000; // in milliseconds
 - [Next.js Documentation](https://nextjs.org/docs)
 - [Shadcn UI Components](https://ui.shadcn.com/)
 
-## Success Criteria Met ✅
+## Success Criteria Met 
 
 ### WP01.2.1
-- ✅ User clicks button → wallet extension prompts for connection
-- ✅ Connection status persists during session
-- ✅ Clean disconnect flow works
+- User clicks button → wallet extension prompts for connection
+- Connection status persists during session
+- Clean disconnect flow works
 
 ### WP01.2.2
-- ✅ Connected wallet successfully signs auth challenge
-- ✅ Signature verification passes
-- ✅ Authenticated session established and maintained
+- Connected wallet successfully signs auth challenge
+- Signature verification passes
+- Authenticated session established and maintained
 
 ## License
 

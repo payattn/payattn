@@ -58,7 +58,7 @@ You now have a complete, privacy-respecting LLM integration for your PayAttn ext
 PayAttn Servers: ❌ Zero Access (not in data flow)
 ```
 
-## ✅ What's Been Created
+## What's Been Created
 
 ### 1. **Extension Utility** (`extension/venice-ai.js`)
 - Direct calls to Venice AI API
@@ -86,7 +86,7 @@ PayAttn Servers: ❌ Zero Access (not in data flow)
 ### 4. **Documentation**
 - `VENICE_AI_DIRECT_SETUP.md` - Complete setup and API reference
 
-## 🚀 How to Get Started
+## How to Get Started
 
 ### Step 1: Get Venice API Key
 ```bash
@@ -119,7 +119,7 @@ PayAttn Servers: ❌ Zero Access (not in data flow)
 3. Ad Matching tab: Test user/ad matching
 ```
 
-## 💡 Key Features
+## Key Features
 
 ### Direct API Calls
 - No backend involved
@@ -157,13 +157,13 @@ const result = await window.VeniceAI.analyzeAdMatch(
 - **Never transmitted to PayAttn servers**
 
 ### Privacy Guarantees
-- ✅ User data stays on device
-- ✅ API key stays on device
-- ✅ Only Venice AI processes the data
-- ✅ Venice AI doesn't log requests
-- ✅ PayAttn has zero visibility
+- User data stays on device
+- API key stays on device
+- Only Venice AI processes the data
+- Venice AI doesn't log requests
+- PayAttn has zero visibility
 
-## 📦 Files Created/Updated
+## Files Created/Updated
 
 **New Files:**
 - `extension/venice-ai.js` - Direct API calling utility
@@ -178,7 +178,7 @@ const result = await window.VeniceAI.analyzeAdMatch(
 - Backend API route (`app/api/ai/complete/route.ts`) - Can be deleted
 - `.env.local` - Not needed anymore
 
-## 🔄 Integration Pattern
+## Integration Pattern
 
 ### In Your Extension Code:
 
@@ -206,18 +206,18 @@ if (result.success) {
 }
 ```
 
-## 🛡️ Security Checklist
+## 🛡 Security Checklist
 
-- ✅ API key stored in chrome.storage (sandbox)
-- ✅ No backend access to sensitive data
-- ✅ User profiles never transmitted
-- ✅ Only direct HTTPS to Venice AI
-- ✅ Venice AI is privacy-respecting
-- ✅ Automatic cleanup on uninstall
-- ✅ No logging of user data
-- ✅ Extension-only access to key
+- API key stored in chrome.storage (sandbox)
+- No backend access to sensitive data
+- User profiles never transmitted
+- Only direct HTTPS to Venice AI
+- Venice AI is privacy-respecting
+- Automatic cleanup on uninstall
+- No logging of user data
+- Extension-only access to key
 
-## 📚 Next Steps
+## Next Steps
 
 1. **Use the test UI** to verify everything works
 2. **Review the documentation** at `VENICE_AI_DIRECT_SETUP.md`
@@ -225,7 +225,7 @@ if (result.success) {
 4. **Integrate into background.js** for automatic ad processing
 5. **Build UI** to show match results to users
 
-## 🎯 Example Use Cases
+## Example Use Cases
 
 ### Ad Analysis
 ```javascript
@@ -250,7 +250,7 @@ const response = await window.VeniceAI.sendMessage(
 // Flexible for any use case
 ```
 
-## 📖 Documentation
+## Documentation
 
 See `VENICE_AI_DIRECT_SETUP.md` for:
 - Complete API reference

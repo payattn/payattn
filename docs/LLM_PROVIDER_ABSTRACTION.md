@@ -11,12 +11,12 @@ Successfully refactored the extension to use a provider-agnostic LLM interface, 
 **Replaces:** `venice-ai.js`
 
 **Features:**
-- ✅ Provider-agnostic interface (`callLLM`, `getLLMTools`, `processToolCall`)
-- ✅ Venice AI provider (cloud-based, free tier available)
-- ✅ Local LM Studio provider (OpenAI-compatible, runs on user's machine)
-- ✅ Configuration management (stores provider choice + credentials in chrome.storage)
-- ✅ Backward compatibility (exports as both `LLMService` and `VeniceAI`)
-- ✅ Works in browser context (`window.LLMService`) and service worker (`self.LLMService`)
+- Provider-agnostic interface (`callLLM`, `getLLMTools`, `processToolCall`)
+- Venice AI provider (cloud-based, free tier available)
+- Local LM Studio provider (OpenAI-compatible, runs on user's machine)
+- Configuration management (stores provider choice + credentials in chrome.storage)
+- Backward compatibility (exports as both `LLMService` and `VeniceAI`)
+- Works in browser context (`window.LLMService`) and service worker (`self.LLMService`)
 
 **Storage Keys:**
 - `payattn_llm_provider` - 'venice' or 'local'
@@ -26,21 +26,21 @@ Successfully refactored the extension to use a provider-agnostic LLM interface, 
 ### 2. Updated `/extension/settings.html` (New Provider Configuration UI)
 
 **Features:**
-- ✅ Provider selection (Venice AI / Local LM Studio)
-- ✅ Venice AI configuration (API key input + link to get key)
-- ✅ Local configuration (LM Studio URL input + setup instructions)
-- ✅ Test Connection button (verifies LLM is working)
-- ✅ Current Status display (shows configured provider + status)
-- ✅ Back button to return to popup
-- ✅ Matches popup.html styling (dark theme, yellow accents, PayAttn branding)
+- Provider selection (Venice AI / Local LM Studio)
+- Venice AI configuration (API key input + link to get key)
+- Local configuration (LM Studio URL input + setup instructions)
+- Test Connection button (verifies LLM is working)
+- Current Status display (shows configured provider + status)
+- Back button to return to popup
+- Matches popup.html styling (dark theme, yellow accents, PayAttn branding)
 
 ### 3. Updated `/extension/popup.html` (Added Settings Link)
 
 **Changes:**
-- ✅ Added gear icon (⚙️) in top-right corner
-- ✅ Links to settings.html
-- ✅ Animated on hover (rotates 45°)
-- ✅ Opens in popup window (not full browser)
+- Added gear icon (⚙️) in top-right corner
+- Links to settings.html
+- Animated on hover (rotates 45°)
+- Opens in popup window (not full browser)
 
 ### 4. Updated Extension References
 

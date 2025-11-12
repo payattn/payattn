@@ -51,13 +51,13 @@ try {
   
   const privateKeyBase58 = base58Encode(keypairBytes);
   
-  console.log('\n✅ SUCCESS!\n');
+  console.log('\n*** SUCCESS!\n');
   console.log('='.repeat(80));
   console.log('BASE58 PRIVATE KEY (for Phantom import):');
   console.log('='.repeat(80));
   console.log(privateKeyBase58);
   console.log('='.repeat(80));
-  console.log('\n📋 INSTRUCTIONS:');
+  console.log('\n*** INSTRUCTIONS:');
   console.log('1. Copy the private key above (the long string)');
   console.log('2. Open Phantom wallet');
   console.log('3. Click Settings → Add / Connect Wallet → Import Private Key');

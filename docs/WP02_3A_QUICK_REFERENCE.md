@@ -1,6 +1,6 @@
 # WP02.3a Quick Reference Card
 
-## 🚀 Get Started in 2 Minutes
+## Get Started in 2 Minutes
 
 ### 1. Open the Test Page
 ```
@@ -26,7 +26,7 @@ Navigate to: age-proof-test.html
 
 ---
 
-## 🎯 Test Checklist
+## Test Checklist
 
 | Task | Expected Result | Where to Check |
 |------|-----------------|-----------------|
@@ -39,7 +39,7 @@ Navigate to: age-proof-test.html
 
 ---
 
-## 🔐 Privacy Validation Checklist
+## Privacy Validation Checklist
 
 ```
 User sees:
@@ -62,7 +62,7 @@ User sees:
 
 ---
 
-## ❌ If Something Fails
+## If Something Fails
 
 | Error | Solution |
 |-------|----------|
@@ -74,7 +74,7 @@ User sees:
 
 ---
 
-## 📊 What Gets Tested
+## What Gets Tested
 
 ✅ **Profile loading** - Decryption works, age extracted
 ✅ **Proof generation** - Extension generates proof correctly
@@ -102,7 +102,7 @@ Advertiser Server
 
 ---
 
-## 🔍 Key Files
+## Key Files
 
 | File | Purpose |
 |------|---------|
@@ -113,20 +113,20 @@ Advertiser Server
 
 ---
 
-## ✨ Success = All Green
+## Success = All Green
 
 When you see:
-- ✅ Profile loads
-- ✅ Proof generates  
-- ✅ Backend verifies
-- ✅ Console all green
-- ✅ Privacy intact
+- Profile loads
+- Proof generates  
+- Backend verifies
+- Console all green
+- Privacy intact
 
 → **WP02.3a is ready** → Move to WP02.3b
 
 ---
 
-## 📝 Notes
+## Notes
 
 - Test page is **temporary** - will integrate into popup later
 - Debug console is **intentionally verbose** - easier to debug

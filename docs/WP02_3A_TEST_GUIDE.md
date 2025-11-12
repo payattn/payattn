@@ -29,9 +29,9 @@ Or navigate to it from popup.html if you add a button.
 ### 2. Prerequisites
 
 You must have:
-- ✅ Authenticated with Phantom wallet (saved to chrome.storage)
-- ✅ Created a profile (age saved to profile.demographics.age)
-- ✅ Backend running at `http://localhost:3000`
+- Authenticated with Phantom wallet (saved to chrome.storage)
+- Created a profile (age saved to profile.demographics.age)
+- Backend running at `http://localhost:3000`
 
 ### 3. Test the Flow
 
@@ -74,9 +74,9 @@ You must have:
 All important events are logged with color coding:
 
 - 🔵 **INFO** (blue) - Important events
-- ✅ **SUCCESS** (green) - Operations completed
+- **SUCCESS** (green) - Operations completed
 - ⚠️ **WARN** (yellow) - Important state changes
-- ❌ **ERROR** (red) - Problems that need fixing
+- **ERROR** (red) - Problems that need fixing
 - 📄 **LOG** (gray) - Detailed data
 
 ### What to Look For
@@ -127,9 +127,9 @@ All important events are logged with color coding:
 
 ### Privacy Guarantee
 
-- ✅ **Your actual age (35)** - NOT in proof, NOT in publicSignals, NOT sent anywhere
-- ✅ **publicSignals [25, 65]** - This is advertiser criteria, already known
-- ✅ **proof** - Cryptographic evidence you fit the criteria, can't be forged
+- **Your actual age (35)** - NOT in proof, NOT in publicSignals, NOT sent anywhere
+- **publicSignals [25, 65]** - This is advertiser criteria, already known
+- **proof** - Cryptographic evidence you fit the criteria, can't be forged
 
 Backend can verify: "This person is age 25-65" without ever seeing "35"
 
@@ -239,7 +239,7 @@ Advertiser wants: 25-65
 
 ## Next Steps (After Testing)
 
-### When This Works Perfectly ✅
+### When This Works Perfectly 
 
 Integration is ready! The test page validates:
 

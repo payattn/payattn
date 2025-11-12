@@ -76,17 +76,17 @@ Decrypt and process profile
 
 ## Security Properties
 
-### ✅ No Keys Stored Locally
+###  No Keys Stored Locally
 - Only `keyHash` stored in IndexedDB
 - Key material fetched on-demand from KDS endpoint
 - Attacker with database access cannot decrypt without KDS access
 
-### ✅ Signature-Based Access Control
+###  Signature-Based Access Control
 - `keyHash = SHA-256(wallet_signature)`
 - Only user with valid wallet signature can compute correct hash
 - Deterministic: same signature → same keyHash → same key material
 
-### ✅ Defense in Depth
+###  Defense in Depth
 ```javascript
 finalKey = PBKDF2(
   password: KDS_material,        // Remote (requires endpoint access)
@@ -95,13 +95,13 @@ finalKey = PBKDF2(
 )
 ```
 
-### ✅ Server-Side Controls
+###  Server-Side Controls
 - Rate limiting on `/api/k/[hash]` endpoint
 - Logging of all key material requests
 - Can revoke access by changing `SERVER_SECRET`
 - Can implement per-user quotas
 
-### ✅ Cache Strategy
+###  Cache Strategy
 - Extension caches key material for 24 hours
 - Reduces endpoint load
 - Session-based expiry
@@ -158,19 +158,19 @@ export async function GET(request, { params }) {
 
 ## Comparison to Alternatives
 
-### ❌ Store Public Key Next to Data
+###  Store Public Key Next to Data
 ```javascript
 // Looks bad (even though technically fine)
 {data: "encrypted", key: "public_key"}
 ```
 
-### ❌ Session-Key Encryption
+###  Session-Key Encryption
 ```javascript
 // Still stores derived key locally
 {data: "encrypted", sessionKey: "derived_from_signature"}
 ```
 
-### ✅ KDS Approach
+###  KDS Approach
 ```javascript
 // Clean separation: data local, keys remote
 {data: "encrypted", keyHash: "lookup_token"}
@@ -233,7 +233,7 @@ KDS_SECRET=<long-random-string>  # MUST be secure in production
 
 ## Migration Path
 
-### Phase 1: KDS Implementation (✅ Complete)
+### Phase 1: KDS Implementation ( Complete)
 - Created KDS endpoint
 - Updated crypto functions
 - Modified auth flow

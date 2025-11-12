@@ -5,31 +5,31 @@
 
 ---
 
-## ✅ Fixed Issues
+## Fixed Issues
 
-### Issue #1: Privacy Violation ✅ FIXED
+### Issue #1: Privacy Violation  FIXED
 **Problem:** Proof generation was in backend code (`lib/zk/`)  
 **Solution:** Moved to extension (`extension/lib/zk-prover.js`)
 
 **New Architecture:**
-- ✅ Extension generates proofs (private data stays here)
-- ✅ Extension sends only proof to backend
-- ✅ Backend verifies proof (no private data exposure)
+- Extension generates proofs (private data stays here)
+- Extension sends only proof to backend
+- Backend verifies proof (no private data exposure)
 
-### Issue #2: Generic Circuit Clarity ✅ FIXED
+### Issue #2: Generic Circuit Clarity  FIXED
 **Problem:** Registry had `age_range` as primary circuit  
 **Solution:** Clarified in documentation and code
 
 **Circuit Roles:**
-- ✅ `age_range` - Initial test circuit (validates approach)
-- ✅ `range_proof` - PRODUCTION generic circuit for numeric ranges
-- ✅ `set_membership` - PRODUCTION generic circuit for categories
+- `age_range` - Initial test circuit (validates approach)
+- `range_proof` - PRODUCTION generic circuit for numeric ranges
+- `set_membership` - PRODUCTION generic circuit for categories
 
 ---
 
-## 📋 Current State
+##  Current State
 
-### ✅ Created (Already Done)
+###  Created (Already Done)
 - `extension/lib/zk-prover.js` - Proof generation (private data stays here)
 - `app/api/verify-proof/route.ts` - Proof verification endpoint
 - `lib/zk/verifier.ts` - Backend verification (updated header)
@@ -37,14 +37,14 @@
 - `public/circuits/age_range/` - Verification key on backend
 - Documentation explaining privacy-first architecture
 
-### ⚠️ Should Be Deleted (Won't Work in Extension)
+###  Should Be Deleted (Won't Work in Extension)
 These were meant for backend but don't belong there:
 - `lib/zk/witness.ts` - DELETE (witness generation happens in extension)
 - `lib/zk/prover.ts` - DELETE (proof generation happens in extension)
 
 **Why?** Backend doesn't have access to private data, so these aren't used.
 
-### ✅ Keep (Still Needed)
+###  Keep (Still Needed)
 - `lib/zk/verifier.ts` - Backend verification only (correct use)
 - `lib/zk/circuits-registry.ts` - Reference/documentation (updated comment)
 - `lib/zk/index.ts` - Export point (can be backend-only now)
@@ -55,7 +55,7 @@ These were meant for backend but don't belong there:
 
 ---
 
-## 🎯 Before WP02.3: Cleanup Tasks
+## Before WP02.3: Cleanup Tasks
 
 ### Recommended Quick Fixes
 
@@ -83,30 +83,30 @@ These were meant for backend but don't belong there:
 
 ---
 
-## 📊 What's Ready for WP02.3
+## What's Ready for WP02.3
 
-### ✅ Proof Generation
+###  Proof Generation
 - Extension-side proof generation implemented
 - Privacy guaranteed (private data doesn't leave extension)
 - WASM and proving keys bundled
 
-### ✅ Proof Verification
+###  Proof Verification
 - Backend verification endpoint ready
 - Verification keys available
 
-### ✅ Architecture
+###  Architecture
 - Extension autonomous and self-contained
 - Service worker can generate proofs anytime
 - Clear separation of concerns
 
-### 🚀 Ready to Build
+###  Ready to Build
 - **WP02.3a:** Age proof UI component in extension
 - **WP02.3b:** End-to-end testing (generate → verify)
 - **WP02.3c:** Advertiser interface
 
 ---
 
-## 🔍 Privacy Verification
+## Privacy Verification
 
 ✅ **Private data NEVER leaves extension:**
 - User's age: stays in extension
@@ -126,7 +126,7 @@ These were meant for backend but don't belong there:
 
 ---
 
-## 📚 Reference Documents
+## Reference Documents
 
 - **ARCHITECTURE-PRIVACY-FIRST.md** - Full architecture explanation
 - **CIRCUITS-ARCHITECTURE.md** - Deployment and bundling details
@@ -135,7 +135,7 @@ These were meant for backend but don't belong there:
 
 ---
 
-## ⚡ Quick Start for WP02.3
+## Quick Start for WP02.3
 
 ### In Extension Code (popup.js or background.js)
 
@@ -173,7 +173,7 @@ if (result.success) {
 
 ---
 
-## ✨ Key Improvements Made
+## Key Improvements Made
 
 | Aspect | Before | After |
 |--------|--------|-------|
@@ -185,7 +185,7 @@ if (result.success) {
 
 ---
 
-## 🚀 Ready for WP02.3?
+## Ready for WP02.3?
 
 **YES** ✅
 
@@ -204,9 +204,9 @@ Proceed to WP02.3 for:
 ## 📞 Questions Before WP02.3?
 
 Key points to confirm:
-- ✅ Private data stays in extension?
-- ✅ Only proofs sent to backend?
-- ✅ Service worker can generate proofs anytime?
-- ✅ Generic circuits ready for WP02.4?
+- Private data stays in extension?
+- Only proofs sent to backend?
+- Service worker can generate proofs anytime?
+- Generic circuits ready for WP02.4?
 
 If all confirmed → **Ready for WP02.3** 🚀

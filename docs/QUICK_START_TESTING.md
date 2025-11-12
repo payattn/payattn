@@ -237,17 +237,17 @@ chrome.storage.local.get(['payattn_max_sessions'], (result) => {
 ## Expected Results
 
 ### Good Ads (Should be OFFERED)
-- ✅ test_crypto_exchange_001 (Crypto + good targeting)
-- ✅ test_football_betting_001 (Football + UK targeting)
-- ✅ test_electric_car_001 (Tesla + high income)
-- ✅ test_vpn_security_001 (Tech + privacy)
-- ✅ test_gaming_console_001 (Gaming interest)
-- ✅ test_investment_app_001 (Investing + UK)
+- test_crypto_exchange_001 (Crypto + good targeting)
+- test_football_betting_001 (Football + UK targeting)
+- test_electric_car_001 (Tesla + high income)
+- test_vpn_security_001 (Tech + privacy)
+- test_gaming_console_001 (Gaming interest)
+- test_investment_app_001 (Investing + UK)
 
 ### Bad Ads (Should be REJECTED)
-- ❌ test_scammy_crypto_001 (Low quality, suspicious)
-- ❌ test_irrelevant_baby_001 (Wrong interests - parenting)
-- ❌ Some others depending on user profile
+- test_scammy_crypto_001 (Low quality, suspicious)
+- test_irrelevant_baby_001 (Wrong interests - parenting)
+- Some others depending on user profile
 
 ### Typical Max Session Result
 ```

@@ -51,7 +51,7 @@ curl https://your-worker-url.workers.dev/
 # {"status":"ok","service":"payattn-zk-verifier",...}
 ```
 
-## Done! 🎉
+## Done! 
 
 Your worker is live and ready to verify proofs!
 

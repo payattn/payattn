@@ -19,7 +19,7 @@
 
 ## Day 1: Core Security Fix (4-6 hours)
 
-### ✅ Task 1: Remove keyHash from IndexedDB Schema (30 min)
+###  Task 1: Remove keyHash from IndexedDB Schema (30 min)
 
 - [ ] Update `storage-idb.ts` ProfileRecord interface
   - Remove `keyHash` field
@@ -31,7 +31,7 @@
 
 ---
 
-### ✅ Task 2: Store keyHash in Session Only (Website) (30 min)
+###  Task 2: Store keyHash in Session Only (Website) (30 min)
 - [ ] Update `AuthSession` interface to keep keyHash
 - [ ] Website stores keyHash in session (already does this!)
 - [ ] Website uses keyHash from session when encrypting
@@ -41,7 +41,7 @@
 
 ---
 
-### ✅ Task 3: Create Extension Storage for keyHash (30 min)
+###  Task 3: Create Extension Storage for keyHash (30 min)
 - [ ] Add helper functions to `extension/background.js`:
   ```javascript
   async function saveKeyHash(keyHash) {
@@ -58,7 +58,7 @@
 
 ---
 
-### ✅ Task 4: Add Phantom Auth to Extension (2-3 hours)
+###  Task 4: Add Phantom Auth to Extension (2-3 hours)
 - [ ] Create `extension/setup.html` (simple HTML page)
   - Copy wallet adapter setup from website
   - Simple form for wallet connection
@@ -76,7 +76,7 @@
 
 ---
 
-### ✅ Task 5: Update Extension Popup to Trigger Setup (30 min)
+###  Task 5: Update Extension Popup to Trigger Setup (30 min)
 - [ ] Update `extension/popup.html`
   - Add "Authenticate" button if no keyHash found
   - Button opens setup.html in new tab
@@ -90,7 +90,7 @@
 
 ---
 
-### ✅ Task 6: Update Background Script to Use chrome.storage (1 hour)
+###  Task 6: Update Background Script to Use chrome.storage (1 hour)
 - [ ] Modify `processProfile()` in `extension/background.js`
   - Get keyHash from `chrome.storage.local` (not from profile record)
   - Fetch key material from KDS using keyHash
@@ -104,7 +104,7 @@
 
 ## Day 2: Testing & Polish (4-6 hours)
 
-### ✅ Task 7: Test Complete Flow (1 hour)
+###  Task 7: Test Complete Flow (1 hour)
 - [ ] Test website auth flow (should still work)
 - [ ] Test extension installation
 - [ ] Test extension setup (Phantom auth in new tab)
@@ -115,7 +115,7 @@
 
 ---
 
-### ✅ Task 8: Add Rate Limiting to KDS (30 min)
+###  Task 8: Add Rate Limiting to KDS (30 min)
 - [ ] Simple in-memory rate limiter in KDS endpoint
   ```typescript
   const rateLimits = new Map(); // IP -> {count, resetAt}
@@ -127,7 +127,7 @@
 
 ---
 
-### ✅ Task 9: Error Handling (1 hour)
+###  Task 9: Error Handling (1 hour)
 - [ ] Extension setup: handle wallet rejection
 - [ ] Extension setup: handle KDS errors
 - [ ] Background script: handle missing keyHash
@@ -138,7 +138,7 @@
 
 ---
 
-### ✅ Task 10: UI Polish (1-2 hours)
+###  Task 10: UI Polish (1-2 hours)
 - [ ] Style extension setup page (match website branding)
 - [ ] Add loading states
 - [ ] Add success confirmation
@@ -152,7 +152,7 @@
 
 ---
 
-### ✅ Task 11: Documentation (1 hour)
+###  Task 11: Documentation (1 hour)
 - [ ] Update README with:
   - "Extension optional but recommended"
   - How to install extension
@@ -190,11 +190,11 @@
 
 ## What's NOT Changing (Keep Simple)
 
-- ❌ No website UI changes needed
-- ❌ No extension-to-website messaging (not needed for hackathon)
-- ❌ No dashboard redesign
-- ❌ Website keeps working standalone
-- ❌ Extension is purely optional enhancement
+- No website UI changes needed
+- No extension-to-website messaging (not needed for hackathon)
+- No dashboard redesign
+- Website keeps working standalone
+- Extension is purely optional enhancement
 
 ---
 

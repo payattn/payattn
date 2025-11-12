@@ -1,6 +1,6 @@
 # Venice AI Quick Reference
 
-## 🚀 Quick Start (5 minutes)
+## Quick Start (5 minutes)
 
 ```bash
 # 1. Get your API key from Venice AI
@@ -16,7 +16,7 @@ Click extension → Ad Management → settings.html → Save key
 Navigate to venice-test.html in the extension
 ```
 
-## 📋 Function Cheat Sheet
+##  Function Cheat Sheet
 
 ### Setup API Key
 ```javascript
@@ -88,7 +88,7 @@ const result = await window.VeniceAI.processAd(
 // Returns: main message, target audience, CTA, estimated targeting
 ```
 
-## ✅ Response Format
+## Response Format
 
 ```javascript
 {
@@ -111,7 +111,7 @@ const result = await window.VeniceAI.processAd(
 }
 ```
 
-## 🔍 Debugging
+## Debugging
 
 ```javascript
 // Check console for logs
@@ -128,7 +128,7 @@ console.log(result);
 // 4. Venice API down? Try https://api.venice.ai/api/v1/models
 ```
 
-## 📁 File Locations
+## File Locations
 
 - **Settings:** `settings.html` - Configure API key
 - **Test UI:** `venice-test.html` - Test functionality
@@ -136,7 +136,7 @@ console.log(result);
 - **Manifest:** `manifest.json` - Permissions
 - **Docs:** `VENICE_AI_DIRECT_SETUP.md` - Full guide
 
-## 🔐 Where Your Data Goes
+## Where Your Data Goes
 
 ```
 API Key:        chrome.storage.local (never leaves device)
@@ -156,7 +156,7 @@ PayAttn:        ← Never sees any of this data
 | Can't find settings.html | Copy extension ID from chrome://extensions, use `chrome-extension://ID/settings.html` |
 | Test page won't load | Same as above - use full chrome-extension:// URL |
 
-## 🎯 Integration Example
+## Integration Example
 
 ```javascript
 // In your background.js or wherever you process ads:
@@ -211,7 +211,7 @@ if (result?.success && result?.matches) {
 "You are a data scientist. Based on the user profile and ad targeting, calculate a match probability (0-100)."
 ```
 
-## 🔗 Resources
+## Resources
 
 - [Venice AI Docs](https://docs.venice.ai)
 - [Chrome Extension API](https://developer.chrome.com/docs/extensions/)

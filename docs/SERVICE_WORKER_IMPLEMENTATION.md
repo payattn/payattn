@@ -216,16 +216,16 @@ payattn_wallet_verification   →  {"walletAddress":"ABC...","timestamp":1234567
 ### Threat Model
 
 **Protected Against:**
-- ✅ Other websites accessing localStorage (origin isolation)
-- ✅ Supply chain attacks in main app (SW has zero deps)
-- ✅ Brute force attacks on encryption (PBKDF2 100k iterations)
-- ✅ Man-in-the-middle (data encrypted at rest)
+- Other websites accessing localStorage (origin isolation)
+- Supply chain attacks in main app (SW has zero deps)
+- Brute force attacks on encryption (PBKDF2 100k iterations)
+- Man-in-the-middle (data encrypted at rest)
 
 **NOT Protected Against:**
-- ❌ XSS in Service Worker itself (code audit required)
-- ❌ Malicious code injected into sw-agent.js
-- ❌ Browser extensions with localStorage access
-- ❌ Physical access to device while browser unlocked
+- XSS in Service Worker itself (code audit required)
+- Malicious code injected into sw-agent.js
+- Browser extensions with localStorage access
+- Physical access to device while browser unlocked
 
 ### Best Practices
 

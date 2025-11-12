@@ -4,7 +4,7 @@ A Next.js application for the Payattn attention economy platform with Solana wal
 
 ## Features
 
-### ✅ Completed Implementations
+###  Completed Implementations
 
 - **WP01.2.1-2: Wallet Authentication** - Solana wallet connection with signature-based authentication
   - See [WALLET_AUTH_README.md](./WALLET_AUTH_README.md) for details

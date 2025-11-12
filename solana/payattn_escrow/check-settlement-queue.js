@@ -26,12 +26,12 @@ async function checkSchema() {
 
   if (queueError) {
     if (queueError.message.includes('does not exist')) {
-      console.log('❌ settlement_queue table does NOT exist');
+      console.log('[ERROR] settlement_queue table does NOT exist');
     } else {
-      console.log('⚠️  Error querying settlement_queue:', queueError.message);
+      console.log('[WARN] Error querying settlement_queue:', queueError.message);
     }
   } else {
-    console.log('✅ settlement_queue table exists');
+    console.log('[OK] settlement_queue table exists');
     console.log('   Columns:', Object.keys(queueData[0] || {}));
   }
 
@@ -43,13 +43,13 @@ async function checkSchema() {
     .limit(1);
 
   if (offersError) {
-    console.log('❌ Error querying offers:', offersError.message);
+    console.log('[ERROR] Error querying offers:', offersError.message);
   } else {
     const columns = Object.keys(offersData[0] || {});
-    console.log('✅ offers table exists');
-    console.log('   Has settling column?', columns.includes('settling') ? '✅' : '❌');
-    console.log('   Has settled_at column?', columns.includes('settled_at') ? '✅' : '❌');
-    console.log('   Has gas_fees_lamports column?', columns.includes('gas_fees_lamports') ? '✅' : '❌');
+    console.log('[OK] offers table exists');
+    console.log('   Has settling column?', columns.includes('settling') ? '[OK]' : '[NO]');
+    console.log('   Has settled_at column?', columns.includes('settled_at') ? '[OK]' : '[NO]');
+    console.log('   Has gas_fees_lamports column?', columns.includes('gas_fees_lamports') ? '[OK]' : '[NO]');
   }
 
   // Check publishers table for wallet_address
@@ -61,15 +61,15 @@ async function checkSchema() {
 
   if (pubError) {
     if (pubError.message.includes('does not exist')) {
-      console.log('❌ publishers table does NOT exist');
+      console.log('[ERROR] publishers table does NOT exist');
     } else {
-      console.log('⚠️  Error querying publishers:', pubError.message);
+      console.log('[WARN] Error querying publishers:', pubError.message);
     }
   } else {
     const columns = Object.keys(pubData[0] || {});
-    console.log('✅ publishers table exists');
-    console.log('   Has wallet_address column?', columns.includes('wallet_address') ? '✅' : '❌');
-    console.log('   Has wallet_verified column?', columns.includes('wallet_verified') ? '✅' : '❌');
+    console.log('[OK] publishers table exists');
+    console.log('   Has wallet_address column?', columns.includes('wallet_address') ? '[OK]' : '[NO]');
+    console.log('   Has wallet_verified column?', columns.includes('wallet_verified') ? '[OK]' : '[NO]');
   }
 
   console.log('\n--- Schema Check Complete ---');

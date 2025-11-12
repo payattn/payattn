@@ -29,7 +29,7 @@ console.log('='.repeat(60), '\n');
 async function testX402Flow() {
   try {
     // Step 1: Peggy accepts an offer
-    console.log('📋 Step 1: Accepting offer...');
+    console.log('[STEP 1] Accepting offer...');
     
     // Use the test offer from database (offer_41f8f17d3b6bebd6)
     const offerId = 'offer_41f8f17d3b6bebd6';
@@ -63,11 +63,11 @@ async function testX402Flow() {
       verificationEndpoint: acceptResponse.headers.get('X-Verification-Endpoint')
     };
     
-    console.log('✅ Received 402 Payment Required');
+    console.log('[OK] Received 402 Payment Required');
     console.log('x402 Headers:', JSON.stringify(x402Headers, null, 2), '\n');
     
     // Step 2: Peggy funds the escrow
-    console.log('💰 Step 2: Funding escrow on Solana...');
+    console.log('[STEP 2] Funding escrow on Solana...');
     
     const amount = parseInt(x402Headers.paymentAmount!);
     const userPubkey = new PublicKey(x402Headers.userPubkey!);
@@ -95,14 +95,14 @@ async function testX402Flow() {
       .signers([advertiserKeypair])
       .rpc();
     
-    console.log('✅ Escrow funded! TX:', tx);
+    console.log('[OK] Escrow funded! TX:', tx);
     console.log('Waiting for confirmation...');
     
     await connection.confirmTransaction(tx, 'confirmed');
-    console.log('✅ Transaction confirmed\n');
+    console.log('[OK] Transaction confirmed\n');
     
     // Step 3: Peggy submits payment proof
-    console.log('📨 Step 3: Submitting payment proof...');
+    console.log('[STEP 3] Submitting payment proof...');
     
     const verifyResponse = await fetch(`${BACKEND_URL}${x402Headers.verificationEndpoint}`, {
       method: 'POST',
@@ -123,11 +123,11 @@ async function testX402Flow() {
       throw new Error(`Verification failed: ${JSON.stringify(verifyResult)}`);
     }
     
-    console.log('✅ Payment verified!');
+    console.log('[OK] Payment verified!');
     console.log('Result:', JSON.stringify(verifyResult, null, 2), '\n');
     
     console.log('='.repeat(60));
-    console.log('🎉 x402 Flow Test PASSED!');
+    console.log('*** x402 Flow Test PASSED!');
     console.log('='.repeat(60));
     console.log('\nOffer Status:', verifyResult.offerStatus);
     console.log('Escrow PDA:', verifyResult.escrowPda);

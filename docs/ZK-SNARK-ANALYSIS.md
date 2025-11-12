@@ -5,9 +5,9 @@
 
 ---
 
-## 📋 Current State Analysis
+##  Current State Analysis
 
-### What You've Built ✅
+### What You've Built 
 
 Your test repo (`is.jmd.zksnark` at /Users/jmd/nosync/is.jmd.zksnark ) successfully demonstrates the complete ZK-SNARK workflow:
 
@@ -46,7 +46,7 @@ Your test repo (`is.jmd.zksnark` at /Users/jmd/nosync/is.jmd.zksnark ) successfu
 
 ---
 
-## 💡 Key Insight: Reuse Strategy
+## Key Insight: Reuse Strategy
 
 **YES, absolutely reuse your test repo's infrastructure.** Here's why:
 
@@ -71,7 +71,7 @@ Your test repo (`is.jmd.zksnark` at /Users/jmd/nosync/is.jmd.zksnark ) successfu
 
 ---
 
-## 🏗️ Proposed Architecture
+##  Proposed Architecture
 
 ```
 org.payattn.main/
@@ -106,7 +106,7 @@ is.jmd.zksnark/ (stays as-is - dev/build repo)
 
 ---
 
-## 🔄 Workflow (Development & Deployment)
+## Workflow (Development & Deployment)
 
 ### Phase 1: Development (is.jmd.zksnark)
 1. Write/modify `.circom` circuits
@@ -132,7 +132,7 @@ is.jmd.zksnark/ (stays as-is - dev/build repo)
 
 ---
 
-## 📊 Circuits Needed for Campaigns
+## Circuits Needed for Campaigns
 
 Based on your campaign matching requirements:
 
@@ -146,7 +146,7 @@ Based on your campaign matching requirements:
 
 ---
 
-## 🎯 WP02 Developer Brief
+## WP02 Developer Brief
 
 ### WP02.1: ZK Infrastructure Setup
 **Goal:** Set up circuit artifact pipeline in main project repo
@@ -299,7 +299,7 @@ export * from './verifier.js';
 
 ---
 
-## 🚀 Implementation Order (Recommended)
+## Implementation Order (Recommended)
 
 1. **WP02.1** - Infrastructure (1-2 days)
    - Copy artifacts, set up directories, version tracking
@@ -326,7 +326,7 @@ export * from './verifier.js';
 
 ---
 
-## ⚠️ Technical Gotchas
+##  Technical Gotchas
 
 1. **WASM Loading:** Browser CORS might block loading `.wasm` from public/
    - Solution: Serve from same origin (Next.js `/public` does this)
@@ -348,7 +348,7 @@ export * from './verifier.js';
 
 ---
 
-## 📦 File Size Reference
+## File Size Reference
 
 For planning bandwidth/storage:
 
@@ -366,7 +366,7 @@ For 5 circuits (age, income, location, interest, score):
 
 ---
 
-## ✅ Checklist for Go/No-Go
+## Checklist for Go/No-Go
 
 Before starting WP02.1, verify:
 
@@ -379,7 +379,7 @@ Before starting WP02.1, verify:
 
 ---
 
-## 📚 Key Takeaway
+## Key Takeaway
 
 **You're NOT redoing setup costs.** Your test repo becomes the "build environment," and the main project consumes pre-built artifacts. This is exactly how real ZK projects work (e.g., Tornado Cash, Aztec, Aave Privacy Module).
 

@@ -143,7 +143,7 @@ async function seedOffers() {
     // Generate fresh offers with unique IDs
     const testOffers = generateTestOffers();
     
-    console.log('📋 Generated unique offer IDs:');
+    console.log('Generated unique offer IDs:');
     testOffers.forEach(offer => {
       console.log(`  • ${offer.offer_id}`);
     });
@@ -173,36 +173,36 @@ async function seedOffers() {
       if (error) {
         // If already exists, skip
         if (error.code === '23505') {
-          console.log(`  ⚠️  Already exists, skipping\n`);
+          console.log(`  [SKIP] Already exists\n`);
         } else {
           throw error;
         }
       } else {
-        console.log(`  ✅ Created\n`);
+        console.log(`  [OK] Created\n`);
       }
     }
 
-    console.log('✅ Seeding complete!');
+    console.log('*** Seeding complete! ***');
     
-    console.log(`\n📊 Summary:`);
+    console.log(`\nSummary:`);
     console.log(`  Total offers created: ${testOffers.length}`);
     console.log(`  Status: 'offer_made' (ready for Peggy)`);
     console.log(`  Advertiser: ${ADVERTISER_WALLET}`);
     console.log(`  Note: Each run generates unique offer IDs for repeatability`);
     
-    console.log(`\n🤖 Next steps:`);
+    console.log(`\nNext steps:`);
     console.log(`  1. Run Peggy: cd advertiser-agent && npm start`);
     console.log(`  2. Or use manual UI: http://localhost:3000/advertisers/offer-queue`);
     console.log(`  3. Check database: SELECT * FROM offers WHERE advertiser_id = '${ADVERTISER_WALLET}';`);
 
   } catch (error) {
-    console.error('❌ Seeding failed:', error);
+    console.error('[ERROR] Seeding failed:', error);
     process.exit(1);
   }
 }
 
 async function cleanOffers() {
-  console.log('🧹 Cleaning test offers...');
+  console.log('Cleaning test offers...');
   
   try {
     const { error } = await supabase
@@ -212,9 +212,9 @@ async function cleanOffers() {
 
     if (error) throw error;
 
-    console.log('✅ Test offers cleaned!');
+    console.log('*** Test offers cleaned! ***');
   } catch (error) {
-    console.error('❌ Cleaning failed:', error);
+    console.error('[ERROR] Cleaning failed:', error);
     process.exit(1);
   }
 }

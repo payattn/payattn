@@ -44,11 +44,11 @@ solana transfer <RECIPIENT_PUBKEY> <AMOUNT> \
 **Devnet Explorer:** https://explorer.solana.com/address/6ZEekbTJZ6D6KrfSGDY2ByoWENWfe8RzhvpBS4KtPdZr?cluster=devnet
 
 **Current Working State (Nov 8, 2025):**
-- ✅ Smart contract deployed with 3-transaction settlement
-- ✅ Backend integration complete (x402 flow + settlement service)
-- ✅ End-to-end tested: escrow creation → funding → settlement → verification
-- ✅ Privacy verified: random ordering, variable delays (7s, 5s observed)
-- ✅ Math verified: 70/25/5 split working correctly
+- Smart contract deployed with 3-transaction settlement
+- Backend integration complete (x402 flow + settlement service)
+- End-to-end tested: escrow creation → funding → settlement → verification
+- Privacy verified: random ordering, variable delays (7s, 5s observed)
+- Math verified: 70/25/5 split working correctly
 - ⏳ Extension validation (WP-SOL-03) - Escrow validator created, needs integration
 - ⏳ Demo polish (WP-SOL-05) - Ready for UI improvements
 - ⏳ Documentation (WP-SOL-06) - In progress
@@ -59,7 +59,7 @@ solana transfer <RECIPIENT_PUBKEY> <AMOUNT> \
 
 **Problem:** Original plan was to hold advertiser funds in Payattn's wallet (requires trust).
 
-**Solution:** Use Solana smart contracts to hold funds in escrow—nobody has to trust Payattn.
+**Solution:** Use Solana smart contracts to hold funds in escrow - nobody has to trust Payattn.
 
 **Flow:**
 1. Advertiser's agent (Peggy) accepts offer → Backend sends x402 "Payment Required" response
@@ -103,10 +103,10 @@ Create the Anchor project as a subdirectory of your main project:
 ```
 
 **Why subdirectory:**
-- ✅ Shared dependencies (backend/extension can import from `../solana/target/idl/`)
-- ✅ Unified deployment (one git repo, one hackathon submission)
-- ✅ IDL stays in sync automatically (no manual copying)
-- ✅ Easier for judges to navigate complete project
+- Shared dependencies (backend/extension can import from `../solana/target/idl/`)
+- Unified deployment (one git repo, one hackathon submission)
+- IDL stays in sync automatically (no manual copying)
+- Easier for judges to navigate complete project
 
 **Initialize the project:**
 ```bash
@@ -808,17 +808,17 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
 **Success criteria:** 3 unlinked transactions submitted with random delays, failed txs queued for retry, gas fees documented
 
 **✅ WP-SOL-04 COMPLETE (Nov 8, 2025):**
-- ✅ **Task 4A:** Publisher Registration - COMPLETE
+- **Task 4A:** Publisher Registration - COMPLETE
   - Publisher settings UI created with wallet validation (`/app/publishers/settings/page.tsx`)
   - API endpoints for saving/fetching wallet addresses
   - Integrated with Supabase publishers table
-- ✅ **Task 4B:** Backend Settlement Service - COMPLETE
+- **Task 4B:** Backend Settlement Service - COMPLETE
   - `settleWithPrivacy()` function with 3 unlinked transactions
   - POST /api/publisher/impressions endpoint working
   - GET /api/admin/settlements/failed for monitoring
   - Failed settlement retry queue implemented
   - **UPDATED (Nov 8):** Now calls `settleUser()`, `settlePublisher()`, `settlePlatform()` separately
-- ✅ **Task 4D:** End-to-End Testing - COMPLETE
+- **Task 4D:** End-to-End Testing - COMPLETE
   - Test escrow created: `offer_test_v3_1762636084025`
   - Escrow PDA: `6kqNeiPo3GNvSNvX8f3BJ6nXFsuKSS8YNhbapEhvqpTh`
   - All 3 transactions successful:
@@ -911,11 +911,11 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
 ## Timeline
 
 **Day 1 (Nov 7-8):**
-- ✅ Prerequisites & Setup (Solana CLI, Rust, Anchor, test wallets funded)
-- ✅ WP-SOL-01 (Smart contract with refund mechanism)
+- Prerequisites & Setup (Solana CLI, Rust, Anchor, test wallets funded)
+- WP-SOL-01 (Smart contract with refund mechanism)
 
 **Day 2 (Nov 8):**
-- ✅ **COMPLETE:** WP-SOL-02 (Backend x402 integration)
+- **COMPLETE:** WP-SOL-02 (Backend x402 integration)
   - Database schema applied (offers, settlement_queue, publishers with wallet_address)
   - Solana service module created with all functions (derivePDA, verifyEscrow, settleUser, settlePublisher, settlePlatform)
   - x402 endpoint working (HTTP 402 with proper headers)
@@ -926,7 +926,7 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
     - Fund escrow → On-chain escrow created ✅
     - Verify payment → Backend verified on-chain ✅
     - Offer status: `offer_made` → `accepted` → `funded` ✅
-- ✅ **COMPLETE:** WP-SOL-04 (Privacy-preserving settlement)
+- **COMPLETE:** WP-SOL-04 (Privacy-preserving settlement)
   - Smart contract rewritten with 3 separate settlement instructions
   - Fixed "Transfer: `from` must not carry data" error with manual lamports manipulation
   - Backend updated to call 3 separate transactions with random ordering and delays
@@ -1072,11 +1072,11 @@ node test-contract-logic.js  # Validates IDL structure, math, errors
 7. Verify privacy: Check transaction timestamps and ordering on Solana Explorer
 
 **Verification Checklist:**
-- ✅ All 3 transactions successful (user, publisher, platform)
-- ✅ Correct amounts: 70%, 25%, 5% split
-- ✅ Random ordering (not always user→publisher→platform)
-- ✅ Variable delays between transactions (0-5s + network time)
-- ✅ No shared signers except escrow PDA
+- All 3 transactions successful (user, publisher, platform)
+- Correct amounts: 70%, 25%, 5% split
+- Random ordering (not always user→publisher→platform)
+- Variable delays between transactions (0-5s + network time)
+- No shared signers except escrow PDA
 
 ### Database Required Fields
 

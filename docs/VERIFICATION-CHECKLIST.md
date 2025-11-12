@@ -7,7 +7,7 @@
 
 ## 🔒 Requirement 1: Private Data Stays in Extension
 
-### What We Built ✅
+### What We Built 
 
 **Extension-side proof generation:**
 ```javascript
@@ -39,20 +39,20 @@ async function generateProof(circuitName, privateInputs, publicInputs, options) 
 }
 ```
 
-### Verification ✅
+### Verification 
 
 **Private input (age: 45):**
-- ✅ Read from extension secure storage
-- ✅ Used to generate witness
-- ✅ **NEVER appears in output**
-- ✅ **NEVER sent to backend**
-- ✅ **NEVER logged or transmitted**
+- Read from extension secure storage
+- Used to generate witness
+- **NEVER appears in output**
+- **NEVER sent to backend**
+- **NEVER logged or transmitted**
 
 **What leaves the extension:**
-- ✅ Proof only (cryptographic proof)
-- ✅ Public signals (bounds, not values)
-- ✅ Circuit name
-- ✅ Timestamp
+- Proof only (cryptographic proof)
+- Public signals (bounds, not values)
+- Circuit name
+- Timestamp
 
 **Result:**
 ```
@@ -70,9 +70,9 @@ Backend ONLY knows: user is in range 40-60 ✅
 
 ---
 
-## 🎯 Requirement 2: Generic Utility Circuits
+## Requirement 2: Generic Utility Circuits
 
-### What We Built ✅
+### What We Built 
 
 **Registered circuits in extension/lib/zk-prover.js:**
 
@@ -101,7 +101,7 @@ const CIRCUITS_REGISTRY = {
 };
 ```
 
-### Verification ✅
+### Verification 
 
 **Generic approach confirmed:**
 
@@ -114,15 +114,15 @@ const CIRCUITS_REGISTRY = {
 | Interests in {golf, tech} | `set_membership` | ✅ Yes (same circuit) |
 
 **Result:**
-- ✅ One circuit for all numeric ranges
-- ✅ One circuit for all category membership
-- ✅ No code duplication
-- ✅ Reusable across all campaigns
-- ✅ Matches production systems (Tornado Cash, Aave)
+- One circuit for all numeric ranges
+- One circuit for all category membership
+- No code duplication
+- Reusable across all campaigns
+- Matches production systems (Tornado Cash, Aave)
 
 ---
 
-## 🏗️ Architecture Diagram - Privacy-First
+##  Architecture Diagram - Privacy-First
 
 ```
 EXTENSION (Autonomous, Self-Contained)
@@ -175,9 +175,9 @@ ADVERTISER
 
 ---
 
-## 🔄 Data Flow Example: Age Range Proof
+## Data Flow Example: Age Range Proof
 
-### 1️⃣ Extension Generates Proof
+### 1⃣ Extension Generates Proof
 ```javascript
 // extension/background.js or popup.js
 
@@ -206,7 +206,7 @@ const proof = await window.ZKProver.generateAgeProof(
 // Age (45) is NOT in this output ✅
 ```
 
-### 2️⃣ Extension Sends Proof to Backend
+### 2⃣ Extension Sends Proof to Backend
 ```javascript
 // Still in extension - proof is serialized
 
@@ -232,12 +232,12 @@ const response = await fetch('/api/verify-proof', {
 ```
 
 **What's NOT in request:**
-- ❌ Age = 45
-- ❌ Witness array
-- ❌ Private inputs
-- ❌ Any private data
+- Age = 45
+- Witness array
+- Private inputs
+- Any private data
 
-### 3️⃣ Backend Verifies Proof
+### 3⃣ Backend Verifies Proof
 ```typescript
 // app/api/verify-proof/route.ts
 
@@ -258,10 +258,10 @@ const result = await verifyProof(
 ```
 
 **What backend knows:**
-- ✅ User is between 40-60 years old
-- ❌ Not: user's actual age
+- User is between 40-60 years old
+- Not: user's actual age
 
-### 4️⃣ Advertiser Uses Result
+### 4⃣ Advertiser Uses Result
 ```
 Campaign: Nike Golf (age 40-60)
 User Proof Result: ✅ Valid
@@ -275,53 +275,53 @@ What advertiser learned:
 
 ---
 
-## ✅ Security Checklist
+## Security Checklist
 
 ### Private Data Protection
-- ✅ Age (45) never transmitted
-- ✅ Location never transmitted
-- ✅ Interests never transmitted
-- ✅ Only proof transmitted
-- ✅ Proof doesn't reveal private data
+- Age (45) never transmitted
+- Location never transmitted
+- Interests never transmitted
+- Only proof transmitted
+- Proof doesn't reveal private data
 
 ### Autonomous Extension
-- ✅ Service worker can generate proofs anytime
-- ✅ No server dependency for proof generation
-- ✅ All WASM bundled with extension
-- ✅ All proving keys bundled with extension
-- ✅ Can run offline if needed
+- Service worker can generate proofs anytime
+- No server dependency for proof generation
+- All WASM bundled with extension
+- All proving keys bundled with extension
+- Can run offline if needed
 
 ### Generic Circuits
-- ✅ `range_proof` works for any numeric range
-- ✅ `set_membership` works for any category
-- ✅ Same circuit used for multiple criteria
-- ✅ Reduces code duplication
-- ✅ Easier to maintain
+- `range_proof` works for any numeric range
+- `set_membership` works for any category
+- Same circuit used for multiple criteria
+- Reduces code duplication
+- Easier to maintain
 
 ### Cryptographic Soundness
-- ✅ Groth16 proofs are non-forgeable
-- ✅ Verification keys are public (safe)
-- ✅ Proving keys are secret (in extension)
-- ✅ Backend can verify without seeing private data
+- Groth16 proofs are non-forgeable
+- Verification keys are public (safe)
+- Proving keys are secret (in extension)
+- Backend can verify without seeing private data
 
 ---
 
-## 📊 Files Summary
+## Files Summary
 
-### ✅ Created for Extension
+###  Created for Extension
 - `extension/lib/zk-prover.js` - Proof generation
   - All private data processing
   - WASM loading
   - Witness generation
   - Proof creation
 
-### ✅ Created for Backend
+###  Created for Backend
 - `app/api/verify-proof/route.ts` - Proof verification
   - Receives proof from extension
   - Verifies using verification key
   - Returns verification result
 
-### ✅ Supporting Files
+###  Supporting Files
 - `extension/circuits/age_range/` - Bundled WASM + proving key
 - `public/circuits/age_range/` - Backend verification key
 - `lib/zk/verifier.ts` - Backend verification logic
@@ -329,15 +329,15 @@ What advertiser learned:
 
 ---
 
-## 🎯 Ready for WP02.3?
+## Ready for WP02.3?
 
 ### Checklist
-- ✅ Private data stays in extension
-- ✅ Only proofs sent to backend
-- ✅ Extension is autonomous
-- ✅ Generic circuits ready
-- ✅ Architecture documented
-- ✅ Code is secure
+- Private data stays in extension
+- Only proofs sent to backend
+- Extension is autonomous
+- Generic circuits ready
+- Architecture documented
+- Code is secure
 
 ### Next Steps
 1. **WP02.3a:** Build age proof UI component
@@ -346,7 +346,7 @@ What advertiser learned:
 
 ---
 
-## 🚀 Status
+## Status
 
 **✅ READY FOR WP02.3**
 

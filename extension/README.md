@@ -2,7 +2,7 @@
 
 Privacy-first ad agent that runs autonomously in the background.
 
-## 🚀 Quick Install (Development Mode)
+## Quick Install (Development Mode)
 
 ### Chrome/Edge:
 1. Open `chrome://extensions/` in your browser
@@ -17,7 +17,7 @@ Privacy-first ad agent that runs autonomously in the background.
 3. Select the `manifest.json` file from this folder
 4. Done! ✅
 
-## ⚙️ How It Works
+## ⚙ How It Works
 
 ### Background Processing:
 - **Runs every 30 minutes** automatically using Chrome Alarms API
@@ -35,7 +35,7 @@ Privacy-first ad agent that runs autonomously in the background.
 - Press "Run Now" to trigger processing immediately
 - View execution logs
 
-## 🔄 Syncing with Web Dashboard
+## Syncing with Web Dashboard
 
 The extension shares IndexedDB storage with the web dashboard at `localhost:3000/storage-test`:
 
@@ -46,7 +46,7 @@ The extension shares IndexedDB storage with the web dashboard at `localhost:3000
 
 **No manual sync needed!** They share the same database.
 
-## 📝 Next Steps
+## Next Steps
 
 1. **Test the basic extension**: Install it and check that it runs
 2. **Integrate crypto functions**: Copy your `crypto-pure.ts` logic into `background.js`
@@ -59,7 +59,7 @@ The extension shares IndexedDB storage with the web dashboard at `localhost:3000
 - Click "background page" under your extension
 - See console logs from `background.js`
 
-## 📦 For Production
+## For Production
 
 When ready to publish:
 1. Test thoroughly in dev mode
