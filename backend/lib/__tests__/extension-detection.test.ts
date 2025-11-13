@@ -233,5 +233,108 @@ describe('Extension Detection', () => {
       const result = await isExtensionInstalled();
       expect(result).toBe(false);
     });
+
+    it('should handle transaction error in getStatusFromDB', async () => {
+      (global as any).chrome = undefined;
+
+      const mockGetRequest = {
+        onsuccess: null as any,
+        onerror: null as any,
+        result: null,
+        error: new Error('Get request failed')
+      };
+
+      const mockObjectStore = {
+        get: jest.fn().mockReturnValue(mockGetRequest)
+      };
+
+      const mockTransaction = {
+        objectStore: jest.fn().mockReturnValue(mockObjectStore)
+      };
+
+      const mockDB = {
+        transaction: jest.fn().mockReturnValue(mockTransaction)
+      };
+
+      const mockOpenRequest = {
+        onerror: null as any,
+        onsuccess: null as any,
+        error: null,
+        result: mockDB
+      };
+
+      const mockIndexedDB = {
+        open: jest.fn().mockReturnValue(mockOpenRequest)
+      };
+      (global as any).indexedDB = mockIndexedDB;
+
+      const promise = isExtensionInstalled();
+      
+      setTimeout(() => {
+        if (mockOpenRequest.onsuccess) {
+          mockOpenRequest.onsuccess();
+        }
+        setTimeout(() => {
+          // Trigger error callback
+          if (mockGetRequest.onerror) {
+            mockGetRequest.onerror();
+          }
+        }, 0);
+      }, 0);
+
+      const result = await promise;
+      // Should return false due to error, which resolves to null status
+      expect(result).toBe(false);
+    });
+
+    it('should handle missing status data in IndexedDB', async () => {
+      (global as any).chrome = undefined;
+
+      const mockGetRequest = {
+        onsuccess: null as any,
+        onerror: null as any,
+        result: null  // No status found
+      };
+
+      const mockObjectStore = {
+        get: jest.fn().mockReturnValue(mockGetRequest)
+      };
+
+      const mockTransaction = {
+        objectStore: jest.fn().mockReturnValue(mockObjectStore)
+      };
+
+      const mockDB = {
+        transaction: jest.fn().mockReturnValue(mockTransaction)
+      };
+
+      const mockOpenRequest = {
+        onerror: null as any,
+        onsuccess: null as any,
+        error: null,
+        result: mockDB
+      };
+
+      const mockIndexedDB = {
+        open: jest.fn().mockReturnValue(mockOpenRequest)
+      };
+      (global as any).indexedDB = mockIndexedDB;
+
+      const promise = isExtensionInstalled();
+      
+      setTimeout(() => {
+        if (mockOpenRequest.onsuccess) {
+          mockOpenRequest.onsuccess();
+        }
+        setTimeout(() => {
+          if (mockGetRequest.onsuccess) {
+            mockGetRequest.onsuccess();
+          }
+        }, 0);
+      }, 0);
+
+      const result = await promise;
+      expect(result).toBe(false);
+    });
   });
 });

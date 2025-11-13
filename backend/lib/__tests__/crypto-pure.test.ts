@@ -462,3 +462,114 @@ describe('Key Derivation', () => {
     expect(new Uint8Array(exported1)).not.toEqual(new Uint8Array(exported2));
   });
 });
+
+describe('KDS Material-Based Encryption/Decryption', () => {
+  const { encryptDataWithMaterial, decryptDataWithMaterial } = require('../crypto-pure');
+
+  test('should encrypt and decrypt data with KDS material', async () => {
+    const data = 'Sensitive user data';
+    const keyMaterial = 'kds-material-xyz789';
+    const walletAddress = '7EqQdEUACv1u4UfuQ3KMC3ZpFqbQkXzJZpZ9M5aGNqgR';
+
+    const encrypted = await encryptDataWithMaterial(data, keyMaterial, walletAddress);
+    expect(encrypted).toBeDefined();
+    expect(typeof encrypted).toBe('string');
+    expect(encrypted.length).toBeGreaterThan(0);
+
+    const decrypted = await decryptDataWithMaterial(encrypted, keyMaterial, walletAddress);
+    expect(decrypted).toBe(data);
+  });
+
+  test('should produce different ciphertext each time (random IV)', async () => {
+    const data = 'Test data';
+    const keyMaterial = 'kds-material-123';
+    const walletAddress = '7EqQdEUACv1u4UfuQ3KMC3ZpFqbQkXzJZpZ9M5aGNqgR';
+
+    const encrypted1 = await encryptDataWithMaterial(data, keyMaterial, walletAddress);
+    const encrypted2 = await encryptDataWithMaterial(data, keyMaterial, walletAddress);
+
+    // Different IVs should produce different ciphertext
+    expect(encrypted1).not.toBe(encrypted2);
+
+    // But both should decrypt to same plaintext
+    const decrypted1 = await decryptDataWithMaterial(encrypted1, keyMaterial, walletAddress);
+    const decrypted2 = await decryptDataWithMaterial(encrypted2, keyMaterial, walletAddress);
+    expect(decrypted1).toBe(data);
+    expect(decrypted2).toBe(data);
+  });
+
+  test('should fail decryption with wrong key material', async () => {
+    const data = 'Secret data';
+    const correctMaterial = 'correct-material';
+    const wrongMaterial = 'wrong-material';
+    const walletAddress = '7EqQdEUACv1u4UfuQ3KMC3ZpFqbQkXzJZpZ9M5aGNqgR';
+
+    const encrypted = await encryptDataWithMaterial(data, correctMaterial, walletAddress);
+
+    await expect(
+      decryptDataWithMaterial(encrypted, wrongMaterial, walletAddress)
+    ).rejects.toThrow();
+  });
+
+  test('should fail decryption with wrong wallet address', async () => {
+    const data = 'Secret data';
+    const keyMaterial = 'kds-material';
+    const correctWallet = '7EqQdEUACv1u4UfuQ3KMC3ZpFqbQkXzJZpZ9M5aGNqgR';
+    const wrongWallet = '9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin';
+
+    const encrypted = await encryptDataWithMaterial(data, keyMaterial, correctWallet);
+
+    await expect(
+      decryptDataWithMaterial(encrypted, keyMaterial, wrongWallet)
+    ).rejects.toThrow();
+  });
+
+  test('should handle empty string encryption', async () => {
+    const data = '';
+    const keyMaterial = 'kds-material';
+    const walletAddress = '7EqQdEUACv1u4UfuQ3KMC3ZpFqbQkXzJZpZ9M5aGNqgR';
+
+    const encrypted = await encryptDataWithMaterial(data, keyMaterial, walletAddress);
+    const decrypted = await decryptDataWithMaterial(encrypted, keyMaterial, walletAddress);
+
+    expect(decrypted).toBe('');
+  });
+
+  test('should handle JSON data encryption', async () => {
+    const jsonData = JSON.stringify({
+      userId: '12345',
+      preferences: { theme: 'dark', notifications: true },
+      wallet: '7EqQdEUACv1u4UfuQ3KMC3ZpFqbQkXzJZpZ9M5aGNqgR'
+    });
+    const keyMaterial = 'kds-material';
+    const walletAddress = '7EqQdEUACv1u4UfuQ3KMC3ZpFqbQkXzJZpZ9M5aGNqgR';
+
+    const encrypted = await encryptDataWithMaterial(jsonData, keyMaterial, walletAddress);
+    const decrypted = await decryptDataWithMaterial(encrypted, keyMaterial, walletAddress);
+
+    expect(JSON.parse(decrypted)).toEqual(JSON.parse(jsonData));
+  });
+
+  test('should handle large data encryption', async () => {
+    const largeData = 'x'.repeat(10000);
+    const keyMaterial = 'kds-material';
+    const walletAddress = '7EqQdEUACv1u4UfuQ3KMC3ZpFqbQkXzJZpZ9M5aGNqgR';
+
+    const encrypted = await encryptDataWithMaterial(largeData, keyMaterial, walletAddress);
+    const decrypted = await decryptDataWithMaterial(encrypted, keyMaterial, walletAddress);
+
+    expect(decrypted).toBe(largeData);
+    expect(decrypted.length).toBe(10000);
+  });
+
+  test('should handle unicode characters', async () => {
+    const unicodeData = '你好世界 🌍 مرحبا العالم';
+    const keyMaterial = 'kds-material';
+    const walletAddress = '7EqQdEUACv1u4UfuQ3KMC3ZpFqbQkXzJZpZ9M5aGNqgR';
+
+    const encrypted = await encryptDataWithMaterial(unicodeData, keyMaterial, walletAddress);
+    const decrypted = await decryptDataWithMaterial(encrypted, keyMaterial, walletAddress);
+
+    expect(decrypted).toBe(unicodeData);
+  });
+});
