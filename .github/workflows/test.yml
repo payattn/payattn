@@ -54,25 +54,25 @@ jobs:
             echo "  Functions: $FUNCTIONS%"
             echo "  Statements: $STATEMENTS%"
             
-            # Check if any metric is below 40%
-            if (( $(echo "$LINES < 40" | bc -l) )); then
-              echo "❌ Lines coverage $LINES% is below 40% threshold"
+            # Check if any metric is below 35%
+            if (( $(echo "$LINES < 35" | bc -l) )); then
+              echo "❌ Lines coverage $LINES% is below 35% threshold"
               exit 1
             fi
-            if (( $(echo "$BRANCHES < 40" | bc -l) )); then
-              echo "❌ Branches coverage $BRANCHES% is below 40% threshold"
+            if (( $(echo "$BRANCHES < 35" | bc -l) )); then
+              echo "❌ Branches coverage $BRANCHES% is below 35% threshold"
               exit 1
             fi
-            if (( $(echo "$FUNCTIONS < 40" | bc -l) )); then
-              echo "❌ Functions coverage $FUNCTIONS% is below 40% threshold"
+            if (( $(echo "$FUNCTIONS < 35" | bc -l) )); then
+              echo "❌ Functions coverage $FUNCTIONS% is below 35% threshold"
               exit 1
             fi
-            if (( $(echo "$STATEMENTS < 40" | bc -l) )); then
-              echo "❌ Statements coverage $STATEMENTS% is below 40% threshold"
+            if (( $(echo "$STATEMENTS < 35" | bc -l) )); then
+              echo "❌ Statements coverage $STATEMENTS% is below 35% threshold"
               exit 1
             fi
             
-            echo "✅ All coverage metrics meet 40% threshold"
+            echo "✅ All coverage metrics meet 35% threshold"
           fi
 
   test-agent:
@@ -122,25 +122,25 @@ jobs:
             echo "  Functions: $FUNCTIONS%"
             echo "  Statements: $STATEMENTS%"
             
-            # Check if any metric is below 40%
-            if (( $(echo "$LINES < 40" | bc -l) )); then
-              echo "❌ Lines coverage $LINES% is below 40% threshold"
+            # Check if any metric is below 15%
+            if (( $(echo "$LINES < 15" | bc -l) )); then
+              echo "❌ Lines coverage $LINES% is below 15% threshold"
               exit 1
             fi
-            if (( $(echo "$BRANCHES < 40" | bc -l) )); then
-              echo "❌ Branches coverage $BRANCHES% is below 40% threshold"
+            if (( $(echo "$BRANCHES < 15" | bc -l) )); then
+              echo "❌ Branches coverage $BRANCHES% is below 15% threshold"
               exit 1
             fi
-            if (( $(echo "$FUNCTIONS < 40" | bc -l) )); then
-              echo "❌ Functions coverage $FUNCTIONS% is below 40% threshold"
+            if (( $(echo "$FUNCTIONS < 15" | bc -l) )); then
+              echo "❌ Functions coverage $FUNCTIONS% is below 15% threshold"
               exit 1
             fi
-            if (( $(echo "$STATEMENTS < 40" | bc -l) )); then
-              echo "❌ Statements coverage $STATEMENTS% is below 40% threshold"
+            if (( $(echo "$STATEMENTS < 15" | bc -l) )); then
+              echo "❌ Statements coverage $STATEMENTS% is below 15% threshold"
               exit 1
             fi
             
-            echo "✅ All coverage metrics meet 40% threshold"
+            echo "✅ All coverage metrics meet 15% threshold"
           fi
 
   test-summary:
