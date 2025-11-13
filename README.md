@@ -2,7 +2,7 @@
 ![PayAttn](docs/payattn_logo_bar01_700x140_trans.png)
 
 [![Tests](https://github.com/payattn/payattn/workflows/Test%20Suite/badge.svg)](https://github.com/payattn/payattn/actions)
-[![Coverage](https://codecov.io/gh/payattn/payattn/branch/main/graph/badge.svg)](https://codecov.io/gh/payattn/payattn)
+
 
 **Autonomous Agents Negotiate Ad Prices and Settle Payments using Solana & x402**
 
