@@ -96,6 +96,11 @@ jobs:
       
       - name: Run tests
         working-directory: advertiser-agent
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://test.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: test-anon-key
+          VENICE_API_KEY: test-venice-key
+          SOLANA_RPC_URL: https://api.devnet.solana.com
         run: npm run test:coverage
       
       - name: Upload coverage to Codecov
