@@ -1,6 +1,9 @@
 # PayAttn
 ![PayAttn](docs/payattn_logo_bar01_700x140_trans.png)
 
+[![Tests](https://github.com/payattn/payattn/workflows/Test%20Suite/badge.svg)](https://github.com/payattn/payattn/actions)
+[![Coverage](https://codecov.io/gh/payattn/payattn/branch/main/graph/badge.svg)](https://codecov.io/gh/payattn/payattn)
+
 **Autonomous Agents Negotiate Ad Prices and Settle Payments using Solana & x402**
 
 PayAttn uses two personalised AI agents to negotiate ad prices on behalf of individual users. Max (the user's agent) and Peggy (advertiser's agent) automatically agree on fair payment for your attention, then settle transactions using x402 payments and Solana escrow. Private, trustless, efficient. No tracking, no data harvesting, no surveillance.
