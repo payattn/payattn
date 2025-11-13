@@ -369,4 +369,28 @@ describe('Profile Version Migration', () => {
     expect(loaded).toBeNull();
     expect(hasProfile('7EqQdEUACv1u4UfuQ3KMC3ZpFqbQkXzJZpZ9M5aGNqgR')).toBe(false);
   });
+
+  test('should migrate old format data (direct encrypted string)', async () => {
+    const { encryptData } = await import('../crypto-pure');
+    const testPublicKey = '7EqQdEUACv1u4UfuQ3KMC3ZpFqbQkXzJZpZ9M5aGNqgR';
+    const testProfile: UserProfile = {
+      demographics: { age: 25 }
+    };
+    
+    // Store old format: direct encrypted string (no version wrapper)
+    const oldFormatData = await encryptData(JSON.stringify(testProfile), testPublicKey);
+    localStorage.setItem(`payattn_profile_v1_${testPublicKey}`, oldFormatData);
+    
+    // Try to load - should trigger migration
+    const loaded = await loadProfile(testPublicKey);
+    
+    // Should successfully load and migrate
+    expect(loaded).not.toBeNull();
+    expect(loaded?.demographics?.age).toBe(25);
+    
+    // Verify new format is saved
+    const stored = localStorage.getItem(`payattn_profile_v1_${testPublicKey}`);
+    const parsed = JSON.parse(stored!);
+    expect(parsed.version).toBe('v1');
+  });
 });

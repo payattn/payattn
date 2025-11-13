@@ -446,4 +446,397 @@ describe('AuthService', () => {
     });
   });
 
+  describe('getSession', () => {
+    beforeEach(() => {
+      // Mock localStorage
+      const localStorageMock = {
+        getItem: jest.fn(),
+        setItem: jest.fn(),
+        removeItem: jest.fn(),
+        clear: jest.fn(),
+      };
+      Object.defineProperty(global, 'localStorage', {
+        value: localStorageMock,
+        writable: true
+      });
+      Object.defineProperty(global, 'window', {
+        value: global,
+        writable: true
+      });
+    });
+
+    it('should return null if window is undefined', () => {
+      Object.defineProperty(global, 'window', {
+        value: undefined,
+        writable: true
+      });
+
+      const session = AuthService.getSession();
+      expect(session).toBeNull();
+    });
+
+    it('should return null if no session stored', () => {
+      (localStorage.getItem as jest.Mock).mockReturnValue(null);
+
+      const session = AuthService.getSession();
+      expect(session).toBeNull();
+    });
+
+    it('should return session if valid and not expired', () => {
+      const validSession = {
+        publicKey: testWalletAddress,
+        authenticated: true,
+        timestamp: Date.now(),
+        expiresAt: Date.now() + 3600000,
+      };
+      (localStorage.getItem as jest.Mock).mockReturnValue(JSON.stringify(validSession));
+
+      const session = AuthService.getSession();
+      expect(session).toEqual(validSession);
+    });
+
+    it('should clear and return null if session is expired', () => {
+      const expiredSession = {
+        publicKey: testWalletAddress,
+        authenticated: true,
+        timestamp: Date.now() - 7200000,
+        expiresAt: Date.now() - 3600000, // expired 1 hour ago
+      };
+      (localStorage.getItem as jest.Mock).mockReturnValue(JSON.stringify(expiredSession));
+
+      const session = AuthService.getSession();
+      expect(session).toBeNull();
+      expect(localStorage.removeItem).toHaveBeenCalled();
+    });
+
+    it('should return null if session JSON is invalid', () => {
+      (localStorage.getItem as jest.Mock).mockReturnValue('invalid json');
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+
+      const session = AuthService.getSession();
+      expect(session).toBeNull();
+      expect(consoleSpy).toHaveBeenCalled();
+
+      consoleSpy.mockRestore();
+    });
+  });
+
+  describe('clearSession', () => {
+    beforeEach(() => {
+      const localStorageMock = {
+        getItem: jest.fn(),
+        setItem: jest.fn(),
+        removeItem: jest.fn(),
+        clear: jest.fn(),
+      };
+      Object.defineProperty(global, 'localStorage', {
+        value: localStorageMock,
+        writable: true
+      });
+      Object.defineProperty(global, 'window', {
+        value: global,
+        writable: true
+      });
+    });
+
+    it('should remove session from localStorage', () => {
+      AuthService.clearSession();
+
+      expect(localStorage.removeItem).toHaveBeenCalledWith('payattn_auth_session');
+    });
+
+    it('should not error if window is undefined', () => {
+      Object.defineProperty(global, 'window', {
+        value: undefined,
+        writable: true
+      });
+
+      expect(() => AuthService.clearSession()).not.toThrow();
+    });
+  });
+
+  describe('refreshSession', () => {
+    beforeEach(() => {
+      const localStorageMock = {
+        getItem: jest.fn(),
+        setItem: jest.fn(),
+        removeItem: jest.fn(),
+        clear: jest.fn(),
+      };
+      Object.defineProperty(global, 'localStorage', {
+        value: localStorageMock,
+        writable: true
+      });
+      Object.defineProperty(global, 'window', {
+        value: global,
+        writable: true
+      });
+    });
+
+    it('should return null if no session exists', () => {
+      (localStorage.getItem as jest.Mock).mockReturnValue(null);
+
+      const refreshed = AuthService.refreshSession();
+      expect(refreshed).toBeNull();
+    });
+
+    it('should return null if session is invalid', () => {
+      const invalidSession = {
+        publicKey: testWalletAddress,
+        authenticated: false,
+        timestamp: Date.now(),
+        expiresAt: Date.now() + 3600000,
+      };
+      (localStorage.getItem as jest.Mock).mockReturnValue(JSON.stringify(invalidSession));
+
+      const refreshed = AuthService.refreshSession();
+      expect(refreshed).toBeNull();
+    });
+
+    it('should return null if session is expired', () => {
+      const expiredSession = {
+        publicKey: testWalletAddress,
+        authenticated: true,
+        timestamp: Date.now() - 7200000,
+        expiresAt: Date.now() - 1000, // expired
+      };
+      (localStorage.getItem as jest.Mock).mockReturnValue(JSON.stringify(expiredSession));
+
+      const refreshed = AuthService.refreshSession();
+      expect(refreshed).toBeNull();
+    });
+
+    it('should refresh valid session and update expiry', () => {
+      const validSession = {
+        publicKey: testWalletAddress,
+        authenticated: true,
+        timestamp: Date.now(),
+        expiresAt: Date.now() + 1000000,
+      };
+      (localStorage.getItem as jest.Mock).mockReturnValue(JSON.stringify(validSession));
+
+      const beforeRefresh = Date.now();
+      const refreshed = AuthService.refreshSession();
+      const afterRefresh = Date.now();
+
+      expect(refreshed).not.toBeNull();
+      expect(refreshed!.expiresAt).toBeGreaterThan(beforeRefresh + 24 * 60 * 60 * 1000 - 1000);
+      expect(refreshed!.expiresAt).toBeLessThan(afterRefresh + 24 * 60 * 60 * 1000 + 1000);
+      expect(localStorage.setItem).toHaveBeenCalled();
+    });
+
+    it('should save refreshed session to localStorage', () => {
+      const validSession = {
+        publicKey: testWalletAddress,
+        authenticated: true,
+        timestamp: Date.now(),
+        expiresAt: Date.now() + 1000000,
+      };
+      (localStorage.getItem as jest.Mock).mockReturnValue(JSON.stringify(validSession));
+
+      AuthService.refreshSession();
+
+      expect(localStorage.setItem).toHaveBeenCalledWith(
+        'payattn_auth_session',
+        expect.any(String)
+      );
+    });
+  });
+
+  describe('getSessionToken', () => {
+    beforeEach(() => {
+      const localStorageMock = {
+        getItem: jest.fn(),
+        setItem: jest.fn(),
+        removeItem: jest.fn(),
+        clear: jest.fn(),
+      };
+      Object.defineProperty(global, 'localStorage', {
+        value: localStorageMock,
+        writable: true
+      });
+      Object.defineProperty(global, 'window', {
+        value: global,
+        writable: true
+      });
+      (global as any).atob = (str: string) => Buffer.from(str, 'base64').toString('binary');
+    });
+
+    it('should return null if window is undefined', () => {
+      Object.defineProperty(global, 'window', {
+        value: undefined,
+        writable: true
+      });
+
+      const token = AuthService.getSessionToken();
+      expect(token).toBeNull();
+    });
+
+    it('should return null if no JWT stored', () => {
+      (localStorage.getItem as jest.Mock).mockReturnValue(null);
+
+      const token = AuthService.getSessionToken();
+      expect(token).toBeNull();
+    });
+
+    it('should return token if valid and not expired', () => {
+      const validToken = {
+        walletAddress: testWalletAddress,
+        publicKey: testWalletAddress,
+        issuedAt: Date.now(),
+        expiresAt: Date.now() + 3600000
+      };
+      const payload = Buffer.from(JSON.stringify(validToken)).toString('base64');
+      const jwt = `header.${payload}`;
+      (localStorage.getItem as jest.Mock).mockReturnValue(jwt);
+
+      const token = AuthService.getSessionToken();
+      expect(token).toEqual(validToken);
+    });
+
+    it('should return null and clear if JWT format is invalid', () => {
+      (localStorage.getItem as jest.Mock).mockReturnValue('invalid.jwt.format');
+
+      const token = AuthService.getSessionToken();
+      expect(token).toBeNull();
+      expect(localStorage.removeItem).toHaveBeenCalledWith('payattn_session');
+    });
+
+    it('should return null and clear if payload is missing', () => {
+      (localStorage.getItem as jest.Mock).mockReturnValue('header.');
+
+      const token = AuthService.getSessionToken();
+      expect(token).toBeNull();
+      expect(localStorage.removeItem).toHaveBeenCalled();
+    });
+
+    it('should return null and clear if token is expired', () => {
+      const expiredToken = {
+        walletAddress: testWalletAddress,
+        publicKey: testWalletAddress,
+        issuedAt: Date.now() - 7200000,
+        expiresAt: Date.now() - 3600000
+      };
+      const payload = Buffer.from(JSON.stringify(expiredToken)).toString('base64');
+      const jwt = `header.${payload}`;
+      (localStorage.getItem as jest.Mock).mockReturnValue(jwt);
+
+      const token = AuthService.getSessionToken();
+      expect(token).toBeNull();
+      expect(localStorage.removeItem).toHaveBeenCalled();
+    });
+
+    it('should return null and clear if JSON parsing fails', () => {
+      const payload = Buffer.from('invalid json').toString('base64');
+      const jwt = `header.${payload}`;
+      (localStorage.getItem as jest.Mock).mockReturnValue(jwt);
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+
+      const token = AuthService.getSessionToken();
+      expect(token).toBeNull();
+      expect(localStorage.removeItem).toHaveBeenCalled();
+      expect(consoleSpy).toHaveBeenCalled();
+
+      consoleSpy.mockRestore();
+    });
+  });
+
+  describe('clearSessionToken', () => {
+    beforeEach(() => {
+      const localStorageMock = {
+        getItem: jest.fn(),
+        setItem: jest.fn(),
+        removeItem: jest.fn(),
+        clear: jest.fn(),
+      };
+      Object.defineProperty(global, 'localStorage', {
+        value: localStorageMock,
+        writable: true
+      });
+      Object.defineProperty(global, 'window', {
+        value: global,
+        writable: true
+      });
+    });
+
+    it('should remove JWT session from localStorage', () => {
+      AuthService.clearSessionToken();
+
+      expect(localStorage.removeItem).toHaveBeenCalledWith('payattn_session');
+    });
+
+    it('should not error if window is undefined', () => {
+      Object.defineProperty(global, 'window', {
+        value: undefined,
+        writable: true
+      });
+
+      expect(() => AuthService.clearSessionToken()).not.toThrow();
+    });
+  });
+
+  describe('isSessionTokenValid', () => {
+    beforeEach(() => {
+      const localStorageMock = {
+        getItem: jest.fn(),
+        setItem: jest.fn(),
+        removeItem: jest.fn(),
+        clear: jest.fn(),
+      };
+      Object.defineProperty(global, 'localStorage', {
+        value: localStorageMock,
+        writable: true
+      });
+      Object.defineProperty(global, 'window', {
+        value: global,
+        writable: true
+      });
+      (global as any).atob = (str: string) => Buffer.from(str, 'base64').toString('binary');
+    });
+
+    it('should return true if token is valid and not expired', () => {
+      const validToken = {
+        walletAddress: testWalletAddress,
+        publicKey: testWalletAddress,
+        issuedAt: Date.now(),
+        expiresAt: Date.now() + 3600000
+      };
+      const payload = Buffer.from(JSON.stringify(validToken)).toString('base64');
+      const jwt = `header.${payload}`;
+      (localStorage.getItem as jest.Mock).mockReturnValue(jwt);
+
+      const isValid = AuthService.isSessionTokenValid();
+      expect(isValid).toBe(true);
+    });
+
+    it('should return false if no token exists', () => {
+      (localStorage.getItem as jest.Mock).mockReturnValue(null);
+
+      const isValid = AuthService.isSessionTokenValid();
+      expect(isValid).toBe(false);
+    });
+
+    it('should return false if token is expired', () => {
+      const expiredToken = {
+        walletAddress: testWalletAddress,
+        publicKey: testWalletAddress,
+        issuedAt: Date.now() - 7200000,
+        expiresAt: Date.now() - 1000
+      };
+      const payload = Buffer.from(JSON.stringify(expiredToken)).toString('base64');
+      const jwt = `header.${payload}`;
+      (localStorage.getItem as jest.Mock).mockReturnValue(jwt);
+
+      const isValid = AuthService.isSessionTokenValid();
+      expect(isValid).toBe(false);
+    });
+
+    it('should return false if token is invalid format', () => {
+      (localStorage.getItem as jest.Mock).mockReturnValue('invalid');
+
+      const isValid = AuthService.isSessionTokenValid();
+      expect(isValid).toBe(false);
+    });
+  });
+
 });

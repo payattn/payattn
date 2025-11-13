@@ -1,6 +1,14 @@
-import { describe, test, expect, jest, beforeAll } from '@jest/globals';
+import { describe, test, expect, jest, beforeAll, beforeEach } from '@jest/globals';
 import { verifyProof, verifyAgeProof, verifyProofBatch, allProofsValid } from '../verifier';
 import type { VerificationResult } from '../verifier';
+
+// Mock fs module for file operations
+jest.mock('fs', () => ({
+  existsSync: jest.fn().mockReturnValue(true),
+  mkdirSync: jest.fn(),
+  writeFileSync: jest.fn(),
+  rmSync: jest.fn()
+}));
 
 // Mock exec to avoid calling actual Rapidsnark CLI in tests
 jest.mock('child_process', () => ({
@@ -337,5 +345,93 @@ describe('Error Handling', () => {
     expect(typeof result.timestamp).toBe('number');
     expect(result.timestamp).toBeGreaterThan(0);
     expect(result.timestamp).toBeLessThanOrEqual(Date.now());
+  });
+});
+
+describe('Rapidsnark Error Handling', () => {
+  const { exec } = require('child_process');
+  
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  test('should handle verification key not found error', async () => {
+    const mockExec = exec as jest.MockedFunction<typeof exec>;
+    mockExec.mockImplementation((command: string, options: any, callback: any) => {
+      callback(new Error('Verification key not found'));
+    });
+
+    const result = await verifyProof(
+      'age_range',
+      { pi_a: ['1'], pi_b: [[]], pi_c: ['1'] },
+      ['18', '65']
+    );
+
+    expect(result.valid).toBe(false);
+    expect(result.message).toBe('Verification key not found');
+  });
+
+  test('should handle verification timeout error', async () => {
+    const mockExec = exec as jest.MockedFunction<typeof exec>;
+    mockExec.mockImplementation((command: string, options: any, callback: any) => {
+      callback(new Error('verification timeout exceeded'));
+    });
+
+    const result = await verifyProof(
+      'age_range',
+      { pi_a: ['1'], pi_b: [[]], pi_c: ['1'] },
+      ['18', '65']
+    );
+
+    expect(result.valid).toBe(false);
+    expect(result.message).toBe('Verification timeout');
+  });
+
+  test('should handle invalid proof error', async () => {
+    const mockExec = exec as jest.MockedFunction<typeof exec>;
+    mockExec.mockImplementation((command: string, options: any, callback: any) => {
+      callback(new Error('Invalid proof format'));
+    });
+
+    const result = await verifyProof(
+      'age_range',
+      { pi_a: ['1'], pi_b: [[]], pi_c: ['1'] },
+      ['18', '65']
+    );
+
+    expect(result.valid).toBe(false);
+    expect(result.message).toBe('Invalid proof');
+  });
+
+  test('should handle generic verification failure', async () => {
+    const mockExec = exec as jest.MockedFunction<typeof exec>;
+    mockExec.mockImplementation((command: string, options: any, callback: any) => {
+      callback(new Error('Some other error'));
+    });
+
+    const result = await verifyProof(
+      'age_range',
+      { pi_a: ['1'], pi_b: [[]], pi_c: ['1'] },
+      ['18', '65']
+    );
+
+    expect(result.valid).toBe(false);
+    expect(result.message).toBe('Verification failed');
+  });
+
+  test('should handle non-Error exceptions', async () => {
+    const mockExec = exec as jest.MockedFunction<typeof exec>;
+    mockExec.mockImplementation((command: string, options: any, callback: any) => {
+      callback({ message: 'string error' });
+    });
+
+    const result = await verifyProof(
+      'age_range',
+      { pi_a: ['1'], pi_b: [[]], pi_c: ['1'] },
+      ['18', '65']
+    );
+
+    expect(result.valid).toBe(false);
+    expect(result.message).toBeDefined();
   });
 });

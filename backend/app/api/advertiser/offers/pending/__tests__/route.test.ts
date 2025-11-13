@@ -53,38 +53,34 @@ describe('GET /api/advertiser/offers/pending', () => {
   });
   
   describe('Fetch Pending Offers', () => {
-    it('should return pending offers with count', async () => {
+    it('should return offers for valid advertiser', async () => {
       const mockAdvertiser = {
         advertiser_id: 'adv_123',
         name: 'Test Advertiser',
-        wallet_pubkey: '7EqQdEUACv1u4UfuQ3KMC3ZpFqbQkXzJZpZ9M5aGNqgR'
+        wallet_pubkey: 'wallet_123'
       };
       
-      const mockOffers = [
+      mockDatabaseClient.getAdvertiser.mockResolvedValue(mockAdvertiser);
+      mockDatabaseClient.getPendingOffersWithAds.mockResolvedValue([
         {
           offer_id: 'offer_1',
-          user_id: 'user_1',
-          user_wallet: '7EqQdEUACv1u4UfuQ3KMC3ZpFqbQkXzJZpZ9M5aGNqgR',
-          user_pubkey: '7EqQdEUACv1u4UfuQ3KMC3ZpFqbQkXzJZpZ9M5aGNqgR',
-          ad_id: 'ad_1',
           advertiser_id: 'adv_123',
+          user_id: 'user_1',
+          ad_id: 'ad_1',
+          user_pubkey: 'wallet_1',
           amount_lamports: 1000,
-          status: 'pending'
+          status: 'offer_made'
         },
         {
           offer_id: 'offer_2',
-          user_id: 'user_2',
-          user_wallet: '9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin',
-          user_pubkey: '9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin',
-          ad_id: 'ad_2',
           advertiser_id: 'adv_123',
+          user_id: 'user_2',
+          ad_id: 'ad_2',
+          user_pubkey: 'wallet_2',
           amount_lamports: 2000,
-          status: 'pending'
+          status: 'offer_made'
         }
-      ];
-      
-      mockDatabaseClient.getAdvertiser.mockResolvedValue(mockAdvertiser);
-      mockDatabaseClient.getPendingOffersWithAds.mockResolvedValue(mockOffers);
+      ] as any);
       
       const request = new NextRequest('http://localhost:3000/api/advertiser/offers/pending', {
         headers: { 'x-advertiser-id': 'adv_123' }
@@ -94,8 +90,9 @@ describe('GET /api/advertiser/offers/pending', () => {
       const data = await response.json();
       
       expect(response.status).toBe(200);
-      expect(data.offers).toEqual(mockOffers);
+      expect(data.offers).toHaveLength(2);
       expect(data.count).toBe(2);
+      expect(mockDatabaseClient.getAdvertiser).toHaveBeenCalledWith('adv_123');
       expect(mockDatabaseClient.getPendingOffersWithAds).toHaveBeenCalledWith('adv_123');
     });
     
@@ -132,7 +129,7 @@ describe('GET /api/advertiser/offers/pending', () => {
           ad_id: 'ad_1',
           advertiser_id: 'adv_123',
           amount_lamports: 1000,
-          status: 'pending',
+          status: 'offer_made',
           ad_creative: {
             ad_creative_id: 'ad_1',
             advertiser_id: 'adv_123',

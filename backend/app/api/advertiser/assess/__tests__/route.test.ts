@@ -129,7 +129,7 @@ describe('POST /api/advertiser/assess', () => {
         user_id: 'user_123',
         user_pubkey: 'UserWallet123',
         amount_lamports: 1000000,
-        status: 'pending',
+        status: 'offer_made',
         zk_proofs: { age_proof: 'proof1' },
         ad_creative: null
       } as any;
@@ -157,7 +157,7 @@ describe('POST /api/advertiser/assess', () => {
         user_id: 'user_123',
         user_pubkey: 'UserWallet123',
         amount_lamports: 1000000,
-        status: 'pending',
+        status: 'offer_made',
         zk_proofs: { age_proof: 'proof1' },
         ad_creative: {
           headline: 'Test Ad',

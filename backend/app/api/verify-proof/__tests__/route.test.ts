@@ -279,6 +279,80 @@ describe('POST /api/verify-proof', () => {
       expect(data.success).toBe(true);
       expect(data.result.valid).toBe(true);
     });
+
+    it('should validate set_membership circuit requirements with matching set', async () => {
+      // Mock hashAndPadSet to return expected hashes
+      const { hashAndPadSet } = require('@/lib/zk/hashing');
+      jest.spyOn(require('@/lib/zk/hashing'), 'hashAndPadSet').mockReturnValue([
+        'hash1', 'hash2', 'hash3', '0', '0', '0', '0', '0', '0', '0'
+      ]);
+
+      mockVerifyProof.mockResolvedValue(
+        createMockVerificationResult(
+          true,
+          'set_membership',
+          ['1', 'hash1', 'hash2', 'hash3', '0', '0', '0', '0', '0', '0', '0']
+        )
+      );
+
+      const request = {
+        json: jest.fn().mockResolvedValue({
+          circuitName: 'set_membership',
+          proof: {
+            pi_a: ['1', '2', '1'],
+            pi_b: [['1', '2'], ['3', '4'], ['5', '6']],
+            pi_c: ['7', '8', '1']
+          },
+          publicSignals: ['1', 'hash1', 'hash2', 'hash3', '0', '0', '0', '0', '0', '0', '0'],
+          campaignRequirements: {
+            allowedValues: ['us', 'uk', 'ca']
+          }
+        })
+      } as unknown as NextRequest;
+
+      const response = await POST(request);
+      const data = await response.json();
+
+      expect(data.success).toBe(true);
+      expect(data.result.valid).toBe(true);
+    });
+
+    it('should reject set_membership proofs with mismatched set', async () => {
+      // Mock hashAndPadSet to return different hashes
+      jest.spyOn(require('@/lib/zk/hashing'), 'hashAndPadSet').mockReturnValue([
+        'hashA', 'hashB', 'hashC', '0', '0', '0', '0', '0', '0', '0'
+      ]);
+
+      mockVerifyProof.mockResolvedValue(
+        createMockVerificationResult(
+          true,
+          'set_membership',
+          ['1', 'hash1', 'hash2', 'hash3', '0', '0', '0', '0', '0', '0', '0']
+        )
+      );
+
+      const request = {
+        json: jest.fn().mockResolvedValue({
+          circuitName: 'set_membership',
+          proof: {
+            pi_a: ['1', '2', '1'],
+            pi_b: [['1', '2'], ['3', '4'], ['5', '6']],
+            pi_c: ['7', '8', '1']
+          },
+          publicSignals: ['1', 'hash1', 'hash2', 'hash3', '0', '0', '0', '0', '0', '0', '0'],
+          campaignRequirements: {
+            allowedValues: ['us', 'uk', 'ca']
+          }
+        })
+      } as unknown as NextRequest;
+
+      const response = await POST(request);
+      const data = await response.json();
+
+      expect(data.success).toBe(false);
+      expect(data.result.valid).toBe(false);
+      expect(data.result.message).toContain('does not match campaign requirements');
+    });
   });
 
   describe('Error Handling', () => {
