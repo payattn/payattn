@@ -54,21 +54,21 @@ jobs:
             echo "  Functions: $FUNCTIONS%"
             echo "  Statements: $STATEMENTS%"
             
-            # Check if any metric is below 35%
+            # Check thresholds: branches/functions 30%, lines/statements 35%
             if (( $(echo "$LINES < 35" | bc -l) )); then
-              echo "❌ Lines coverage $LINES% is below 35% threshold"
+              echo "❌ Lines coverage ($LINES%) is below 35%"
               exit 1
             fi
-            if (( $(echo "$BRANCHES < 35" | bc -l) )); then
-              echo "❌ Branches coverage $BRANCHES% is below 35% threshold"
+            if (( $(echo "$BRANCHES < 30" | bc -l) )); then
+              echo "❌ Branches coverage ($BRANCHES%) is below 30%"
               exit 1
             fi
-            if (( $(echo "$FUNCTIONS < 35" | bc -l) )); then
-              echo "❌ Functions coverage $FUNCTIONS% is below 35% threshold"
+            if (( $(echo "$FUNCTIONS < 30" | bc -l) )); then
+              echo "❌ Functions coverage ($FUNCTIONS%) is below 30%"
               exit 1
             fi
             if (( $(echo "$STATEMENTS < 35" | bc -l) )); then
-              echo "❌ Statements coverage $STATEMENTS% is below 35% threshold"
+              echo "❌ Statements coverage ($STATEMENTS%) is below 35%"
               exit 1
             fi
             

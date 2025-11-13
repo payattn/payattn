@@ -1,0 +1,23 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🧪 Running tests before commit..."
+
+# Run backend tests
+cd backend
+npm test --silent --passWithNoTests || {
+  echo "❌ Backend tests failed!"
+  exit 1
+}
+
+# Run agent tests
+cd ../advertiser-agent
+NEXT_PUBLIC_SUPABASE_URL=https://test.supabase.co \
+NEXT_PUBLIC_SUPABASE_ANON_KEY=test-key \
+VENICE_API_KEY=test-key \
+npm test --silent --passWithNoTests || {
+  echo "❌ Agent tests failed!"
+  exit 1
+}
+
+echo "✅ All tests passed! Committing..."
