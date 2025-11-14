@@ -74,6 +74,13 @@ jobs:
             
             echo "✅ All coverage metrics meet 35% threshold"
           fi
+      
+      - name: Upload backend coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage
+          path: backend/coverage/coverage-summary.json
+          retention-days: 1
 
   test-agent:
     name: Advertiser Agent Tests
@@ -147,6 +154,88 @@ jobs:
             
             echo "✅ All coverage metrics meet 15% threshold"
           fi
+      
+      - name: Upload agent coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-coverage
+          path: advertiser-agent/coverage/coverage-summary.json
+          retention-days: 1
+
+  coverage-badge:
+    name: Generate Coverage Badge
+    runs-on: ubuntu-latest
+    needs: [test-backend, test-agent]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Download backend coverage
+        uses: actions/download-artifact@v4
+        with:
+          name: backend-coverage
+          path: backend-coverage
+      
+      - name: Download agent coverage
+        uses: actions/download-artifact@v4
+        with:
+          name: agent-coverage
+          path: agent-coverage
+      
+      - name: Generate coverage summary
+        run: |
+          # Extract coverage percentages from downloaded artifacts
+          BACKEND_FUNCTIONS=$(node -pe "JSON.parse(require('fs').readFileSync('backend-coverage/coverage-summary.json')).total.functions.pct")
+          BACKEND_LINES=$(node -pe "JSON.parse(require('fs').readFileSync('backend-coverage/coverage-summary.json')).total.lines.pct")
+          BACKEND_STATEMENTS=$(node -pe "JSON.parse(require('fs').readFileSync('backend-coverage/coverage-summary.json')).total.statements.pct")
+          BACKEND_BRANCHES=$(node -pe "JSON.parse(require('fs').readFileSync('backend-coverage/coverage-summary.json')).total.branches.pct")
+          
+          AGENT_FUNCTIONS=$(node -pe "JSON.parse(require('fs').readFileSync('agent-coverage/coverage-summary.json')).total.functions.pct")
+          AGENT_LINES=$(node -pe "JSON.parse(require('fs').readFileSync('agent-coverage/coverage-summary.json')).total.lines.pct")
+          AGENT_STATEMENTS=$(node -pe "JSON.parse(require('fs').readFileSync('agent-coverage/coverage-summary.json')).total.statements.pct")
+          AGENT_BRANCHES=$(node -pe "JSON.parse(require('fs').readFileSync('agent-coverage/coverage-summary.json')).total.branches.pct")
+          
+          # Calculate weighted average (70% backend, 30% agent)
+          OVERALL_FUNCTIONS=$(node -pe "Math.round(($BACKEND_FUNCTIONS * 0.7 + $AGENT_FUNCTIONS * 0.3) * 100) / 100")
+          OVERALL_LINES=$(node -pe "Math.round(($BACKEND_LINES * 0.7 + $AGENT_LINES * 0.3) * 100) / 100")
+          OVERALL_STATEMENTS=$(node -pe "Math.round(($BACKEND_STATEMENTS * 0.7 + $AGENT_STATEMENTS * 0.3) * 100) / 100")
+          OVERALL_BRANCHES=$(node -pe "Math.round(($BACKEND_BRANCHES * 0.7 + $AGENT_BRANCHES * 0.3) * 100) / 100")
+          
+          # Create standard coverage JSON for shields.io dynamic badge
+          cat > coverage.json << EOF
+          {
+            "schemaVersion": 1,
+            "label": "coverage",
+            "message": "${OVERALL_FUNCTIONS}%",
+            "color": "$(
+              if (( $(echo "$OVERALL_FUNCTIONS >= 80" | bc -l) )); then
+                echo "brightgreen"
+              elif (( $(echo "$OVERALL_FUNCTIONS >= 60" | bc -l) )); then
+                echo "green"
+              elif (( $(echo "$OVERALL_FUNCTIONS >= 40" | bc -l) )); then
+                echo "yellow"
+              elif (( $(echo "$OVERALL_FUNCTIONS >= 20" | bc -l) )); then
+                echo "orange"
+              else
+                echo "red"
+              fi
+            )"
+          }
+          EOF
+          
+          echo "Generated coverage.json with ${OVERALL_FUNCTIONS}% function coverage"
+      
+      - name: Commit coverage badge
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add coverage.json
+          git diff --staged --quiet || git commit -m "Update coverage badge [skip ci]"
+          git push
 
   test-summary:
     name: Test Summary

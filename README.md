@@ -1,9 +1,6 @@
 # PayAttn
 ![PayAttn](docs/payattn_logo_bar01_700x140_trans.png)
 
-[![Tests](https://github.com/payattn/payattn/workflows/Test%20Suite/badge.svg)](https://github.com/payattn/payattn/actions)
-
-
 **Autonomous Agents Negotiate Ad Prices and Settle Payments using Solana & x402**
 
 PayAttn uses two personalised AI agents to negotiate ad prices on behalf of individual users. Max (the user's agent) and Peggy (advertiser's agent) automatically agree on fair payment for your attention, then settle transactions using x402 payments and Solana escrow. Private, trustless, efficient. No tracking, no data harvesting, no surveillance.
@@ -11,6 +8,17 @@ PayAttn uses two personalised AI agents to negotiate ad prices on behalf of indi
 ## The Problem
 
 Online advertising is broken. The current model doesn't work for users or publishers. It is optimised for ad networks that have built empires on surveillance and data harvesting. PayAttn shifts power back to users while still giving advertisers and publishers a fair deal.
+
+---
+
+[![Tests](https://github.com/payattn/payattn/workflows/Test%20Suite/badge.svg)](https://github.com/payattn/payattn/actions)
+[![Coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/payattn/payattn/main/coverage.json)](https://github.com/payattn/payattn/actions/workflows/test.yml) [![Built for Solana x402 Hackathon](https://img.shields.io/badge/Built%20for-Solana%20x402%20Hackathon-9945FF)](https://solana.com/x402/hackathon)
+
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)
+![Next.js](https://img.shields.io/badge/Next.js-000000?logo=next.js&logoColor=white)
+![Code Style: Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)
+![Node.js Version](https://img.shields.io/badge/node-%3E%3D18-brightgreen)
 
 ---
 
