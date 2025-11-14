@@ -28,6 +28,7 @@ module.exports = {
     '!app/api/advertiser/offers/[id]/accept/route.ts',
     '!app/api/publisher/impressions/route.ts',
   ],
+  coverageReporters: ['text', 'lcov', 'json-summary'],
   coverageThreshold: {
     global: {
       branches: 30,
