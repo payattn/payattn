@@ -19,11 +19,14 @@ pids
 lib-cov
 
 # Coverage directory used by tools like istanbul
-coverage
+coverage/
 *.lcov
 
 # nyc test coverage
 .nyc_output
+
+# Exception: allow coverage.json badge file at repo root
+!coverage.json
 
 # Grunt intermediate storage (https://gruntjs.com/creating-plugins#storing-task-files)
 .grunt
@@ -170,3 +173,4 @@ test-ledger/
 !**/.vscode/*.json
 !**/components.json
 !**/mock-campaigns.json
+!coverage.json
