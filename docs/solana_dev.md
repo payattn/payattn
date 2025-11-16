@@ -94,9 +94,9 @@ Create the Anchor project as a subdirectory of your main project:
 ```
 ```
 /Users/jmd/nosync/org.payattn.main/
- backend/              # Next.js backend (x402 facilitator)
- extension/            # Chrome extension (Max - user agent)
- solana/               # Anchor project (smart contracts)
+ backend/     # Next.js backend (x402 facilitator)
+ extension/   # Chrome extension (Max - user agent)
+ solana/      # Anchor project (smart contracts)
     payattn_escrow/
  package.json
 ```
@@ -408,7 +408,7 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
 - HTTP 402 response working with all required headers
 - Escrow funded on-chain WITHOUT publisher (correct x402 flow): [Transaction](https://explorer.solana.com/tx/5tx1mGUjD5hgqaLkunuGUq4fK6KhDTcZVFMCYr2c2WnTdvsAnpCS1EYAZbhgfpXTz7dczuYmHwYCT4DAoqffH7CG?cluster=devnet)
 - Escrow PDA: `EqCj1kyPwB8pCXUAiLoubFFMBdCTc7XYuEBb3MRpcys3`
-- Publisher will be specified at settlement time (when user views ad) 
+- Publisher will be specified at settlement time (when user views ad)
 - Payment verification working, offer status updated to "funded"
 - Ready for settlement implementation with publisher parameter
 
@@ -622,7 +622,7 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
         
         // Add to failed settlement queue for retry
         await db.query(
-          `INSERT INTO settlement_queue 
+          `INSERT INTO settlement_queue
            (offer_id, tx_type, recipient_pubkey, amount, last_error)
            VALUES ($1, $2, $3, $4, $5)`,
           [offerId, type, pubkey, amount, err.message]
@@ -638,7 +638,7 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
     if (allSucceeded) {
       // Mark as fully settled
       await db.query(
-        `UPDATE offers 
+        `UPDATE offers
          SET status = 'settled', settling = false, settled_at = NOW()
          WHERE offer_id = $1`,
         [offerId]
@@ -689,7 +689,7 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
     );
     
     if (!publisher?.wallet_address) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: 'Publisher wallet not registered',
         action: 'Please add wallet address in dashboard'
       });
@@ -706,7 +706,7 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
     res.json({
       settled: results.every(r => r.success),
       transactions: results,
-      message: results.every(r => r.success) 
+      message: results.every(r => r.success)
         ? 'Payment sent to all parties'
         : 'Some transactions failed, added to retry queue'
     });
@@ -723,7 +723,7 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
   // Endpoint to view failed settlements (admin only)
   router.get('/api/admin/settlements/failed', async (req, res) => {
     const failed = await db.query(
-      `SELECT * FROM settlement_queue 
+      `SELECT * FROM settlement_queue
        WHERE attempts < 10
        ORDER BY created_at DESC`
     );
@@ -922,10 +922,10 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
   - Payment verification endpoint tested successfully
   - Fixed Next.js 16 async params issue
   - **END-TO-END TEST PASSED:** Complete flow working
-    - Accept offer  HTTP 402 response 
-    - Fund escrow  On-chain escrow created 
-    - Verify payment  Backend verified on-chain 
-    - Offer status: `offer_made`  `accepted`  `funded` 
+    - Accept offer  HTTP 402 response
+    - Fund escrow  On-chain escrow created
+    - Verify payment  Backend verified on-chain
+    - Offer status: `offer_made`  `accepted`  `funded`
 - **COMPLETE:** WP-SOL-04 (Privacy-preserving settlement)
   - Smart contract rewritten with 3 separate settlement instructions
   - Fixed "Transfer: `from` must not carry data" error with manual lamports manipulation
@@ -950,7 +950,7 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
 ### x402 Payment Required Protocol
 - **HTTP 402 Status Code**: Dormant since 1997, now brought to life with blockchain
 - **DIY Facilitator**: Payattn backend acts as payment verifier (no third-party dependency)
-- **Standard Flow**: 
+- **Standard Flow**:
   1. Agent requests resource
   2. Server responds 402 with payment instructions
   3. Agent pays on-chain (creates escrow)
@@ -975,7 +975,7 @@ solana balance $(solana-keygen pubkey ~/.config/solana/payattn-backend.json)
 - **Speed**: 400ms settlement (Ethereum = 15 minutes)
 - **Cost**: $0.0001/tx (Ethereum = $5-50/tx)
 - **UX**: Users negotiate 15 ads/hour = 15 escrows/hour
-- **PDAs**: Efficient escrow pattern without deploy-per-escrow overhead
+- **PDAs**:  escrow pattern without deploy-per-escrow overhead
 - **Economics**: Even with 3 separate txs, gas = $0.003 (acceptable for $0.01+ impressions)
 
 ### Trust Model
@@ -1264,7 +1264,6 @@ Return results with Explorer links for all 3 transactions
 - **Order Randomization**: User/Publisher/Platform shuffled each time
 - **Result**: Blockchain analysis can't definitively link user  publisher
 - **Tradeoff**: 3 gas costs but preserves user privacy
-
 
 ## Wallets
 

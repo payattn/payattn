@@ -59,6 +59,12 @@ Online advertising is broken. The current model doesn't work for users or publis
 
 ---
 
+## Solana x402 Hackathon demo video
+
+[![Solana x402 Hackathon video](https://img.youtube.com/vi/CbyV_rnU0tA/0.jpg)](https://www.youtube.com/watch?v=CbyV_rnU0tA)
+
+---
+
 ## Quick Start
 
 ### One-Command Setup
@@ -108,6 +114,7 @@ npm start
 - Node.js 18+
 - Chrome (for extension development)
 - macOS/Linux (for Rapidsnark compilation ...I used a docker container on MacOS)
+- LLM (local LMstudio etc supported) but can use venice.ai too
 
 ### 1. Clone Repository
 ```bash

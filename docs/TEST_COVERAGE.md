@@ -166,7 +166,7 @@ Extension JavaScript files do not export functions (designed for browser extensi
 **Framework:** Jest 29.7.0
 **Configuration:** `backend/jest.config.ts`
 **Test Pattern:** `**/__tests__/**/*.test.ts`
-**Coverage Threshold:** 
+**Coverage Threshold:**
 - Statements: 35%
 - Branches: 30%
 - Functions: 35%

@@ -156,29 +156,29 @@ Server verification process:
 ### Attack Scenarios
 
 ####  Attacker knows wallet address
-- Can compute keyHash 
-- CANNOT access KDS without valid signature 
+- Can compute keyHash
+- CANNOT access KDS without valid signature
 - No key material  cannot decrypt
 
 ####  Attacker intercepts encrypted data
-- Has encrypted profile 
-- CANNOT compute keyHash without wallet address 
-- CANNOT access KDS without signature 
+- Has encrypted profile
+- CANNOT compute keyHash without wallet address
+- CANNOT access KDS without signature
 - No key material  cannot decrypt
 
 ####  Attacker has keyHash + encrypted data
-- Knows keyHash 
-- Has encrypted data 
-- CANNOT access KDS without signature 
+- Knows keyHash
+- Has encrypted data
+- CANNOT access KDS without signature
 - No key material  cannot decrypt
 
 ####  Valid user with signature
-- Has wallet address 
-- Can compute keyHash 
-- Can sign message (has private key) 
-- KDS verifies signature 
-- Gets key material 
-- Can decrypt profile 
+- Has wallet address
+- Can compute keyHash
+- Can sign message (has private key)
+- KDS verifies signature
+- Gets key material
+- Can decrypt profile
 
 ## Testing
 

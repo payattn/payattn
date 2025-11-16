@@ -25,7 +25,7 @@
    Configuration UI (settings.html)                            
       User-friendly API key setup                              
                                                               
-  HTTPS 
+  HTTPS
                   Direct to Venice AI API
                   (privacy-respecting)
 
@@ -33,7 +33,6 @@
    Process requests                                            
    Return analysis results                                     
    No request logging (privacy-first)                          
-
 
 PayAttn Servers   ZERO ACCESS TO USER DATA OR API KEYS
 ```

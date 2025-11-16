@@ -26,7 +26,7 @@ Authentication varies by endpoint:
 - **Used by:** `/api/advertiser/assess`, `/api/advertiser/sessions`, `/api/advertiser/profile`
 
 ### Key-Derivation Storage (KDS)
-- **Headers:** 
+- **Headers:**
   - `x-wallet` (Solana wallet address)
   - `x-auth-token` (base64-encoded wallet signature)
 - **Used by:** `/api/k/{hash}`

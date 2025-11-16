@@ -231,4 +231,4 @@ If all tests pass, you have:
 5.  Defense-in-depth encryption
 6.  Privacy-first architecture
 
-**The KDS architecture is working!** 
+**The KDS architecture is working!**

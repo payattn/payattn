@@ -130,7 +130,7 @@ Visit `http://localhost:3000` to see the app.
        
        v
 
-  Generate Challenge 
+  Generate Challenge
   (timestamp + nonce)
 
        
@@ -272,7 +272,7 @@ const SESSION_DURATION = 24 * 60 * 60 * 1000; // in milliseconds
 - [Next.js Documentation](https://nextjs.org/docs)
 - [Shadcn UI Components](https://ui.shadcn.com/)
 
-## Success Criteria Met 
+## Success Criteria Met
 
 ### WP01.2.1
 - User clicks button  wallet extension prompts for connection

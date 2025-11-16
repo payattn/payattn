@@ -137,7 +137,7 @@ Both should produce the same hash.
 - **Solution:** Ensure allowed values list is identical (case-sensitive)
 
 **Issue:** Proof verification fails
-- **Solution:** 
+- **Solution:**
   1. Check console for detailed error
   2. Verify proof was generated successfully
   3. Ensure proof JSON is complete (not truncated)

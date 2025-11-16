@@ -220,4 +220,4 @@ if (result?.success && result?.matches) {
 
 ---
 
-**Key Point:** Your API key and user data never leave your device. Only Venice AI sees the data you send for processing. PayAttn's servers have zero visibility. 
+**Key Point:** Your API key and user data never leave your device. Only Venice AI sees the data you send for processing. PayAttn's servers have zero visibility.

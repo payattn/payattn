@@ -136,7 +136,7 @@ VALUES (
 6. Fill form and submit
 7. Check DB:
    ```sql
-   SELECT * FROM ad_creative 
+   SELECT * FROM ad_creative
    WHERE advertiser_id = '7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU';
    ```
 
@@ -155,8 +155,8 @@ Current seed data has placeholder IDs like `adv_rolex`, `adv_nike`. These need t
 
 ```sql
 -- Update test advertisers with real wallet addresses
-UPDATE advertisers 
-SET wallet_pubkey = advertiser_id 
+UPDATE advertisers
+SET wallet_pubkey = advertiser_id
 WHERE advertiser_id IN ('adv_rolex', 'adv_nike', 'adv_spotify');
 
 -- OR create new test advertiser with your wallet

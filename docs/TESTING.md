@@ -92,7 +92,7 @@ curl -X POST http://localhost:3000/api/verify-proof \
 
 [Verifier] Verification completed in 47ms
 [Verifier] Total time: 52ms
-[Verifier] Result: VALID 
+[Verifier] Result: VALID
 ```
 
 **Expected timing:**
@@ -319,4 +319,3 @@ const isValid = stdout.includes('Valid proof');
 5. Report results!
 
 **Expected outcome:**  Verification in <100ms with "Valid proof" output
-

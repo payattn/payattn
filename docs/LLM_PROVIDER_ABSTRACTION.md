@@ -263,4 +263,4 @@ const assessment = await window.MaxAssessor.assessSingleAd(campaign, userProfile
 
 ---
 
-**All functionality tested and working!** 
+**All functionality tested and working!**

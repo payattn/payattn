@@ -183,16 +183,16 @@ if (allProofsValid(results)) {
 User (Browser/Extension)
 
  Private Input (age: 45)
-   NEVER sent to server 
+   NEVER sent to server
 
  Public Input (minAge: 40, maxAge: 60)
-   Only in proof (hashed) 
+   Only in proof (hashed)
 
  Generate Proof
    Load WASM from /circuits/age_range/age_range.wasm
    Load .zkey from /circuits/age_range/age_range_0000.zkey
    Calculate witness (using WASM)
-   Create Groth16 proof 
+   Create Groth16 proof
 
  Send to Backend
     Proof object
@@ -203,12 +203,12 @@ User (Browser/Extension)
    Backend /api/verify-proof
    
     Load verification_key.json
-    Verify proof cryptographically 
+    Verify proof cryptographically
    
     Response: { valid: true/false }
        
        
-   Advertiser: "User matches age criteria" 
+   Advertiser: "User matches age criteria"
    (Never knows actual age)
 ```
 
@@ -400,4 +400,4 @@ A: Yes - proofs can't be forged. Use HTTPS for confidentiality of public signals
 ---
 
 Last updated: November 5, 2025  
-Phase: WP02 Phase 1 Complete 
+Phase: WP02 Phase 1 Complete

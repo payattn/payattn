@@ -1,4 +1,4 @@
-# Service Worker ZK-SNARK Proof Generation - WORKING 
+# Service Worker ZK-SNARK Proof Generation - WORKING
 
 **Status**: Successfully implemented and tested (Nov 5, 2025)
 
@@ -8,7 +8,7 @@ The PayAttn extension can now generate ZK-SNARK proofs autonomously in the servi
 
 **Important Notes:**
 - **Proof Storage:** Proofs are NOT automatically stored - they exist only in memory and are returned directly from the function. Send them immediately to the backend or cache in `chrome.storage` if needed.
-- **Available Circuits:** 
+- **Available Circuits:**
   -  `age_range` - Age verification (specific use case)
   -  `range_check` - Generic range proof (age, income, credit score, etc.)
   -  `set_membership` - Categorical membership (countries, interests, etc. - requires hashing)
@@ -152,9 +152,9 @@ async function runAgentCycle() {
       const proofPackage = await generateProofInServiceWorker(
         'age_range',
         { age: profile.age },              // Private input - stays in extension
-        { 
+        {
           minAge: campaign.minAge,          // Public inputs - in proof
-          maxAge: campaign.maxAge 
+          maxAge: campaign.maxAge
         },
         { verbose: false }                  // Set true for debugging
       );

@@ -401,7 +401,7 @@ Backend verification in JavaScript is a known pain point, which is why productio
 - [ ] All 3 circuits verified successfully
 - [ ] Invalid proofs correctly rejected
 
-**Current status:** 5/8 complete, operational for testing 
+**Current status:** 5/8 complete, operational for testing
 
 ---
 
@@ -432,5 +432,4 @@ make <platform>
 
 ---
 
-**Implementation operational and ready for testing.** 
-
+**Implementation operational and ready for testing.**
