@@ -34,6 +34,8 @@ Online advertising is broken. The current model doesn't work for users or publis
 
 **The novel part:** Autonomous price negotiation between agents, backed by cryptographic privacy guarantees and automatic blockchain settlement.
 
+![System overview whiteboard diagram](docs/whiteboard_overview01.png)
+
 ---
 
 ## Key Technical Achievements
